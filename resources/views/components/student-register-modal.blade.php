@@ -1,0 +1,123 @@
+{{-- Student Registration Modal --}}
+<div class="modal fade" id="studentRegistration" tabindex="-1" aria-labelledby="studentRegistrationLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-transparent border-0">
+            <form class="row g-3 needs-validation" action="{{ route('auth.register') }}" method="POST">
+                @csrf
+                <input type="hidden" name="user_type" value="student">
+                <div class="login-modal card shadow mb-3 col-12 bg-transparent border border-light p-0">
+                    <div class="card-body">
+                        <div class="pt-4 pb-2">
+                            <h5 class="card-title text-start pb-0 fs-4">Register</h5>
+                            <hr class="text-light">
+                        </div>
+                        <div class="d-flex align-items-start justify-content-center gap-5">
+                            <div class="col-5">
+                                <div class="col-12 mb-2">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="text" name="email" placeholder="Enter your email address"
+                                        class="form-control @error('email') is-invalid @enderror" id="email">
+                                    @error('email')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-12 mb-2">
+                                    <label for="username" class="form-label">Username/Group Name</label>
+                                    <input type="username" name="username" placeholder="Enter your username/group name"
+                                        class="form-control @error('username') is-invalid @enderror" id="username">
+                                    @error('username')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-12 mb-2">
+                                    <label for="password" class="form-label">Password</label>
+                                    <input type="password" name="password" placeholder="Enter your passsword"
+                                        class="form-control @error('password') is-invalid @enderror" id="password">
+                                    @error('password')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-12 mb-2">
+                                    <label for="password_confirmation" class="form-label">Confirm Password</label>
+                                    <input type="password" name="password_confirmation"
+                                        placeholder="Confirm your passsword"
+                                        class="form-control @error('password') is-invalid @enderror"
+                                        id="password_confirmation">
+                                </div>
+                                <div class="col-12 mb-2">
+                                    <label for="members" class="form-label">Members</label>
+                                    <div class="member-input-container border rounded p-2">
+                                        <input type="text" id="members"
+                                            class="form-control @error('members') is-invalid @enderror"
+                                            placeholder="Type and press Enter">
+                                        <div id="membersContainer" class="d-flex flex-wrap gap-1 mt-2"></div>
+                                        @error('members')
+                                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-5">
+                                <div class="col-12 mb-2">
+                                    <label for="program" class="form-label">Program</label>
+                                    <input type="program" name="program" placeholder="Enter your program"
+                                        class="form-control @error('program') is-invalid @enderror" id="program">
+                                    @error('program')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-12 mb-2">
+                                    <label for="yearsection" class="form-label">Year & Section</label>
+                                    <input type="yearsection" name="yearsection"
+                                        placeholder="Enter your year and section"
+                                        class="form-control @error('yearsection') is-invalid @enderror"
+                                        id="yearsection">
+                                    @error('yearsection')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-12 mb-2">
+                                    <label for="capstone_adviser" class="form-label">Capstone Adviser</label>
+                                    <input type="capstone_adviser" name="capstone_adviser"
+                                        placeholder="Enter your capstone adviser"
+                                        class="form-control @error('capstone_adviser') is-invalid @enderror"
+                                        id="capstone_adviser">
+                                    @error('capstone_adviser')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-12 mb-2">
+                                    <label for="instructor" class="form-label">Instructor</label>
+                                    <input type="instructor" name="instructor" placeholder="Enter your instrcutor"
+                                        class="form-control @error('instructor') is-invalid @enderror"
+                                        id="instructor">
+                                    @error('instructor')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="login-logo-container m-auto text-center pt-3">
+                                    <img class="m-auto" src="{{ asset('img/capservation-logo-hd.png') }}"
+                                        alt="capservation-logo" style="width: 174px; height: 150px;">
+                                    <div class="d-flex flex-column justify-content-center align-items-center">
+                                        <span>REGISTER TO CCS</span>
+                                        <span>RESERVATION</span>
+                                    </div>
+                                    <div class="mt-3">
+                                        <div class="d-flex gap-1">
+                                            <a class="btn w-100" href="/"
+                                                style="background-color: #65ABEE; border-radius: 8px;">Return</a>
+                                            <button class="btn w-100"
+                                                style="background-color: #65ABEE; border-radius: 8px;"
+                                                type="submit">Register</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
