@@ -15,6 +15,10 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- Datatables -->
     <link rel="stylesheet" href="https://cdn.datatables.net/2.1.6/css/dataTables.dataTables.css" />
+
+    <!-- Select2 Style -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
     <!-- Custom Styles -->
     <link href="{{ asset('css/styles.css') }}" rel="stylesheet">
 </head>
@@ -43,6 +47,11 @@
                         {{ session('success') }}
                     </div>
                 @endif
+                @if (session('error'))
+                    <div class="alert alert-danger">
+                        {{ session('error') }}
+                    </div>
+                @endif
                 <div class="index-text-container">
                     <h1 class="index-content-title">In Capservation,</h1>
                     <p class="index-content-text">we make reserving simpler</p>
@@ -55,9 +64,8 @@
 
             <x-login-modal></x-login-modal>
             <x-choose-usertype></x-choose-usertype>
-            <x-student-register-modal></x-student-register-modal>
+            <x-student-register-modal :instructors="$instructors"></x-student-register-modal>
             <x-instructor-register-modal></x-instructor-register-modal>
-
         </div>
     </div>
 
@@ -65,17 +73,24 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
     </script>
+
     <!-- Fontawesome Script -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/js/all.min.js"
         integrity="sha512-6sSYJqDreZRZGkJ3b+YfdhB3MzmuP9R7X1QZ6g5aIXhRvR1Y/N/P47jmnkENm7YL3oqsmI6AK+V6AD99uWDnIw=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <!-- JQuery Script -->
+
+    <!-- jQuery Script -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
         integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
     <!-- Datatables -->
     <script src="https://cdn.datatables.net/2.1.6/js/dataTables.js"></script>
-    <!-- Custom Script -->
+
+    <!-- Select2 Script -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <!--Custom Script -->
     <script src="{{ asset('js/script.js') }}"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {

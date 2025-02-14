@@ -10,9 +10,15 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
+    public function dashboard()
+    {
+        return view('dashboard');
+    }
+
     public function index()
     {
-        return view('auth.index');
+        $instructors = User::where('user_type', 'instructor')->get();
+        return view('auth.index', compact('instructors'));
     }
 
     public function login(Request $request)
@@ -32,7 +38,7 @@ class AuthController extends Controller
         // Attempt to authenticate user
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             $request->session()->regenerate();
-            return $this->dashboard(Auth::user());
+            return $this->check_user_auth(Auth::user());
         }
 
         return redirect()->back()
@@ -96,7 +102,7 @@ class AuthController extends Controller
                 'program' => $request->program,
                 'year_section' => $request->yearsection,
                 'capstone_adviser_id' => $request->capstone_adviser,
-                'instructor' => $request->instructor,
+                'instructor_id' => $request->instructor,
                 'members' => json_encode($request->members ?? []),
             ];
         } elseif ($request->user_type === 'instructor') {
@@ -121,17 +127,12 @@ class AuthController extends Controller
         return redirect('/')->with('success', 'Logged out successfully.');
     }
 
-    public function dashboard($user)
+    public function check_user_auth($user)
     {
-        switch ($user->user_type) {
-            case 'admin':
-                return redirect('/admin/dashboard')->with('success', 'Login successful!');
-            case 'instructor':
-                return redirect('/instructor/dashboard')->with('success', 'Login successful!');
-            case 'student':
-                return redirect('/student/dashboard')->with('success', 'Login successful!');
-            default:
-                return redirect('/')->withErrors(['error' => 'Unauthorized access.']);
+        if ($user) {
+            return redirect('/dashboard')->with('success', 'Login successful!');
+        } else {
+            return redirect('/')->withErrors(['error' => 'Unauthorized access. Please login.']);
         }
     }
 }

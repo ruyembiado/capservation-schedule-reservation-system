@@ -15,114 +15,84 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- Datatables -->
     <link rel="stylesheet" href="https://cdn.datatables.net/2.1.6/css/dataTables.dataTables.css" />
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    
     <!-- Custom Styles -->
     <link href="{{ asset('css/styles.css') }}" rel="stylesheet">
 </head>
 
 <body>
     <div class="wrapper">
-        <aside id="sidebar" class="bg-primary bg-gradient expand">
+        <aside id="sidebar" class="bg-theme-primary expand">
             <div class="d-flex gap-3 justify-content-center pt-4">
                 <button class="toggle-btn" type="button">
                     <i class="fa-solid text-white fa fa-bars fs-5"></i>
                 </button>
                 <div class="sidebar-logo">
-                    <a href="index.html">Lorem Ipsum</a>
+                    <a href="/dashboard">Capservation</a>
                 </div>
             </div>
             <ul class="sidebar-nav">
                 <li class="sidebar-item">
-                    <a href="index.html" class="sidebar-link">
+                    <a href="/dashboard" class="sidebar-link">
                         <i class="fa fa-home"></i>
                         <span>Dashboard</span>
                     </a>
                 </li>
-
+                @if (auth()->user()->user_type == 'admin')
+                    <li class="sidebar-item">
+                        <a href="/groups" class="sidebar-link">
+                            <i class="fa fa-users"></i>
+                            <span>Groups</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="/instructors" class="sidebar-link">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            <span>Instructors</span>
+                        </a>
+                    </li>
+                @endif
                 <li class="sidebar-item">
-                    <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
-                        data-bs-target="#components" aria-expanded="false" aria-controls="components">
-                        <i class="fa fa-bars"></i>
-                        <span>Components</span>
+                    <a href="/reserve" class="sidebar-link">
+                        <i class="fa fa-pen-to-square"></i>
+                        <span>Reserve</span>
                     </a>
-                    <ul id="components" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
-                        <li class="sidebar-item bg-primary">
-                            <a href="components-alerts.html" class="sidebar-link">Alerts</a>
-                        </li>
-                        <li class="sidebar-item bg-primary">
-                            <a href="components-accordion.html" class="sidebar-link">Accordion</a>
-                        </li>
-                        <li class="sidebar-item bg-primary">
-                            <a href="components-badges.html" class="sidebar-link">Badges</a>
-                        </li>
-                        <li class="sidebar-item bg-primary">
-                            <a href="components-breadcrumbs.html" class="sidebar-link">Breadcrumbs</a>
-                        </li>
-                        <li class="sidebar-item bg-primary">
-                            <a href="components-buttons.html" class="sidebar-link">Buttons</a>
-                        </li>
-                        <li class="sidebar-item bg-primary">
-                            <a href="components-cards.html" class="sidebar-link">Cards</a>
-                        </li>
-                        <li class="sidebar-item bg-primary">
-                            <a href="components-progress.html" class="sidebar-link">Progress</a>
-                        </li>
-                        <li class="sidebar-item bg-primary">
-                            <a href="components-spinners.html" class="sidebar-link">Spinners</a>
-                        </li>
-                    </ul>
                 </li>
                 <li class="sidebar-item">
-                    <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
-                        data-bs-target="#tables" aria-expanded="false" aria-controls="tables">
-                        <i class="fa fa-table"></i>
-                        <span>Tables</span>
+                    <a href="/transactions" class="sidebar-link">
+                        <i class="fa fa-file-lines"></i>
+                        <span>Transactions</span>
                     </a>
-                    <ul id="tables" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
-                        <li class="sidebar-item bg-primary">
-                            <a href="tables-datatables.html" class="sidebar-link">Datatables</a>
-                        </li>
-                    </ul>
                 </li>
                 <li class="sidebar-item">
-                    <a href="#" class="sidebar-link collapsed has-dropdown" data-bs-toggle="collapse"
-                        data-bs-target="#pages" aria-expanded="false" aria-controls="pages">
-                        <i class="fa fa-file"></i>
-                        <span>Pages</span>
+                    <a href="/calendar" class="sidebar-link">
+                        <i class="fa fa-calendar"></i>
+                        <span>Calendar</span>
                     </a>
-                    <ul id="pages" class="sidebar-dropdown list-unstyled collapse" data-bs-parent="#sidebar">
-
-                        <li class="sidebar-item bg-primary">
-                            <a href="pages-error-404.html" class="sidebar-link">404</a>
-                        </li>
-                        <li class="sidebar-item bg-primary">
-                            <a href="pages-faq.html" class="sidebar-link">FAQ</a>
-                        </li>
-                        <li class="sidebar-item bg-primary">
-                            <a href="pages-login.html" class="sidebar-link">Login</a>
-                        </li>
-                        <li class="sidebar-item bg-primary">
-                            <a href="pages-register.html" class="sidebar-link">Register</a>
-                        </li>
-                        <li class="sidebar-item bg-primary">
-                            <a href="pages-profile.html" class="sidebar-link">Profile</a>
-                        </li>
-                    </ul>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/inbox" class="sidebar-link">
+                        <i class="fa fa-envelope-open-text"></i>
+                        <span>Inbox</span>
+                    </a>
                 </li>
             </ul>
         </aside>
-        <div class="main">
+        <div class="main bg-gradient">
             <nav class="navbar navbar-expand px-4 py-3">
-                <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-md-0 my-1 mw-100 navbar-search">
+                {{-- <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-md-0 my-1 mw-100 navbar-search">
                     <div class="input-group">
-                        <input type="text" class="form-control bg-light border-0 small"
-                            placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+                        <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
+                            aria-label="Search" aria-describedby="basic-addon2">
                         <div class="input-group-append">
                             <button class="btn btn-primary" type="button">
                                 <i class="fas fa-search fa-sm"></i>
                             </button>
                         </div>
                     </div>
-                </form>
+                </form> --}}
                 <div class="navbar-collapse collapse">
                     <ul class="navbar-nav ms-auto">
                         @auth
@@ -156,8 +126,7 @@
                                     Activity Log
                                 </a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="/logout" data-toggle="modal"
-                                    data-target="#logoutModal">
+                                <a class="dropdown-item" href="/logout" data-toggle="modal" data-target="#logoutModal">
                                     <i class="text-primary fas fa-sign-out-alt fa-sm fa-fw mr-2"></i>
                                     Logout
                                 </a>
@@ -188,18 +157,29 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
     </script>
+
     <!-- Fontawesome Script -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/js/all.min.js"
         integrity="sha512-6sSYJqDreZRZGkJ3b+YfdhB3MzmuP9R7X1QZ6g5aIXhRvR1Y/N/P47jmnkENm7YL3oqsmI6AK+V6AD99uWDnIw=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <!-- JQuery Script -->
+
+    <!-- jQuery Script -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
         integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
     <!-- Datatables -->
     <script src="https://cdn.datatables.net/2.1.6/js/dataTables.js"></script>
-    <!-- Custom Script -->
+
+    <!-- Select2 Script -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <!-- FullCalendar JS -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+
+    <!--Custom Script -->
     <script src="{{ asset('js/script.js') }}"></script>
+
 </body>
 
 </html>

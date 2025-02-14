@@ -1,4 +1,5 @@
 {{-- Student Registration Modal --}}
+@props(['instructors' => []])
 <div class="modal fade" id="studentRegistration" tabindex="-1" aria-labelledby="studentRegistrationLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -89,13 +90,34 @@
                                 </div>
                                 <div class="col-12 mb-2">
                                     <label for="instructor" class="form-label">Instructor</label>
-                                    <input type="instructor" name="instructor" placeholder="Enter your instrcutor"
-                                        class="form-control @error('instructor') is-invalid @enderror"
-                                        id="instructor">
+                                    <div class="custom-select-container">
+                                        <div class="custom-select" id="custom-select">-- Select an instructor --</div>
+                                        <div class="custom-dropdown" id="custom-dropdown">
+                                            @foreach ($instructors as $instructor)
+                                                <div data-value="{{ $instructor->id }}"
+                                                    class="{{ old('instructor') == $instructor->id ? 'selected' : '' }}">
+                                                    {{ $instructor->name }}
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+
+                                    <!-- Hidden actual select input -->
+                                    <select name="instructor" id="instructor" class="hidden-select">
+                                        <option value="" disabled>-- Select an instructor --</option>
+                                        @foreach ($instructors as $instructor)
+                                            <option value="{{ $instructor->id }}"
+                                                {{ old('instructor') == $instructor->id ? 'selected' : '' }}>
+                                                {{ $instructor->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+
                                     @error('instructor')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
                                 </div>
+
                                 <div class="login-logo-container m-auto text-center pt-3">
                                     <img class="m-auto" src="{{ asset('img/capservation-logo-hd.png') }}"
                                         alt="capservation-logo" style="width: 174px; height: 150px;">

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\StudentController;
 
@@ -22,17 +23,20 @@ Route::get('/', [AuthController::class, 'index'])->name('login');
 
 Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
 Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
+Route::get('/get-instructors', [InstructorController::class, 'get_instructors']);
 
 Route::middleware(['auth'])->group(function () {
     // Logout
     Route::get('/logout', [AuthController::class, 'logout']);
 
-    // Admin
-    Route::get('/admin/dashboard', [AdminController::class, 'adminDashboard']);
+    // Auth users
+    Route::get('/dashboard', [AuthController::class, 'dashboard']);
 
-    // Instructor
-    Route::get('/instructor/dashboard', [InstructorController::class, 'instructorDashboard']);
+    // Admin views
+    Route::get('/groups', [AdminController::class, 'groups']);
+    Route::get('/instructors', [AdminController::class, 'instructors']);
+    Route::get('/transactions', [AdminController::class, 'transactions']);
 
-    // Student
-    Route::get('/student/dashboard', [StudentController::class, 'studentDashboard']);
+    // All users
+    Route::get('/calendar', [CalendarController::class, 'index']);
 });
