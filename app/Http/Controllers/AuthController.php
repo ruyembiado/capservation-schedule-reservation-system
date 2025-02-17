@@ -12,7 +12,18 @@ class AuthController extends Controller
 {
     public function dashboard()
     {
-        return view('dashboard');
+        $data = [];
+        if (Auth::user()->user_type === 'admin') {
+            $data = [
+                'groups' => User::where('user_type', 'student')->get(),
+                'instructors' => User::where('user_type', 'instructor')->get(),
+            ];
+        } elseif (Auth::user()->user_type === 'instructor') {
+            # code...
+        } elseif (Auth::user()->user_type === 'student') {
+            # code...
+        }
+        return view('dashboard', compact('data'));
     }
 
     public function index()

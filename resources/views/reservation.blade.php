@@ -4,8 +4,9 @@
     <!-- Start the content section -->
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0">Instructors</h1>
+        <h1 class="h3 mb-0">Reservations</h1>
     </div>
+
     <div class="card shadow mb-4">
         <div class="card-body">
             <div class="table-responsive">
@@ -13,23 +14,21 @@
                     <thead>
                         <tr>
                             <th>No.</th>
-                            <th>Full Name</th>
-                            <th>Username</th>
-                            <th>Email</th>
-                            <th>Position</th>
+                            <th>Group</th>
+                            <th>Titles</th>
+                            <th>Reserve by</th>
                             <th>Date Created</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($instructors as $instructor)
+                        @foreach ($reservations as $reservation)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $instructor->name }}</td>
-                                <td>{{ $instructor->username }}</td>
-                                <td>{{ $instructor->email }}</td>
-                                <td>{{ $instructor->position }}</td>
-                                <td>{{ $instructor->created_at->format('Y-m-d g:i A') }}</td>
+                                <td>{{ $reservation->user->name ?: $reservation->user->username }}</td>
+                                <td>{{ $reservation->title }}</td>
+                                <td>{{ $reservation->reserveBy->name }}</td>
+                                <td>{{ $reservation->created_at->format('Y-m-d g:i A') }}</td>
                                 <td>
                                     <a href="" class="btn btn-warning btn-sm">Edit</a>
                                     <form action="" method="POST" style="display: inline;">

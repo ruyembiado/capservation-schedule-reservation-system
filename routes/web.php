@@ -3,9 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\CalendarController;
-use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\InstructorController;
+use App\Http\Controllers\ReservationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +38,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/instructors', [AdminController::class, 'instructors']);
     Route::get('/transactions', [AdminController::class, 'transactions']);
 
-    // All users
-    Route::get('/calendar', [CalendarController::class, 'index']);
+    // Schedule
+    Route::get('/calendar', [ScheduleController::class, 'index']);
+    Route::post('/add_schedule', [ScheduleController::class, 'store'])->name('schedule.store');
+
+    // Reservation
+    Route::get('/reservations', [ReservationController::class, 'index']);
 });

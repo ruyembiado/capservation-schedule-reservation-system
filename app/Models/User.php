@@ -59,4 +59,19 @@ class User extends Authenticatable
     {
         return $this->belongsTo(User::class, 'instructor_id');
     }
+
+    public function capstones()
+    {
+        return $this->hasMany(Capstone::class, 'group_id');
+    }
+
+    public function schedules()
+    {
+        return $this->hasMany(Schedule::class, 'group_id');
+    }
+
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class, 'group_id');
+    }
 }

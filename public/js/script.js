@@ -178,7 +178,8 @@ $(document).ready(function () {
         },
         dateClick: function (info) {
             if (new Date(info.dateStr) >= new Date().setHours(0, 0, 0, 0)) {
-                $('input#event-date').val(info.dateStr);
+                $('input#schedule_date_display').val(info.dateStr);
+                $('input#schedule_date').val(info.dateStr);
             }
         },
         dayCellDidMount: function (info) {
@@ -186,9 +187,9 @@ $(document).ready(function () {
             let cellDate = new Date(info.date).setHours(0, 0, 0, 0);
 
             if (cellDate < today) {
-                info.el.style.backgroundColor = "#f8d7da"; 
-                info.el.style.color = "#6c757d"; 
-                info.el.style.pointerEvents = "none"; 
+                info.el.style.backgroundColor = "#f8d7da";
+                info.el.style.color = "#6c757d";
+                info.el.style.pointerEvents = "none";
                 info.el.style.opacity = "0.6";
             }
         }

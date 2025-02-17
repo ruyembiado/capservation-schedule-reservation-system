@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/2.1.6/css/dataTables.dataTables.css" />
     <!-- Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    
+
     <!-- Custom Styles -->
     <link href="{{ asset('css/styles.css') }}" rel="stylesheet">
 </head>
@@ -51,6 +51,12 @@
                         <a href="/instructors" class="sidebar-link">
                             <i class="fas fa-chalkboard-teacher"></i>
                             <span>Instructors</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="/reservations" class="sidebar-link">
+                            <i class="fa fa-pen-to-square"></i>
+                            <span>Reservations</span>
                         </a>
                     </li>
                 @endif

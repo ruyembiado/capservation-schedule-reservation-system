@@ -17,7 +17,7 @@
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                     Total Groups</div>
-                                <div class="h5 mb-0 font-weight-bold">134</div>
+                                <div class="h5 mb-0 font-weight-bold">{{ count($data['groups']) }}</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-file fa-2x text-primary"></i>
@@ -39,7 +39,7 @@
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                     Total Instructors</div>
-                                <div class="h5 mb-0 font-weight-bold">1234</div>
+                                <div class="h5 mb-0 font-weight-bold">{{ count($data['instructors']) }}</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-file fa-2x text-success"></i>
@@ -61,7 +61,7 @@
                             <div class="col mr-2">
                                 <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
                                     Total Transactions</div>
-                                <div class="h5 mb-0 font-weight-bold">134</div>
+                                <div class="h5 mb-0 font-weight-bold">0</div>
                             </div>
                             <div class="col-auto">
                                 <i class="fas fa-file fa-2x text-info"></i>
