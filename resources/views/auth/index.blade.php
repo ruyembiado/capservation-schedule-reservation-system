@@ -104,6 +104,16 @@
             } else if (userType === "instructor") {
                 document.getElementById('instructorRegistrationButton').click();
             }
+
+            function hideAlerts(delay = 3000) {
+                console.log('Hiding alerts');
+                if ($('.alert-success, .alert-danger').length) {
+                    setTimeout(function() {
+                        $('.alert-success, .alert-danger').fadeOut('slow');
+                    }, delay);
+                }
+            }
+            hideAlerts();
         });
     </script>
 </body>

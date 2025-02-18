@@ -44,4 +44,5 @@ Route::middleware(['auth'])->group(function () {
 
     // Reservation
     Route::get('/reservations', [ReservationController::class, 'index']);
+    Route::get('/reserve', [ReservationController::class, 'create']);
 });

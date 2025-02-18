@@ -26,7 +26,9 @@ class ReservationController extends Controller
      */
     public function create()
     {
-        //
+        // get the latest reservation
+        $reservation = Reservation::where('group_id', Auth::user()->id)->latest()->first();
+        return view('reserve', compact('reservation'));
     }
 
     /**

@@ -421,3 +421,78 @@ nav {
     background-size: cover; */
     background-color: #9AE5F9;
 }
+
+/* History of Defense */
+/* START TIMELINE 
+ the width of the list parent is optional 
+if you set this width 
+A hover sample effect is added as well as an active state*/
+
+.base-timeline {
+    list-style-type: none;
+    counter-reset: number;
+    /* number 2021*/
+    position: relative;
+    display: block;
+    z-index: 2;
+    width: 75%;
+    /* change or remove*/
+
+}
+
+.base-timeline::before {
+    content: '';
+    width: 100%;
+    border-top: 2px solid #012D6C;
+    display: inline-block;
+    position: absolute;
+    top: 50%;
+    z-index: -1;
+
+}
+
+/* set width of time-line this can be px, percentage or other unit
+3 is the number of list items minus 1 when using percentage
+*/
+.base-timeline__item {
+    position: relative;
+    display: inline-block;
+    width: calc(100% / 2 - 15px);
+    /* change width */
+}
+
+.base-timeline__item::before {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    counter-increment: number;
+    /* number -1*/
+    content: counter(number) '';
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    background-color: #fff;
+    color: #012D6C;
+    border: 2px solid #012D6C;
+    font-weight: bold;
+    transition: all 0.6s ease-in-out;
+    box-sizing: border-box;
+}
+
+/* modifier with use of the data-year attribute */
+.base-timeline__item--data::before {
+    content: attr(data-year);
+    width: 60px;
+    height: 60px;
+}
+
+.base-timeline__item--active::before {
+    background-color: #012D6C;
+    color: #fff;
+    border: 2px solid;
+    border-color: #012D6C;
+}
+
+.base-timeline__item:last-child {
+    width: 0;
+}

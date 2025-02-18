@@ -219,5 +219,4 @@ $(document).ready(function () {
     //     minimumInputLength: 2,
     //     allowClear: true
     // });
-
 });

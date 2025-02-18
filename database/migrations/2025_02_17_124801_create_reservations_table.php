@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('reserve_by');
             $table->string('status')->default('pending');
             $table->timestamps();
+            
             $table->foreign('group_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('capstone_title_id')->references('id')->on('capstones')->onDelete('cascade');
             $table->foreign('reserve_by')->references('id')->on('users')->onDelete('cascade');
