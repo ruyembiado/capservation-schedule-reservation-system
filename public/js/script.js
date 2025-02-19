@@ -161,6 +161,13 @@ $(document).ready(function () {
         }
     });
 
+    $('#reserve_group').select2({
+        theme: 'bootstrap-5',
+        width: '100%', 
+        placeholder: "Select a group",
+        allowClear: true
+    });
+
     var calendarEl = $('#FullCalendar')[0];
     var calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
@@ -195,28 +202,4 @@ $(document).ready(function () {
         }
     });
     calendar.render();
-
-    // $('#instructorSelect2').select2({
-    //     ajax: {
-    //         url: '/get-instructors',
-    //         dataType: 'json',
-    //         delay: 250,
-    //         data: function (params) {
-    //             return {
-    //                 search: params.term 
-    //             };
-    //         },
-    //         processResults: function (data) {
-    //             return {
-    //                 results: data.map(item => ({
-    //                     id: item.id,
-    //                     text: item.name
-    //                 }))
-    //             };
-    //         }
-    //     },
-    //     placeholder: "Search for an instructor",
-    //     minimumInputLength: 2,
-    //     allowClear: true
-    // });
 });

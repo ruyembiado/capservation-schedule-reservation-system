@@ -18,7 +18,8 @@
                                 <div class="col-12 mb-2">
                                     <label for="email" class="form-label">Email</label>
                                     <input type="text" name="email" placeholder="Enter your email address"
-                                        class="form-control @error('email') is-invalid @enderror" id="email">
+                                        class="form-control @error('email') is-invalid @enderror" id="email"
+                                        value="{{ old('email') }}">
                                     @error('email')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
@@ -26,7 +27,8 @@
                                 <div class="col-12 mb-2">
                                     <label for="username" class="form-label">Username/Group Name</label>
                                     <input type="username" name="username" placeholder="Enter your username/group name"
-                                        class="form-control @error('username') is-invalid @enderror" id="username">
+                                        class="form-control @error('username') is-invalid @enderror" id="username"
+                                        value="{{ old('username') }}">
                                     @error('username')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
@@ -52,7 +54,16 @@
                                         <input type="text" id="members"
                                             class="form-control @error('members') is-invalid @enderror"
                                             placeholder="Type and press Enter">
-                                        <div id="membersContainer" class="d-flex flex-wrap gap-1 mt-2"></div>
+                                        <!-- Hidden inputs for old members -->
+                                        <div id="membersContainer" class="d-flex flex-wrap gap-1 mt-2">
+                                            @foreach (old('members', []) as $member)
+                                                <span class="badge bg-light text-dark">
+                                                    {{ $member }}
+                                                </span>
+                                                <input type="hidden" name="members[]" value="{{ $member }}">
+                                            @endforeach
+                                        </div>
+
                                         @error('members')
                                             <div class="invalid-feedback d-block">{{ $message }}</div>
                                         @enderror
@@ -63,7 +74,8 @@
                                 <div class="col-12 mb-2">
                                     <label for="program" class="form-label">Program</label>
                                     <input type="program" name="program" placeholder="Enter your program"
-                                        class="form-control @error('program') is-invalid @enderror" id="program">
+                                        class="form-control @error('program') is-invalid @enderror" id="program"
+                                        value="{{ old('program') }}">
                                     @error('program')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
@@ -72,8 +84,8 @@
                                     <label for="yearsection" class="form-label">Year & Section</label>
                                     <input type="yearsection" name="yearsection"
                                         placeholder="Enter your year and section"
-                                        class="form-control @error('yearsection') is-invalid @enderror"
-                                        id="yearsection">
+                                        class="form-control @error('yearsection') is-invalid @enderror" id="yearsection"
+                                        value="{{ old('yearsection') }}">
                                     @error('yearsection')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
@@ -83,7 +95,7 @@
                                     <input type="capstone_adviser" name="capstone_adviser"
                                         placeholder="Enter your capstone adviser"
                                         class="form-control @error('capstone_adviser') is-invalid @enderror"
-                                        id="capstone_adviser">
+                                        id="capstone_adviser" value="{{ old('capstone_adviser') }}">
                                     @error('capstone_adviser')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror

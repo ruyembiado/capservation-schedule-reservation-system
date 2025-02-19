@@ -44,7 +44,15 @@ class ScheduleController extends Controller
                 ->withInput($request->all());
         }
 
-        Schedule::create($request->all());
+        $data = [
+            'group_id' => $request->group,
+            'schedule_date' => $request->schedule_date,
+            'schedule_time' => $request->schedule_time,
+            'schedule_category' => $request->schedule_category?:'',
+            'schedule_remarks' => $request->schedule_remarks?:'',
+        ];
+
+        Schedule::create($data);
 
         return redirect()->back()->with('success', 'Schedule created successfully.');
     }

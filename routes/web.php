@@ -44,5 +44,8 @@ Route::middleware(['auth'])->group(function () {
 
     // Reservation
     Route::get('/reservations', [ReservationController::class, 'index']);
-    Route::get('/reserve', [ReservationController::class, 'create']);
+    Route::get('/reserve', [ReservationController::class, 'create'])->name('reservation.create');
+    Route::post('/reserve/select-group', [ReservationController::class, 'storeGroup'])->name('reservation.storeGroup');
+    Route::get('/get-all-groups', [ReservationController::class, 'getGroups']);
+    Route::post('/reserve-group', [ReservationController::class, 'store'])->name('reservation.store');
 });

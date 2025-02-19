@@ -17,7 +17,7 @@
                                 <div class="col-12 mb-2">
                                     <label for="email" class="form-label">Email</label>
                                     <input type="text" name="email" placeholder="Enter your email address"
-                                        class="form-control @error('email') is-invalid @enderror" id="email">
+                                        class="form-control @error('email') is-invalid @enderror" id="email" value="{{ old('email') }}">
                                     @error('email')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
@@ -25,7 +25,7 @@
                                 <div class="col-12 mb-2">
                                     <label for="name" class="form-label">Full Name</label>
                                     <input type="name" name="name" placeholder="Enter your full name"
-                                        class="form-control @error('name') is-invalid @enderror" id="name">
+                                        class="form-control @error('name') is-invalid @enderror" id="name" value="{{ old('name') }}">
                                     @error('name')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
@@ -33,7 +33,7 @@
                                 <div class="col-12 mb-2">
                                     <label for="username" class="form-label">Username</label>
                                     <input type="username" name="username" placeholder="Enter your username"
-                                        class="form-control @error('username') is-invalid @enderror" id="username">
+                                        class="form-control @error('username') is-invalid @enderror" id="username" value="{{ old('username') }}">
                                     @error('username')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
@@ -58,7 +58,7 @@
                                 <div class="col-12 mb-2">
                                     <label for="position" class="form-label">Position</label>
                                     <input type="position" name="position" placeholder="Enter your position"
-                                        class="form-control @error('position') is-invalid @enderror" id="position">
+                                        class="form-control @error('position') is-invalid @enderror" id="position" value="{{ old('position') }}">
                                     @error('position')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror

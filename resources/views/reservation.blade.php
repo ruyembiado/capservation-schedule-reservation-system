@@ -17,6 +17,7 @@
                             <th>Group</th>
                             <th>Titles</th>
                             <th>Reserve by</th>
+                            <th>status</th>
                             <th>Date Created</th>
                             <th>Action</th>
                         </tr>
@@ -25,10 +26,15 @@
                         @foreach ($reservations as $reservation)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $reservation->user->name ?: $reservation->user->username }}</td>
-                                <td>{{ $reservation->title }}</td>
-                                <td>{{ $reservation->reserveBy->name }}</td>
-                                <td>{{ $reservation->created_at->format('Y-m-d g:i A') }}</td>
+                                <td>{{ $reservation['user']['name'] ?? $reservation['user']['username'] }}</td>
+                                <td>
+                                    @foreach ($reservation['titles'] as $title)
+                                        <li>{{ $title }}</li>
+                                    @endforeach
+                                </td>
+                                <td>{{ $reservation['reserveBy']['name'] }}</td>
+                                <td>{{ Str::ucfirst($reservation['status']) }}</td>
+                                <td>{{ \Carbon\Carbon::parse($reservation['created_at'])->format('Y-m-d g:i A') }}</td>
                                 <td>
                                     <a href="" class="btn btn-warning btn-sm">Edit</a>
                                     <form action="" method="POST" style="display: inline;">
