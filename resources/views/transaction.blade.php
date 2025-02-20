@@ -13,33 +13,32 @@
                     <thead>
                         <tr>
                             <th>No.</th>
-                            <th>Full Name</th>
-                            <th>Username</th>
-                            <th>Email</th>
-                            <th>Position</th>
-                            <th>Date Created</th>
-                            <th>Action</th>
+                            <th>Group Name</th>
+                            <th>Members</th>
+                            <th>Program</th>
+                            <th>Type of Defense</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Transaction Code</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
+                        @foreach ($transactions as $transaction)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ Str::ucfirst($transaction->group->username) }}</td>
+                                <td>
+                                    @foreach (json_decode($transaction->members, true) as $member)
+                                        <li>{{ $member }}</li>
+                                    @endforeach
+                                </td>
+                                <td>{{ $transaction->program }}</td>
+                                <td>{{ Str::title(str_replace('_', ' ', $transaction->type_of_defense)) }}</td>
+                                <td>{{ \Carbon\Carbon::parse($transaction->date_created)->format('Y-m-d') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($transaction->date_created)->format('h:i A') }}</td>
+                                <td>{{ $transaction->transaction_code }}</td>
+                            </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>

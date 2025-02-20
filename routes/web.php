@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Transaction;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
@@ -7,6 +8,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\TransactionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,4 +50,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/reserve/select-group', [ReservationController::class, 'storeGroup'])->name('reservation.storeGroup');
     Route::get('/get-all-groups', [ReservationController::class, 'getGroups']);
     Route::post('/reserve-group', [ReservationController::class, 'store'])->name('reservation.store');
+
+    // Transaction
+    Route::get('/transactions', [TransactionController::class, 'index']);
 });

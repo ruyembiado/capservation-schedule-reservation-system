@@ -29,7 +29,7 @@
                                 <td>{{ $reservation['user']['name'] ?? $reservation['user']['username'] }}</td>
                                 <td>
                                     @foreach ($reservation['titles'] as $title)
-                                        <li>{{ $title }}</li>
+                                        <li><i class="fa fa-book"></i> {{ $title }}</li>
                                     @endforeach
                                 </td>
                                 <td>{{ $reservation['reserveBy']['name'] }}</td>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Capstone;
 use App\Models\User;
 use App\Models\Reservation;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -28,12 +29,12 @@ class ReservationController extends Controller
                     return [
                         'group_id' => $group->first()->group_id,
                         'user' => $group->first()->user,
-                        'reserveBy' => $group->first()->reserveBy, 
-                        'titles' => $group->pluck('capstone.title')->toArray(), 
-                        'status' => $group->first()->status, 
+                        'reserveBy' => $group->first()->reserveBy,
+                        'titles' => $group->pluck('capstone.title')->toArray(),
+                        'status' => $group->first()->status,
                         'created_at' => $group->first()->created_at,
                     ];
-                })->values(); 
+                })->values();
         }
 
         return view('reservation', compact('reservations'));
@@ -98,11 +99,44 @@ class ReservationController extends Controller
             }
         }
 
+        $transactionCode = $this->generateTransactionCode();
+
+        $user = User::find($request->group_id);
+
+        if (!$user) {
+            return redirect()->back()->withErrors(['group_id' => 'Group not found.']);
+        }
+
+        $type_of_defense = match ($request->type_of_defense ?? 'title_defense') {
+            'pre_oral' => 'pre_oral',
+            'final_defense' => 'final_defense',
+            default => 'title_defense',
+        };
+
+        Transaction::create([
+            'group_id' => $request->group_id,
+            'group_name' => $user->username,
+            'members' => $user->members,
+            'program' => $user->program,
+            'type_of_defense' => $type_of_defense,
+            'transaction_code' => $transactionCode
+        ]);
+
         session()->forget('selected_group');
 
         return redirect()->back()->with('success', 'Reserved successfully.');
     }
 
+    private function generateTransactionCode()
+    {
+        $lastTransaction = Transaction::latest('id')->first();
+
+        $nextNumber = $lastTransaction
+            ? ((int) str_replace('CAP-', '', $lastTransaction->transaction_code) + 1)
+            : 1;
+
+        return 'CAP-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+    }
     /**
      * Display the specified resource.
      */

@@ -30,9 +30,14 @@
                         SELECT
                     </button>
                 </form>
+                @if (!empty($reservation) && $reservation->status == 'pending')
+                    <div class="alert alert-warning col-12 mt-2 m-auto text-center">
+                        This group has already reserved
+                    </div>
+                @endif
             </div>
 
-            @if ($selectedGroup && $reservation == null )
+            @if ($selectedGroup && $reservation == null)
                 <div class="history-container col-6 text-center m-auto">
                     <ul class="base-timeline m-auto p-0">
                         <li class="base-timeline__item {{ empty($reservation) ? 'base-timeline__item--active' : '' }}"></li>
