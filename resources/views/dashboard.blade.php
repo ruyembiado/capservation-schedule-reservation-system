@@ -9,6 +9,7 @@
 
     <!-- Content Row -->
     <div class="row">
+        @if (auth()->user()->user_type == 'admin')
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="card shadow h-100 py-2">
                 <div class="card-body">
@@ -74,7 +75,7 @@
                 </div>
             </div>
         </div>
-
+        @endif
     </div>
     <!-- Content Row -->
 @endsection <!-- End the content section -->

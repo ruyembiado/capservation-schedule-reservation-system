@@ -24,8 +24,7 @@
                     @error('group')
                         <div class="invalid-feedback d-block">{{ $message }}</div>
                     @enderror
-                    <button class="btn w-100 bg-theme-primary text-light mt-2"
-                        onmouseover="this.style.backgroundColor='#0056b3'" onmouseout="this.style.backgroundColor='#012D6C'"
+                    <button class="btn w-100 btn-primary text-light mt-2"
                         type="submit">
                         SELECT
                     </button>
@@ -75,9 +74,7 @@
                                 @enderror
                             </div>
                             <div class="col-12 mb-2">
-                                <button class="btn w-100 bg-theme-primary text-light"
-                                    onmouseover="this.style.backgroundColor='#0056b3'"
-                                    onmouseout="this.style.backgroundColor='#012D6C'" type="submit">
+                                <button class="w-100 btn btn-primary text-light"type="submit">
                                     RESERVE
                                 </button>
                             </div>

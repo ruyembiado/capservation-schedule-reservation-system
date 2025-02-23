@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('title_status')->default('pending');
             $table->string('capstone_status')->default('title_defense');
             $table->timestamps();
-
             $table->foreign('group_id')->references('id')->on('users')->onDelete('cascade');
         });
     }

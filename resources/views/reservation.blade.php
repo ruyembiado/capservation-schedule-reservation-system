@@ -36,10 +36,12 @@
                                 <td>{{ Str::ucfirst($reservation['status']) }}</td>
                                 <td>{{ \Carbon\Carbon::parse($reservation['created_at'])->format('Y-m-d g:i A') }}</td>
                                 <td>
-                                    <a href="" class="btn btn-warning btn-sm">Edit</a>
-                                    <form action="" method="POST" style="display: inline;">
+                                    <a href="" class="btn btn-warning btn-sm mb-1">Edit</a>
+                                    <form action="{{ route('reservation.destroy', $reservation['id']) }}" method="POST"
+                                        style="display: inline;" onsubmit="return confirmDelete(event)">
                                         @csrf
                                         @method('DELETE')
+                                        <input type="hidden" name="id" value="{{ $reservation['id'] }}">
                                         <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                     </form>
                                 </td>
@@ -52,3 +54,12 @@
     </div>
     <!-- Content Row -->
 @endsection <!-- End the content section -->
+
+<script>
+    function confirmDelete(event) {
+        event.preventDefault();
+        if (confirm('Are you sure you want to delete this reservation? This action cannot be undone.')) {
+            event.target.submit();
+        }
+    }
+</script>

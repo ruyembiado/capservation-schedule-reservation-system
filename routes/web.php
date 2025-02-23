@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\PanelistController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\ReservationController;
@@ -50,7 +51,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/reserve/select-group', [ReservationController::class, 'storeGroup'])->name('reservation.storeGroup');
     Route::get('/get-all-groups', [ReservationController::class, 'getGroups']);
     Route::post('/reserve-group', [ReservationController::class, 'store'])->name('reservation.store');
+    Route::delete('/delete_reservation/{reservation_id}', [ReservationController::class, 'destroy'])->name('reservation.destroy');
 
     // Transaction
     Route::get('/transactions', [TransactionController::class, 'index']);
+
+    // Panelists
+    Route::get('/panelists', [PanelistController::class, 'index']);
+    Route::get('/add_panelist', [PanelistController::class, 'create'])->name('panelist.create');
+    Route::post('/add_panelist', [PanelistController::class, 'store'])->name('panelist.store');
 });

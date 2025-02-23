@@ -61,6 +61,12 @@
                             <span>Reservations</span>
                         </a>
                     </li>
+                    <li class="sidebar-item">
+                        <a href="/panelists" class="sidebar-link">
+                            <i class="fas fa-user-friends"></i>
+                            <span>Panelists</span>
+                        </a>
+                    </li>
                 @endif
                 <li class="sidebar-item">
                     <a href="/reserve" class="sidebar-link">

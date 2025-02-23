@@ -19,18 +19,34 @@ class ReservationController extends Controller
     {
         if (Auth::user()->user_type === 'student') {
             $reservations = Reservation::where('reserve_by', Auth::user()->id)
-                ->with('user', 'reserveBy', 'capstone')
-                ->get();
+                ->with(['user', 'reserveBy'])
+                ->get()
+                ->map(function ($reservation) {
+                    return [
+                        'id' => $reservation->id,
+                        'group_id' => $reservation->group_id,
+                        'user' => $reservation->user,
+                        'reserveBy' => $reservation->reserveBy,
+                        'titles' => Capstone::whereIn('id', json_decode($reservation->capstone_title_id, true))
+                            ->pluck('title')
+                            ->toArray(),
+                        'status' => $reservation->status,
+                        'created_at' => $reservation->created_at,
+                    ];
+                });
         } else {
-            $reservations = Reservation::with('capstone', 'user', 'reserveBy')
+            $reservations = Reservation::with(['user', 'reserveBy'])
                 ->get()
                 ->groupBy('group_id')
                 ->map(function ($group) {
                     return [
+                        'id' => $group->first()->id,
                         'group_id' => $group->first()->group_id,
                         'user' => $group->first()->user,
                         'reserveBy' => $group->first()->reserveBy,
-                        'titles' => $group->pluck('capstone.title')->toArray(),
+                        'titles' => Capstone::whereIn('id', json_decode($group->first()->capstone_title_id, true))
+                            ->pluck('title')
+                            ->toArray(),
                         'status' => $group->first()->status,
                         'created_at' => $group->first()->created_at,
                     ];
@@ -84,6 +100,7 @@ class ReservationController extends Controller
             'title_3' => $request->title_3,
         ];
 
+        $capstoneIds = [];
         foreach ($titles as $title) {
             if (!empty($title)) {
                 $capstone = Capstone::create([
@@ -91,13 +108,15 @@ class ReservationController extends Controller
                     'title' => $title,
                 ]);
 
-                Reservation::create([
-                    'group_id' => $request->group_id,
-                    'capstone_title_id' => $capstone->id,
-                    'reserve_by' => auth()->id(),
-                ]);
+                $capstoneIds[] = $capstone->id;
             }
         }
+
+        Reservation::create([
+            'group_id' => $request->group_id,
+            'capstone_title_id' => json_encode($capstoneIds),
+            'reserve_by' => auth()->id(),
+        ]);
 
         $transactionCode = $this->generateTransactionCode();
 
@@ -164,8 +183,16 @@ class ReservationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Reservation $reservation)
+    public function destroy($id)
     {
-        //
+        $reservation = Reservation::find($id);
+
+        if (!$reservation) {
+            return redirect()->back()->with('error', 'Reservation not found.');
+        }
+
+        $reservation->delete();
+
+        return redirect()->back()->with('success', 'Reservation deleted successfully.');
     }
 }
