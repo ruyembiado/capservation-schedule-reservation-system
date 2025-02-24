@@ -13,6 +13,7 @@ class Transaction extends Model
 
     protected $fillable = [
         'group_id',
+        'reservation_id',
         'group_name',
         'members',
         'program',
@@ -23,5 +24,10 @@ class Transaction extends Model
     public function group()
     {
         return $this->belongsTo(User::class, 'group_id');
+    }
+
+    public function reservation()
+    {
+        return $this->belongsTo(Reservation::class, 'reservation_id');
     }
 }

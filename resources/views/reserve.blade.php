@@ -11,7 +11,7 @@
                 <form action="{{ route('reservation.storeGroup') }}" method="POST">
                     @csrf
                     <label for="reserve_group" class="form-label">Group</label>
-                    <select id="reserve_group" class="form-control select2 @error('group') is-invalid @enderror"
+                    <select id="reserve_group" class="form-control select2"
                         name="group">
                         <option value="">-- Select Group --</option>
                         @foreach ($groups as $group)
@@ -32,6 +32,11 @@
                 @if (!empty($reservation) && $reservation->status == 'pending')
                     <div class="alert alert-warning col-12 mt-2 m-auto text-center">
                         This group has already reserved
+                    </div>
+                @endif
+                @if (!empty($reservation) && $reservation->status == 'approved')
+                    <div class="alert alert-warning col-12 mt-2 m-auto text-center">
+                        This group has already scheduled for defense
                     </div>
                 @endif
             </div>

@@ -6,7 +6,6 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0">Calendar</h1>
     </div>
-
     <!-- Content Row -->
     <div class="row">
         <!-- Calendar Container -->
@@ -20,14 +19,20 @@
                             @csrf
                             <div class="mb-3">
                                 <label for="group" class="form-label">Select group</label>
-                                <select name="group" class="form-control" id="group"></select>
+                                <select name="group" class="form-control select2" id="group_schedule">
+                                    <option value="">-- Select Group --</option>
+                                    @foreach ($reservations as $reservation)
+                                        <option value="{{ $reservation->user->id }}" {{ old('group') == $reservation->user->id ? 'selected' : '' }}>
+                                            {{ Str::ucfirst($reservation->user->username) }}</option>
+                                    @endforeach
+                                </select>
                                 @error('group')
                                     <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="mb-3">
                                 <label for="schedule_date" class="form-label">Schedule Date</label>
-                                <input type="date" class="form-control" min="{{ now()->format('Y-m-d') }}"
+                                <input type="date" name="schedule_date" class="form-control" min="{{ now()->format('Y-m-d') }}"
                                     id="schedule_date" value="{{ old('schedule_date') }}">
                                 @error('schedule_date')
                                     <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -67,7 +72,6 @@
                             </div>
                             <button type="submit" class="btn btn-primary">Add Event</button>
                         </form>
-
                     </div>
                 </div>
             </div>

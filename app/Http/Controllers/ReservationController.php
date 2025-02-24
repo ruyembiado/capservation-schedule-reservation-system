@@ -112,7 +112,7 @@ class ReservationController extends Controller
             }
         }
 
-        Reservation::create([
+        $reservation = Reservation::create([
             'group_id' => $request->group_id,
             'capstone_title_id' => json_encode($capstoneIds),
             'reserve_by' => auth()->id(),
@@ -134,6 +134,7 @@ class ReservationController extends Controller
 
         Transaction::create([
             'group_id' => $request->group_id,
+            'reservation_id' => $reservation->id,
             'group_name' => $user->username,
             'members' => $user->members,
             'program' => $user->program,

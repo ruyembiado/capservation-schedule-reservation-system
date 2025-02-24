@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Reservation;
 use App\Models\Schedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -13,9 +14,27 @@ class ScheduleController extends Controller
      */
     public function index()
     {
-        $schedules = Schedule::all();
-        return view('calendar', compact('schedules'));
+        $reservations = Reservation::where('status', 'pending')->with('user')->get();
+        return view('calendar', compact('reservations'));
     }
+
+    public function getSchedules()
+    {
+        $schedules = Schedule::with('user')->get()->map(function ($schedule) {
+            return [
+                'id' => $schedule->id,
+                'title' => ucwords(optional($schedule->user)->username) ?? 'Unknown User',
+                'start' => $schedule->schedule_date . 'T' . $schedule->schedule_time,
+                'end' => $schedule->schedule_date . 'T' . date('H:i:s', strtotime($schedule->schedule_time . ' +1 hour')),
+                'groupId' => $schedule->group_id,
+                'allDay' => false,
+            ];
+        });
+
+        return response()->json($schedules);
+    }
+
+
 
     /**
      * Show the form for creating a new resource.
@@ -48,11 +67,15 @@ class ScheduleController extends Controller
             'group_id' => $request->group,
             'schedule_date' => $request->schedule_date,
             'schedule_time' => $request->schedule_time,
-            'schedule_category' => $request->schedule_category?:'',
-            'schedule_remarks' => $request->schedule_remarks?:'',
+            'schedule_category' => $request->schedule_category ?: '',
+            'schedule_remarks' => $request->schedule_remarks ?: '',
         ];
 
         Schedule::create($data);
+
+        Reservation::where('group_id', $request->group)
+            ->where('status', 'pending')
+            ->update(['status' => 'approved']);
 
         return redirect()->back()->with('success', 'Schedule created successfully.');
     }

@@ -163,7 +163,14 @@ $(document).ready(function () {
 
     $('#reserve_group').select2({
         theme: 'bootstrap-5',
-        width: '100%', 
+        width: '100%',
+        placeholder: "Select a group",
+        allowClear: true
+    });
+
+    $('#group_schedule').select2({
+        theme: 'bootstrap-5',
+        width: '100%',
         placeholder: "Select a group",
         allowClear: true
     });
@@ -175,7 +182,32 @@ $(document).ready(function () {
         headerToolbar: {
             left: 'prev,next today',
             center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            right: 'dayGridMonth,timeGridWeek,timeGridDay,list'
+        },
+        events: function (fetchInfo, successCallback, failureCallback) {
+            $.ajax({
+                url: '/schedules', // Your Laravel route to fetch schedules
+                type: 'GET',
+                dataType: 'json',
+                success: function (response) {
+                    console.log("Events Loaded:", response); // Debugging
+                    successCallback(response);
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error loading events:", error);
+                    failureCallback(error);
+                }
+            });
+        },
+        eventContent: function (arg) {
+            return {
+                html: `<div class="fc-event-time">
+                            ${arg.event.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
+                       </div>
+                       <div class="fc-event-title">
+                            ${arg.event.title}
+                       </div>`
+            };
         },
         validRange: {
             start: null
@@ -199,7 +231,19 @@ $(document).ready(function () {
                 info.el.style.pointerEvents = "none";
                 info.el.style.opacity = "0.6";
             }
-        }
+        },
+        select: function (info) {
+            let dateTimeParts = info.startStr.split('T');
+            let selectedDate = dateTimeParts[0];
+            let selectedTime = dateTimeParts[1].slice(0, 5);
+
+            $('#schedule_date').val(selectedDate);
+            $('#schedule_time').val(selectedTime);
+        },
+        selectMirror: true,
+        slotDuration: '00:30:00',
+        slotMinTime: '08:00:00',
+        slotMaxTime: '18:00:00',
     });
     calendar.render();
 });

@@ -44,6 +44,7 @@ Route::middleware(['auth'])->group(function () {
     // Schedule
     Route::get('/calendar', [ScheduleController::class, 'index']);
     Route::post('/add_schedule', [ScheduleController::class, 'store'])->name('schedule.store');
+    Route::get('/schedules', [ScheduleController::class, 'getSchedules']);
 
     // Reservation
     Route::get('/reservations', [ReservationController::class, 'index']);
