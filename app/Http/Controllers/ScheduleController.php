@@ -14,7 +14,7 @@ class ScheduleController extends Controller
      */
     public function index()
     {
-        $reservations = Reservation::where('status', 'pending')->with('user')->get();
+        $reservations = Reservation::where('status', 'approved')->with('user')->get();
         return view('calendar', compact('reservations'));
     }
 
@@ -74,8 +74,8 @@ class ScheduleController extends Controller
         Schedule::create($data);
 
         Reservation::where('group_id', $request->group)
-            ->where('status', 'pending')
-            ->update(['status' => 'approved']);
+            ->where('status', 'approved')
+            ->update(['status' => 'reserved']);
 
         return redirect()->back()->with('success', 'Schedule created successfully.');
     }

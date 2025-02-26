@@ -14,6 +14,8 @@ class Reservation extends Model
         'group_id',
         'capstone_title_id',
         'reserve_by',
+        'status',
+        'panelist_id',
     ];
 
     public function user()

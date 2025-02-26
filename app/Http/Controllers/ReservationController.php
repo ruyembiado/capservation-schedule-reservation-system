@@ -18,7 +18,26 @@ class ReservationController extends Controller
     public function index()
     {
         if (Auth::user()->user_type === 'student') {
-            $reservations = Reservation::where('reserve_by', Auth::user()->id)
+            $reservations = Reservation::where('group_id', Auth::user()->id)
+                ->with(['user', 'reserveBy'])
+                ->get()
+                ->map(function ($reservation) {
+                    return [
+                        'id' => $reservation->id,
+                        'group_id' => $reservation->group_id,
+                        'user' => $reservation->user,
+                        'reserveBy' => $reservation->reserveBy,
+                        'titles' => Capstone::whereIn('id', json_decode($reservation->capstone_title_id, true))
+                            ->pluck('title')
+                            ->toArray(),
+                        'status' => $reservation->status,
+                        'created_at' => $reservation->created_at,
+                    ];
+                });
+        } elseif (Auth::user()->user_type === 'instructor') {
+            $studentIds = User::where('instructor_id', Auth::user()->id)->pluck('id');
+            
+            $reservations = Reservation::whereIn('group_id', $studentIds)
                 ->with(['user', 'reserveBy'])
                 ->get()
                 ->map(function ($reservation) {

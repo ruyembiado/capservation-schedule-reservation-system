@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -19,7 +20,11 @@ class AuthController extends Controller
                 'instructors' => User::where('user_type', 'instructor')->get(),
             ];
         } elseif (Auth::user()->user_type === 'instructor') {
-            # code...
+            $studentIds = User::where('instructor_id', Auth::user()->id)->pluck('id');
+            $data = [
+                'groups' => User::whereIn('id', $studentIds)->get(),
+                'transactions' => Transaction::whereIn('group_id', $studentIds)->get(),
+            ];
         } elseif (Auth::user()->user_type === 'student') {
             # code...
         }

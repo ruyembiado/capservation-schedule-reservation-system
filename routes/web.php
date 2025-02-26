@@ -61,4 +61,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/panelists', [PanelistController::class, 'index']);
     Route::get('/add_panelist', [PanelistController::class, 'create'])->name('panelist.create');
     Route::post('/add_panelist', [PanelistController::class, 'store'])->name('panelist.store');
+    Route::get('/assign_panelist/{id}', [PanelistController::class, 'showForm'])->name('assign_panelist.form');
+    Route::post('/assign_panelists', [PanelistController::class, 'assignPanelists'])->name('assign_panelist.store');
 });

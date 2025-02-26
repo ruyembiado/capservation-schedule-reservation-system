@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller
 {
@@ -12,7 +14,13 @@ class TransactionController extends Controller
      */
     public function index()
     {
-        $transactions = Transaction::all();
+        if (Auth::user()->user_type === 'instructor') {
+            $studentIds = User::where('instructor_id', Auth::user()->id)->pluck('id');
+            
+            $transactions = Transaction::whereIn('group_id', $studentIds)->get();
+        } else {
+            $transactions = Transaction::all();
+        }
         return view('transaction', compact('transactions'));
     }
 

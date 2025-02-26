@@ -38,11 +38,13 @@
                                 <td>{{ $group->created_at->format('Y-m-d g:i A') }}</td>
                                 <td>
                                     <a href="" class="btn btn-warning btn-sm">Edit</a>
-                                    <form action="" method="POST" style="display: inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                    </form>
+                                    @if (auth()->user()->user_type == 'admin')
+                                        <form action="" method="POST" style="display: inline;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                        </form>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach
