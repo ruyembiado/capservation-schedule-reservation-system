@@ -18,6 +18,7 @@ class AuthController extends Controller
             $data = [
                 'groups' => User::where('user_type', 'student')->get(),
                 'instructors' => User::where('user_type', 'instructor')->get(),
+                'transactions' => Transaction::all(),
             ];
         } elseif (Auth::user()->user_type === 'instructor') {
             $studentIds = User::where('instructor_id', Auth::user()->id)->pluck('id');
@@ -26,7 +27,9 @@ class AuthController extends Controller
                 'transactions' => Transaction::whereIn('group_id', $studentIds)->get(),
             ];
         } elseif (Auth::user()->user_type === 'student') {
-            # code...
+            $data = [
+                'transactions' => Transaction::where('group_id', Auth::user()->id)->get(),
+            ];
         }
         return view('dashboard', compact('data'));
     }

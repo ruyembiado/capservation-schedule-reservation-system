@@ -9,27 +9,30 @@
 
     <!-- Content Row -->
     <div class="row">
-        <div class="col-xl-3 col-md-6 mb-4">
-            <div class="card shadow h-100 py-2">
-                <div class="card-body">
-                    <div class="d-flex h-100 flex-column justify-content-between">
-                        <div class="row align-items-center justify-content-between">
-                            <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                    Total Groups</div>
-                                <div class="h5 mb-0 font-weight-bold">{{ count($data['groups']) }}</div>
+        @if (auth()->user()->user_type === 'admin' || auth()->user()->user_type === 'instructor')
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="d-flex h-100 flex-column justify-content-between">
+                            <div class="row align-items-center justify-content-between">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Total Groups</div>
+                                    <div class="h5 mb-0 font-weight-bold">{{ count($data['groups']) }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-file fa-2x text-primary"></i>
+                                </div>
                             </div>
-                            <div class="col-auto">
-                                <i class="fas fa-file fa-2x text-primary"></i>
+                            <div class="">
+                                <a class="text-dark" href="/groups">All Groups</a>
                             </div>
-                        </div>
-                        <div class="">
-                            <a class="text-dark" href="/groups">All Groups</a>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        @endif
+
 
         @if (auth()->user()->user_type === 'admin')
             <div class="col-xl-3 col-md-6 mb-4">

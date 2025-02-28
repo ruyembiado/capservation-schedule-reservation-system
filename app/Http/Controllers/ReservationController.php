@@ -22,33 +22,30 @@ class ReservationController extends Controller
                 ->with(['user', 'reserveBy'])
                 ->get()
                 ->map(function ($reservation) {
+                    $titles = $this->getTitlesForReservation($reservation);
                     return [
                         'id' => $reservation->id,
                         'group_id' => $reservation->group_id,
                         'user' => $reservation->user,
                         'reserveBy' => $reservation->reserveBy,
-                        'titles' => Capstone::whereIn('id', json_decode($reservation->capstone_title_id, true))
-                            ->pluck('title')
-                            ->toArray(),
+                        'titles' => $titles,
                         'status' => $reservation->status,
                         'created_at' => $reservation->created_at,
                     ];
                 });
         } elseif (Auth::user()->user_type === 'instructor') {
             $studentIds = User::where('instructor_id', Auth::user()->id)->pluck('id');
-            
             $reservations = Reservation::whereIn('group_id', $studentIds)
                 ->with(['user', 'reserveBy'])
                 ->get()
                 ->map(function ($reservation) {
+                    $titles = $this->getTitlesForReservation($reservation);
                     return [
                         'id' => $reservation->id,
                         'group_id' => $reservation->group_id,
                         'user' => $reservation->user,
                         'reserveBy' => $reservation->reserveBy,
-                        'titles' => Capstone::whereIn('id', json_decode($reservation->capstone_title_id, true))
-                            ->pluck('title')
-                            ->toArray(),
+                        'titles' => $titles,
                         'status' => $reservation->status,
                         'created_at' => $reservation->created_at,
                     ];
@@ -56,23 +53,39 @@ class ReservationController extends Controller
         } else {
             $reservations = Reservation::with(['user', 'reserveBy'])
                 ->get()
-                ->groupBy('group_id')
-                ->map(function ($group) {
+                ->map(function ($reservation) {
+                    $titles = $this->getTitlesForReservation($reservation);
                     return [
-                        'id' => $group->first()->id,
-                        'group_id' => $group->first()->group_id,
-                        'user' => $group->first()->user,
-                        'reserveBy' => $group->first()->reserveBy,
-                        'titles' => Capstone::whereIn('id', json_decode($group->first()->capstone_title_id, true))
-                            ->pluck('title')
-                            ->toArray(),
-                        'status' => $group->first()->status,
-                        'created_at' => $group->first()->created_at,
+                        'id' => $reservation->id,
+                        'group_id' => $reservation->group_id,
+                        'user' => $reservation->user,
+                        'reserveBy' => $reservation->reserveBy,
+                        'titles' => $titles,
+                        'status' => $reservation->status,
+                        'created_at' => $reservation->created_at,
                     ];
-                })->values();
+                });
         }
 
         return view('reservation', compact('reservations'));
+    }
+
+    /**
+     * Helper method to get titles for a reservation based on the type of defense.
+     *
+     * @param Reservation $reservation
+     * @return array
+     */
+    private function getTitlesForReservation($reservation)
+    {
+        $transaction = Transaction::where('reservation_id', $reservation->id)->first();
+        if ($transaction && in_array($transaction->type_of_defense, ['pre_oral_defense', 'final_defense'])) {
+            $capstone = Capstone::find($reservation->capstone_title_id);
+            return $capstone ? [$capstone->title] : [];
+        } else {
+            $capstoneIds = json_decode($reservation->capstone_title_id, true);
+            return Capstone::whereIn('id', $capstoneIds)->pluck('title')->toArray();
+        }
     }
 
     /**
@@ -80,12 +93,40 @@ class ReservationController extends Controller
      */
     public function create()
     {
-        $selectedGroup = session('selected_group');
-        $reservation = Reservation::where('group_id', $selectedGroup)->latest()->first();
+        $selectedGroup = session('selected_group', null);
+
+        if (Auth::user()->user_type === 'student') {
+            $reservation = Reservation::with('capstone')->where('group_id', Auth::user()->id)->latest()->first();
+        } else {
+            $reservation = Reservation::with('capstone')->where('group_id', $selectedGroup)->latest()->first();
+        }
+
+        $transaction = Transaction::where('group_id', $reservation->group_id ?? null)
+            ->latest()
+            ->first();
 
         $groups = User::where('user_type', 'student')->select('id', 'username')->get();
 
-        return view('reserve', compact('groups', 'reservation', 'selectedGroup'));
+        $defendedCapstones = [];
+        if ($reservation) {
+            if ($transaction && in_array($transaction->type_of_defense, ['pre_oral_defense', 'final_defense'])) {
+                $capstoneId = $reservation->capstone_title_id;
+                if ($capstoneId) {
+                    $defendedCapstones = Capstone::where('id', $capstoneId)
+                        ->where('title_status', 'defended')
+                        ->get();
+                }
+            } else {
+                $capstoneIds = json_decode($reservation->capstone_title_id ?? '[]', true);
+                if (is_array($capstoneIds)) {
+                    $defendedCapstones = Capstone::whereIn('id', $capstoneIds)
+                        ->where('title_status', 'defended')
+                        ->get();
+                }
+            }
+        }
+
+        return view('reserve', compact('groups', 'reservation', 'selectedGroup', 'transaction', 'defendedCapstones'));
     }
 
     public function storeGroup(Request $request)
@@ -100,66 +141,109 @@ class ReservationController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'title_1' => 'required',
-            'title_2' => 'required',
-            'title_3' => 'required',
-            'group_id' => 'required'
-        ]);
+        $notTitleDefense = $request->has('type_of_defense') && $request->has('capstone_title_id');
 
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput($request->all());
-        }
+        if ($notTitleDefense) {
+            $validator = Validator::make($request->all(), [
+                'group_id' => 'required',
+                'type_of_defense' => 'required',
+                'capstone_title_id' => 'required'
+            ]);
 
-        $titles = [
-            'title_1' => $request->title_1,
-            'title_2' => $request->title_2,
-            'title_3' => $request->title_3,
-        ];
-
-        $capstoneIds = [];
-        foreach ($titles as $title) {
-            if (!empty($title)) {
-                $capstone = Capstone::create([
-                    'group_id' => $request->group_id,
-                    'title' => $title,
-                ]);
-
-                $capstoneIds[] = $capstone->id;
+            if ($validator->fails()) {
+                return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput($request->all());
             }
+
+            $reservation = Reservation::create([
+                'group_id' => $request->group_id,
+                'capstone_title_id' => $request->capstone_title_id,
+                'reserve_by' => Auth::user()->id,
+            ]);
+
+            Capstone::where('id', $reservation->capstone_title_id)
+                ->update(['title_status' => 'pending', 'capstone_status' => $request->type_of_defense]);
+
+            $transactionCode = $this->generateTransactionCode();
+
+            $user = User::find($request->group_id);
+
+            if (!$user) {
+                return redirect()->back()->withErrors(['group_id' => 'Group not found.']);
+            }
+
+            Transaction::create([
+                'group_id' => $request->group_id,
+                'reservation_id' => $reservation->id,
+                'group_name' => $user->username,
+                'members' => $user->members,
+                'program' => $user->program,
+                'type_of_defense' => $request->type_of_defense,
+                'transaction_code' => $transactionCode
+            ]);
+        } else {
+            $validator = Validator::make($request->all(), [
+                'title_1' => 'required',
+                'title_2' => 'required',
+                'title_3' => 'required',
+                'group_id' => 'required'
+            ]);
+
+            if ($validator->fails()) {
+                return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput($request->all());
+            }
+
+            $titles = [
+                'title_1' => $request->title_1,
+                'title_2' => $request->title_2,
+                'title_3' => $request->title_3,
+            ];
+
+            $capstoneIds = [];
+            foreach ($titles as $title) {
+                if (!empty($title)) {
+                    $capstone = Capstone::create([
+                        'group_id' => $request->group_id,
+                        'title' => $title,
+                    ]);
+
+                    $capstoneIds[] = $capstone->id;
+                }
+            }
+
+            $reservation = Reservation::create([
+                'group_id' => $request->group_id,
+                'capstone_title_id' => json_encode($capstoneIds),
+                'reserve_by' => Auth::user()->id,
+            ]);
+
+            $transactionCode = $this->generateTransactionCode();
+
+            $user = User::find($request->group_id);
+
+            if (!$user) {
+                return redirect()->back()->withErrors(['group_id' => 'Group not found.']);
+            }
+
+            $type_of_defense = match ($request->type_of_defense ?? 'title_defense') {
+                'pre_oral' => 'pre_oral',
+                'final_defense' => 'final_defense',
+                default => 'title_defense',
+            };
+
+            Transaction::create([
+                'group_id' => $request->group_id,
+                'reservation_id' => $reservation->id,
+                'group_name' => $user->username,
+                'members' => $user->members,
+                'program' => $user->program,
+                'type_of_defense' => $type_of_defense,
+                'transaction_code' => $transactionCode
+            ]);
         }
-
-        $reservation = Reservation::create([
-            'group_id' => $request->group_id,
-            'capstone_title_id' => json_encode($capstoneIds),
-            'reserve_by' => auth()->id(),
-        ]);
-
-        $transactionCode = $this->generateTransactionCode();
-
-        $user = User::find($request->group_id);
-
-        if (!$user) {
-            return redirect()->back()->withErrors(['group_id' => 'Group not found.']);
-        }
-
-        $type_of_defense = match ($request->type_of_defense ?? 'title_defense') {
-            'pre_oral' => 'pre_oral',
-            'final_defense' => 'final_defense',
-            default => 'title_defense',
-        };
-
-        Transaction::create([
-            'group_id' => $request->group_id,
-            'reservation_id' => $reservation->id,
-            'group_name' => $user->username,
-            'members' => $user->members,
-            'program' => $user->program,
-            'type_of_defense' => $type_of_defense,
-            'transaction_code' => $transactionCode
-        ]);
 
         session()->forget('selected_group');
 

@@ -34,8 +34,8 @@
                                 </td>
                                 <td>{{ $transaction->program }}</td>
                                 <td>{{ Str::title(str_replace('_', ' ', $transaction->type_of_defense)) }}</td>
-                                <td>{{ \Carbon\Carbon::parse($transaction->date_created)->format('Y-m-d') }}</td>
-                                <td>{{ \Carbon\Carbon::parse($transaction->date_created)->format('h:i A') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($transaction->created_at)->format('Y-m-d') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($transaction->created_at)->format('h:i A') }}</td>
                                 <td>{{ $transaction->transaction_code }}</td>
                             </tr>
                         @endforeach

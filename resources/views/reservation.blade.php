@@ -32,7 +32,7 @@
                                         <li><i class="fa fa-book"></i> {{ $title }}</li>
                                     @endforeach
                                 </td>
-                                <td>{{ $reservation['reserveBy']['name'] }}</td>
+                                <td>{{ $reservation['reserveBy']['name']??$reservation['reserveBy']['username'] }}</td>
                                 <td>{{ Str::ucfirst($reservation['status']) }}</td>
                                 <td>{{ \Carbon\Carbon::parse($reservation['created_at'])->format('Y-m-d g:i A') }}</td>
                                 <td>
