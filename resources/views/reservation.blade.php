@@ -32,27 +32,26 @@
                                         <li><i class="fa fa-book"></i> {{ $title }}</li>
                                     @endforeach
                                 </td>
-                                <td>{{ $reservation['reserveBy']['name']??$reservation['reserveBy']['username'] }}</td>
+                                <td>{{ $reservation['reserveBy']['name'] ?? $reservation['reserveBy']['username'] }}</td>
                                 <td>{{ Str::ucfirst($reservation['status']) }}</td>
                                 <td>{{ \Carbon\Carbon::parse($reservation['created_at'])->format('Y-m-d g:i A') }}</td>
                                 <td>
-                                    @if (Auth::user()->user_type == 'admin')
-                                        <a href="" class="btn btn-warning btn-sm mb-1">Edit</a>
-                                        <form action="{{ route('reservation.destroy', $reservation['id']) }}" method="POST"
+                                    {{-- @if (Auth::user()->user_type == 'admin') --}}
+                                    {{-- <form action="{{ route('reservation.destroy', $reservation['id']) }}" method="POST"
                                             style="display: inline;" onsubmit="return confirmDelete(event)">
                                             @csrf
                                             @method('DELETE')
                                             <input type="hidden" name="id" value="{{ $reservation['id'] }}">
                                             <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                        </form>
+                                        </form> --}}
+                                    {{-- @endif --}}
+                                    {{-- @if (Auth::user()->user_type === 'instructor') --}}
+                                    @if ($reservation['status'] != 'done')
+                                        <a href="{{ route('assign_panelist.form', ['id' => $reservation['id']]) }}"
+                                            class="btn {{ $reservation['status'] == 'pending' ? 'btn-primary' : 'btn-warning' }} btn-sm mb-1">{{ $reservation['status'] == 'pending' ? 'Assign' : 'Update' }}
+                                            Panelists</a>
                                     @endif
-                                    @if (Auth::user()->user_type === 'instructor')
-                                        @if ($reservation['status'] != 'done')
-                                            <a href="{{ route('assign_panelist.form', ['id' => $reservation['id']]) }}"
-                                                class="btn {{ $reservation['status'] == 'pending' ? 'btn-primary' : 'btn-warning' }} btn-sm mb-1">{{ $reservation['status'] == 'pending' ? 'Assign' : 'Update' }}
-                                                Panelists</a>
-                                        @endif
-                                    @endif
+                                    {{-- @endif --}}
                                 </td>
                             </tr>
                         @endforeach

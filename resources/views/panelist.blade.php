@@ -28,8 +28,8 @@
                                 <td>{{ $panelist->email }}</td>
                                 <td>{{ $panelist->created_at->format('Y-m-d g:i A') }}</td>
                                 <td>
-                                    <a href="" class="btn btn-warning btn-sm">Edit</a>
-                                    <form action="" method="POST" style="display: inline;">
+                                    <a href="/update_panelist/{{ $panelist->id }}" class="btn btn-warning btn-sm">Edit</a>
+                                    <form action="{{ route('panelist.destroy', $panelist->id) }}" method="POST" onsubmit="return confirmDelete(event)" style="display: inline;">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger btn-sm">Delete</button>
@@ -44,3 +44,12 @@
     </div>
     <!-- Content Row -->
 @endsection <!-- End the content section -->
+
+<script>
+    function confirmDelete(event) {
+        event.preventDefault();
+        if (confirm('Are you sure you want to delete this panelist? This action cannot be undone.')) {
+            event.target.submit();
+        }
+    }
+</script>

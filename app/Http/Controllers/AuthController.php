@@ -120,7 +120,7 @@ class AuthController extends Controller
             $data += [
                 'program' => $request->program,
                 'year_section' => $request->yearsection,
-                'capstone_adviser_id' => $request->capstone_adviser,
+                'capstone_adviser' => $request->capstone_adviser,
                 'instructor_id' => $request->instructor,
                 'members' => json_encode($request->members ?? []),
             ];

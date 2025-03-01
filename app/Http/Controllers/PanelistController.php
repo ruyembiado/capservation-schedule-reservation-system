@@ -34,6 +34,37 @@ class PanelistController extends Controller
         return view('assign_panelist_form', compact('reservation', 'panelists'));
     }
 
+    public function updateForm($id)
+    {
+        $panelist = Panelist::where('id', $id)->get()->first();
+        return view('update_panelist', compact('panelist'));
+    }
+
+    public function updatePanelist(Request $request, $id)
+    {
+        $rules = [
+            'name' => 'required|unique:panelists,name,' . $id,
+            'email' => 'required|email|unique:panelists,email,' . $id,
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $panelist = Panelist::findOrFail($id);
+
+        $panelist->name = $request->name;
+        $panelist->email = $request->email;
+
+        $panelist->save();
+
+        return redirect('/panelists')->with('success', 'Panelist updated successfully!');
+    }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -110,8 +141,11 @@ class PanelistController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Panelist $panelist)
+    public function destroy($id)
     {
-        //
+        $panelist = Panelist::findOrFail($id);
+        $panelist->delete();
+
+        return redirect('/panelists')->with('success', 'Panelist deleted successfully!');
     }
 }

@@ -4,6 +4,7 @@ use App\Models\Transaction;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\GroupController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\PanelistController;
 use App\Http\Controllers\ScheduleController;
@@ -27,7 +28,7 @@ Route::get('/', [AuthController::class, 'index'])->name('login');
 
 Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
 Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
-Route::get('/get-instructors', [InstructorController::class, 'get_instructors']);
+// Route::get('/get-instructors', [InstructorController::class, 'get_instructors']);
 
 Route::middleware(['auth'])->group(function () {
     // Logout
@@ -63,4 +64,17 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/add_panelist', [PanelistController::class, 'store'])->name('panelist.store');
     Route::get('/assign_panelist/{id}', [PanelistController::class, 'showForm'])->name('assign_panelist.form');
     Route::post('/assign_panelists', [PanelistController::class, 'assignPanelists'])->name('assign_panelist.store');
+    Route::get('/update_panelist/{id}', [PanelistController::class, 'updateForm']);
+    Route::post('/update_panelist/{id}', [PanelistController::class, 'updatePanelist'])->name('panelist.update');
+    Route::delete('/delete_panelist/{id}', [PanelistController::class, 'destroy'])->name('panelist.destroy');
+
+    // Group
+    Route::get('/update_group/{id}', [GroupController::class, 'updateGroupForm']);
+    Route::post('/update_group/{id}', [GroupController::class, 'updateGroup'])->name('group.update');
+    Route::delete('/delete_group/{id}', [GroupController::class, 'deleteGroup'])->name('groups.delete');
+
+    // Instructor
+    Route::get('/update_instructor/{id}', [InstructorController::class, 'updateInstructorForm']);
+    Route::post('/update_instructor/{id}', [InstructorController::class, 'updateInstructor'])->name('instructor.update');
+    Route::delete('/delete_instructor/{id}', [InstructorController::class, 'deleteInstructor'])->name('instructor.delete');
 });

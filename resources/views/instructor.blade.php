@@ -31,8 +31,10 @@
                                 <td>{{ $instructor->position }}</td>
                                 <td>{{ $instructor->created_at->format('Y-m-d g:i A') }}</td>
                                 <td>
-                                    <a href="" class="btn btn-warning btn-sm">Edit</a>
-                                    <form action="" method="POST" style="display: inline;">
+                                    <a href="/update_instructor/{{ $instructor->id }}"
+                                        class="btn btn-warning btn-sm">Edit</a>
+                                    <form action="{{ route('instructor.delete', $instructor->id) }}" method="POST"
+                                        onsubmit="return confirmDelete(event)" style="display: inline;">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger btn-sm">Delete</button>
@@ -47,3 +49,13 @@
     </div>
     <!-- Content Row -->
 @endsection <!-- End the content section -->
+
+
+<script>
+    function confirmDelete(event) {
+        event.preventDefault();
+        if (confirm('Are you sure you want to delete this instructor? This action cannot be undone.')) {
+            event.target.submit();
+        }
+    }
+</script>
