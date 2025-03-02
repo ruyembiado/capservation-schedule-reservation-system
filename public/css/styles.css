@@ -105,6 +105,10 @@ img.person-tech {
     overflow-y: scroll;
 }
 
+main#page-top {
+    height: 100vh;
+}
+
 #sidebar {
     width: 70px;
     min-width: 70px;

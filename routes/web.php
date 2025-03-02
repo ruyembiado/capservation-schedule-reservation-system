@@ -4,6 +4,7 @@ use App\Models\Transaction;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CapstoneController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\PanelistController;
@@ -77,4 +78,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/update_instructor/{id}', [InstructorController::class, 'updateInstructorForm']);
     Route::post('/update_instructor/{id}', [InstructorController::class, 'updateInstructor'])->name('instructor.update');
     Route::delete('/delete_instructor/{id}', [InstructorController::class, 'deleteInstructor'])->name('instructor.delete');
+
+    // Capstones
+    Route::get('/capstones', [CapstoneController::class, 'index']);
+    Route::get('/update_capstone/{ids}', [CapstoneController::class, 'create'])->where('ids', '.*');
+    Route::post('/update_capstone/{ids}', [CapstoneController::class, 'update'])->name('capstone.update');
 });

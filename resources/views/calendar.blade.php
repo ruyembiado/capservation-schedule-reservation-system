@@ -22,7 +22,8 @@
                                 <select name="group" class="form-control select2" id="group_schedule">
                                     <option value="">-- Select Group --</option>
                                     @foreach ($reservations as $reservation)
-                                        <option value="{{ $reservation->user->id }}" {{ old('group') == $reservation->user->id ? 'selected' : '' }}>
+                                        <option value="{{ $reservation->user->id }}"
+                                            {{ old('group') == $reservation->user->id ? 'selected' : '' }}>
                                             {{ Str::ucfirst($reservation->user->username) }}</option>
                                     @endforeach
                                 </select>
@@ -32,8 +33,9 @@
                             </div>
                             <div class="mb-3">
                                 <label for="schedule_date" class="form-label">Schedule Date</label>
-                                <input type="date" name="schedule_date" class="form-control" min="{{ now()->format('Y-m-d') }}"
-                                    id="schedule_date" value="{{ old('schedule_date') }}">
+                                <input type="date" name="schedule_date" class="form-control"
+                                    min="{{ now()->format('Y-m-d') }}" id="schedule_date"
+                                    value="{{ old('schedule_date') }}">
                                 @error('schedule_date')
                                     <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
@@ -53,7 +55,8 @@
                                     <option value="available"
                                         {{ old('schedule_category') == 'available' ? 'selected' : '' }}>
                                         Available</option>
-                                    <option value="occupied" {{ old('schedule_category') == 'occupied' ? 'selected' : '' }}>
+                                    <option value="occupied"
+                                        {{ old('schedule_category') == 'occupied' ? 'selected' : '' }}>
                                         Occupied</option>
                                     <option value="unavailable"
                                         {{ old('schedule_category') == 'unavailable' ? 'selected' : '' }}>Unavailable

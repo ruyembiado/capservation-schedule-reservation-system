@@ -17,13 +17,31 @@
                             <th>Group</th>
                             <th>Titles</th>
                             <th>Reserve by</th>
-                            <th>status</th>
+                            <th>Status</th>
                             <th>Date Created</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($reservations as $reservation)
+                            @php $bg = ''; @endphp
+                            @switch($reservation['status'])
+                                @case('done')
+                                    @php $bg = 'bg-success'; @endphp
+                                @break
+
+                                @case('pending')
+                                    @php $bg = 'bg-warning'; @endphp
+                                @break
+
+                                @case('reserved')
+                                    @php $bg = 'bg-primary'; @endphp
+                                @break
+
+                                @default
+                                    @php $bg = ''; @endphp
+                            @endswitch
+
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $reservation['user']['name'] ?? $reservation['user']['username'] }}</td>
@@ -33,7 +51,10 @@
                                     @endforeach
                                 </td>
                                 <td>{{ $reservation['reserveBy']['name'] ?? $reservation['reserveBy']['username'] }}</td>
-                                <td>{{ Str::ucfirst($reservation['status']) }}</td>
+                                <td>
+                                    <span
+                                        class="badge {{ $bg }}">{{ Str::ucfirst($reservation['status']) }}</span>
+                                </td>
                                 <td>{{ \Carbon\Carbon::parse($reservation['created_at'])->format('Y-m-d g:i A') }}</td>
                                 <td>
                                     {{-- @if (Auth::user()->user_type == 'admin') --}}
@@ -46,7 +67,7 @@
                                         </form> --}}
                                     {{-- @endif --}}
                                     {{-- @if (Auth::user()->user_type === 'instructor') --}}
-                                    @if ($reservation['status'] != 'done')
+                                    @if ($reservation['status'] != 'done' && $reservation['status'] != 'reserved')
                                         <a href="{{ route('assign_panelist.form', ['id' => $reservation['id']]) }}"
                                             class="btn {{ $reservation['status'] == 'pending' ? 'btn-primary' : 'btn-warning' }} btn-sm mb-1">{{ $reservation['status'] == 'pending' ? 'Assign' : 'Update' }}
                                             Panelists</a>

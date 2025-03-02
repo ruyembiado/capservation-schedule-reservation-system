@@ -65,6 +65,12 @@
                             <span>Reservations</span>
                         </a>
                     </li>
+                    <li class="sidebar-item">
+                        <a href="/capstones" class="sidebar-link">
+                            <i class="fa fa-book"></i>
+                            <span>Capstones</span>
+                        </a>
+                    </li>
                 @endif
                 @if (auth()->user()->user_type == 'admin')
                     <li class="sidebar-item">
