@@ -13,56 +13,85 @@ $(document).ready(function () {
         $("#dataTable1").DataTable();
     }
 
-    // Members Input Functionality
-    const memberInput = document.getElementById("members"); // Fixed ID
-    const membersContainer = document.getElementById("membersContainer");
+    const selectPanelists = document.getElementById("panelists");
+    const panelistCards = document.querySelectorAll(".panelist-card");
 
-    if (memberInput && membersContainer) {
-        let members = [];
+    panelistCards.forEach(card => {
+        card.addEventListener("click", function () {
+            const panelistId = this.dataset.id;
+            const option = selectPanelists.querySelector(`option[value="${panelistId}"]`);
 
-        // Prevent form submission when pressing Enter inside the input
-        memberInput.addEventListener("keypress", function (event) {
-            if (event.key === "Enter") {
-                event.preventDefault(); // Stops form from submitting
-
-                let memberValue = memberInput.value.trim();
-                if (memberValue !== "" && !members.includes(memberValue)) {
-                    members.push(memberValue);
-                    updateMembers();
-                    memberInput.value = "";
-                }
+            if (option) {
+                option.selected = !option.selected;
+                this.classList.toggle("bg-selected-panelist");
             }
         });
+    });
 
-        function updateMembers() {
-            membersContainer.innerHTML = "";
+    const credentialsRepeater = document.getElementById("credentialsRepeater");
+    const addCredentialBtn = document.getElementById("addCredentialBtn");
 
-            members.forEach((member, index) => {
-                let memberElement = document.createElement("span");
-                memberElement.classList.add("member-tag", "px-2", "rounded", "bg-light", "text-dark", "d-inline-flex", "align-items-center", "m-1", "p-2");
-                memberElement.innerHTML = `${member} <span class="remove-member ms-2 text-danger fw-bold" data-index="${index}" style="cursor:pointer;">&times;</span>`;
+    addCredentialBtn.addEventListener("click", function () {
+        let newItem = document.createElement("div");
+        newItem.classList.add("input-group", "mb-2", "credential-item");
+        newItem.innerHTML = `
+            <input type="text" name="credentials[]" class="form-control" placeholder="Enter credential">
+            <button type="button" class="btn btn-danger remove-credential">x</button>
+        `;
+        credentialsRepeater.appendChild(newItem);
+    });
 
-                // Append the tag
-                membersContainer.appendChild(memberElement);
-
-                // Add a hidden input for form submission
-                let hiddenInput = document.createElement("input");
-                hiddenInput.type = "hidden";
-                hiddenInput.name = "members[]";
-                hiddenInput.value = member;
-                membersContainer.appendChild(hiddenInput);
-            });
-
-            // Add remove event
-            document.querySelectorAll(".remove-member").forEach((btn) => {
-                btn.addEventListener("click", function () {
-                    let index = this.getAttribute("data-index");
-                    members.splice(index, 1);
-                    updateMembers();
-                });
-            });
+    credentialsRepeater.addEventListener("click", function (e) {
+        if (e.target.classList.contains("remove-credential")) {
+            e.target.closest(".credential-item").remove();
         }
-    }
+    });
+
+    const vacantTimeRepeater = $("#vacantTimeRepeater");
+    const addVacantTimeBtn = $("#addVacantTimeBtn");
+
+    addVacantTimeBtn.on("click", function () {
+        let newItem = `
+            <div class="input-group mb-2 vacant-time-item">
+                <select name="vacant_time[day][]" class="form-select">
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                </select>
+                <input type="time" name="vacant_time[start_time][]" class="form-control">
+                <input type="time" name="vacant_time[end_time][]" class="form-control">
+                <button type="button" class="btn btn-danger remove-vacant-time">x</button>
+            </div>
+        `;
+        vacantTimeRepeater.append(newItem);
+    });
+
+    vacantTimeRepeater.on("click", ".remove-vacant-time", function () {
+        $(this).closest(".vacant-time-item").remove();
+    });
+
+    const repeater = document.getElementById("membersRepeater");
+    const addMemberBtn = document.getElementById("addMemberBtn");
+
+    // Add new input field on button click
+    addMemberBtn.addEventListener("click", function () {
+        let newItem = document.createElement("div");
+        newItem.classList.add("input-group", "mb-2");
+        newItem.innerHTML = `
+            <input type="text" name="members[]" class="form-control" placeholder="Member Name">
+            <button type="button" class="btn btn-danger remove-member">x</button>
+        `;
+        repeater.appendChild(newItem);
+    });
+
+    // Remove input field when clicking the remove button
+    repeater.addEventListener("click", function (e) {
+        if (e.target.classList.contains("remove-member")) {
+            e.target.closest(".input-group").remove();
+        }
+    });
 
     const $selectBox = $("#custom-select");
     const $dropdown = $("#custom-dropdown");
@@ -165,6 +194,13 @@ $(document).ready(function () {
         theme: 'bootstrap-5',
         width: '100%',
         placeholder: "Select a group",
+        allowClear: true
+    });
+
+    $('#select_instructor').select2({
+        theme: 'bootstrap-5',
+        width: '100%',
+        placeholder: "Select instructor",
         allowClear: true
     });
 

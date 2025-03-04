@@ -23,14 +23,21 @@ class GroupController extends Controller
             'email' => 'required|email|unique:users,email,' . $id,
             'username' => 'required|string|max:255|unique:users,username,' . $id,
             'password' => 'nullable|string|min:8|confirmed',
-            'members' => 'required|array',
+            'members.*' => 'required|string',
             'program' => 'required|string|max:255',
             'yearsection' => 'required|string|max:255',
             'capstone_adviser' => 'required|string|max:255',
             'instructor' => 'required|exists:users,id',
         ];
 
-        $validator = Validator::make($request->all(), $rules);
+        $messages = [];
+        if ($request->members) {
+            foreach ($request->members as $index => $member) {
+                $messages["members.$index.required"] = "Member " . ($index + 1) . " is required.";
+            }
+        }
+
+        $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
             return redirect()->back()

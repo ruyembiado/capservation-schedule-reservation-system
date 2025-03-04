@@ -29,6 +29,65 @@
                     @enderror
                 </div>
 
+                <div class="col-12 mb-2">
+                    <label for="vacant_time" class="form-label">Vacant Time</label>
+                    <div id="vacantTimeRepeater">
+                        @php
+                            $vacantTimes = old('vacant_time.day', json_decode($panelist->vacant_time, true) ?? ['']);
+                        @endphp
+                        @foreach ($vacantTimes as $index => $vacantTime)
+                            <div class="input-group mt-1 mb-2 vacant-time-item">
+                                <select name="vacant_time[day][]"
+                                    class="form-select @error("vacant_time.day.$index") is-invalid @enderror">
+                                    <option value="" disabled>Select Day</option>
+                                    @foreach (['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] as $day)
+                                        <option value="{{ $day }}"
+                                            {{ isset($vacantTime['day']) && $vacantTime['day'] == $day ? 'selected' : '' }}>
+                                            {{ $day }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <input type="time" name="vacant_time[start_time][]"
+                                    class="form-control @error("vacant_time.start_time.$index") is-invalid @enderror"
+                                    value="{{ old("vacant_time.start_time.$index", $vacantTime['start_time'] ?? '') }}">
+                                <input type="time" name="vacant_time[end_time][]"
+                                    class="form-control @error("vacant_time.end_time.$index") is-invalid @enderror"
+                                    value="{{ old("vacant_time.end_time.$index", $vacantTime['end_time'] ?? '') }}">
+                                <button type="button" class="btn btn-danger remove-vacant-time">x</button>
+                            </div>
+                            @error("vacant_time.day.$index")
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                            @error("vacant_time.start_time.$index")
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                            @error("vacant_time.end_time.$index")
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        @endforeach
+                    </div>
+                    <button type="button" class="btn btn-sm btn-primary" id="addVacantTimeBtn">Add Vacant Time</button>
+                </div>
+                <div class="col-12 mb-2">
+                    <label for="credentials" class="form-label">Credentials</label>
+                    <div id="credentialsRepeater">
+                        @php
+                            $credentials = old('credentials', json_decode($panelist->credentials, true) ?? ['']);
+                        @endphp
+                        @foreach ($credentials as $index => $credential)
+                            <div class="input-group mb-2 credential-item">
+                                <input type="text" name="credentials[]"
+                                    class="form-control @error("credentials.$index") is-invalid @enderror"
+                                    value="{{ $credential }}" placeholder="Enter credential">
+                                <button type="button" class="btn btn-danger remove-credential">x</button>
+                                @error("credentials.$index")
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        @endforeach
+                    </div>
+                    <button type="button" class="btn btn-sm btn-primary" id="addCredentialBtn">Add Credential</button>
+                </div>
                 <div class="mt-3 text-end">
                     <button class="btn btn-primary text-light" type="submit">Update</button>
                 </div>

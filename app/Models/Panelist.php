@@ -10,5 +10,5 @@ class Panelist extends Model
     use HasFactory;
 
     protected $table = 'panelists';
-    protected $fillable = ['name', 'email'];
+    protected $fillable = ['name', 'email', 'credentials', 'vacant_time'];
 }

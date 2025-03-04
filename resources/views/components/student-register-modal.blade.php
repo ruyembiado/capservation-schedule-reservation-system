@@ -50,24 +50,29 @@
                                 </div>
                                 <div class="col-12 mb-2">
                                     <label for="members" class="form-label">Members</label>
-                                    <div class="member-input-container border rounded p-2">
-                                        <input type="text" id="members"
-                                            class="form-control @error('members') is-invalid @enderror"
-                                            placeholder="Type and press Enter">
-                                        <!-- Hidden inputs for old members -->
-                                        <div id="membersContainer" class="d-flex flex-wrap gap-1 mt-2">
-                                            @foreach (old('members', []) as $member)
-                                                <span class="badge bg-light text-dark">
-                                                    {{ $member }}
-                                                </span>
-                                                <input type="hidden" name="members[]" value="{{ $member }}">
-                                            @endforeach
-                                        </div>
-
-                                        @error('members')
-                                            <div class="invalid-feedback d-block">{{ $message }}</div>
-                                        @enderror
+                                    <div id="membersRepeater">
+                                        @forelse (old('members', []) as $index => $member)
+                                            <div class="input-group mb-2">
+                                                <input type="text" name="members[]" value="{{ $member }}"
+                                                    class="form-control @error("members.$index") is-invalid @enderror"
+                                                    placeholder="Member Name">
+                                                <button type="button"
+                                                    class="btn btn-danger remove-member">&times;</button>
+                                                @error("members.$index")
+                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        @empty
+                                            <div class="input-group mb-2">
+                                                <input type="text" name="members[]" class="form-control"
+                                                    placeholder="Member Name">
+                                                <button type="button"
+                                                    class="btn btn-danger remove-member">&times;</button>
+                                            </div>
+                                        @endforelse
                                     </div>
+                                    <button type="button" class="btn btn-primary mt-2" id="addMemberBtn">Add
+                                        Member</button>
                                 </div>
                             </div>
                             <div class="col-5">

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Capstone;
 use App\Models\Panelist;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
@@ -27,12 +28,16 @@ class PanelistController extends Controller
     }
 
     public function showForm($id)
-    {
-        $reservation = Reservation::findOrFail($id);
-        $panelists = Panelist::all();
+{
+    $reservation = Reservation::findOrFail($id);
+    $panelists = Panelist::all();
 
-        return view('assign_panelist_form', compact('reservation', 'panelists'));
-    }
+    $capstoneIds = json_decode($reservation->capstone_title_id, true) ?? [];
+    $capstones = Capstone::whereIn('id', $capstoneIds)->get();
+
+    return view('assign_panelist_form', compact('reservation', 'panelists', 'capstones'));
+}
+
 
     public function updateForm($id)
     {
@@ -70,18 +75,65 @@ class PanelistController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|unique:panelists',
-            'email' => 'required|email|unique:panelists',
+        // Remove empty credentials before validation
+        $request->merge([
+            'credentials' => array_filter($request->credentials, function ($credential) {
+                return !empty($credential);
+            })
         ]);
 
+        $messages = [];
+        if ($request->credentials) {
+            foreach ($request->credentials as $index => $credential) {
+                $messages["credentials.$index.required"] = "Credential " . ($index + 1) . " is required.";
+            }
+        }
+
+        if ($request->vacant_time['start_time']) {
+            foreach ($request->vacant_time['start_time'] as $index => $startTime) {
+                $messages["vacant_time.end_time.$index.after"] = "The vacant time end time " . ($index + 1) . " must be a time after start time " . ($index + 1) . ".";
+            }
+        }
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => 'required|email',
+            'vacant_time.day.*' => 'required',
+            'vacant_time.start_time.*' => 'required|date_format:H:i',
+            'vacant_time.end_time.*' => 'required|date_format:H:i|after:vacant_time.start_time.*',
+            'credentials.*' => 'required|string|max:255',
+        ], $messages);
+
         if ($validator->fails()) {
+            // dd($validator->errors());
             return redirect()->back()
                 ->withErrors($validator)
                 ->withInput($request->all());
         }
 
-        Panelist::create($request->all());
+        $panelist = Panelist::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+        ]);
+
+        if ($request->has('vacant_time')) {
+            $vacantTimes = [];
+            foreach ($request->vacant_time['day'] as $index => $day) {
+                $vacantTimes[] = [
+                    'day' => $day,
+                    'start_time' => $request->vacant_time['start_time'][$index],
+                    'end_time' => $request->vacant_time['end_time'][$index],
+                ];
+            }
+            $panelist->vacant_time = json_encode($vacantTimes);
+            $panelist->save();
+        }
+
+        if ($request->has('credentials')) {
+            $panelist->credentials = json_encode($request->credentials);
+            $panelist->save();
+        }
 
         return redirect()->back()->with('success', 'Panelist added successfully!');
     }

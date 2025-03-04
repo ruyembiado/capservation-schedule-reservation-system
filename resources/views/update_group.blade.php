@@ -45,25 +45,31 @@
                         </div>
                         <div class="col-12 mb-2">
                             <label for="members" class="form-label">Members</label>
-                            <div class="member-input-container border rounded p-2">
-                                <input type="text" id="members"
-                                    class="form-control @error('members') is-invalid @enderror"
-                                    placeholder="Type and press Enter">
-                                <!-- Hidden inputs for old members -->
-                                <div id="membersContainer" class="d-flex flex-wrap gap-1 mt-2">
-                                    @if ($group->members)
-                                        @foreach (json_decode($group->members, true) as $member)
-                                            <span class="badge bg-light text-dark">
-                                                {{ $member }}
-                                            </span>
-                                            <input type="hidden" name="members[]" value="{{ $member }}">
-                                        @endforeach
-                                    @endif
-                                </div>
-                                @error('members')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
+                            <div id="membersRepeater">
+                                @if (old('members'))
+                                    @foreach (old('members') as $index => $member)
+                                        <div class="input-group mb-2 member-item">
+                                            <input type="text" name="members[]" value="{{ $member }}"
+                                                class="form-control @error("members.$index") is-invalid @enderror"
+                                                placeholder="Enter member name">
+                                            <button type="button" class="btn btn-danger remove-member">x</button>
+                                            @error("members.$index")
+                                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    @endforeach
+                                @else
+                                    @foreach (json_decode($group->members) as $member)
+                                        <div class="input-group mb-2 member-item">
+                                            <input type="text" name="members[]" value="{{ $member }}"
+                                                class="form-control" placeholder="Enter member name">
+                                            <button type="button" class="btn btn-danger remove-member">x</button>
+                                        </div>
+                                    @endforeach
+                                @endif
                             </div>
+                            <!-- Add Member Button Outside the Repeater -->
+                            <button type="button" class="btn btn-sm btn-primary" id="addMemberBtn">Add Member</button>
                         </div>
                     </div>
                     <div class="col-5">
@@ -96,34 +102,9 @@
                         </div>
                         <div class="col-12 mb-2">
                             <label for="instructor" class="form-label">Instructor</label>
-                            <div class="custom-select-container">
-                                <!-- Custom select display -->
-                                <div class="custom-select" id="custom-select">
-                                    @if (old('instructor', $group->instructor_id))
-                                        @php
-                                            $selectedInstructor = $instructors->firstWhere(
-                                                'id',
-                                                old('instructor', $group->instructor_id),
-                                            );
-                                        @endphp
-                                        {{ $selectedInstructor ? $selectedInstructor->name : '-- Select an instructor --' }}
-                                    @else
-                                        -- Select an instructor --
-                                    @endif
-                                </div>
-                                <!-- Custom dropdown options -->
-                                <div class="custom-dropdown" id="custom-dropdown">
-                                    @foreach ($instructors as $instructor)
-                                        <div data-value="{{ $instructor->id }}"
-                                            class="custom-dropdown-option {{ old('instructor', $group->instructor_id) == $instructor->id ? 'selected' : '' }}">
-                                            {{ $instructor->name }}
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-
                             <!-- Hidden actual select input -->
-                            <select name="instructor" id="instructor" class="hidden-select">
+                            <select name="instructor" class="form-control select2" id="select_instructor"
+                                class="">
                                 <option value="" disabled>-- Select an instructor --</option>
                                 @foreach ($instructors as $instructor)
                                     <option value="{{ $instructor->id }}"

@@ -105,9 +105,9 @@ img.person-tech {
     overflow-y: scroll;
 }
 
-main#page-top {
+/* main#page-top {
     height: 100vh;
-}
+} */
 
 #sidebar {
     width: 70px;
@@ -505,4 +505,17 @@ A hover sample effect is added as well as an active state*/
     align-items: flex-start;
     display: flex;
     flex-direction: column;
+}
+
+.panelist-card {
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.panelist-card:hover {
+    background: #f9fffc;
+}
+
+.bg-selected-panelist {
+    background: #d1e7dd;
 }
