@@ -84,7 +84,7 @@ class AuthController extends Controller
                 'yearsection' => 'required|string',
                 'capstone_adviser' => 'required|string',
                 'instructor' => 'required|string',
-                'members' => 'required|array',
+                'members.*' => 'required|string',
             ];
         }
 
@@ -96,8 +96,15 @@ class AuthController extends Controller
             ];
         }
 
+        $messages = [];
+        if ($request->user_type === 'student' && $request->members) {
+            foreach ($request->members as $index => $member) {
+                $messages["members.$index.required"] = "Member " . ($index + 1) . " is required.";
+            }
+        }
+
         // Validate the request
-        $validator = Validator::make($request->all(), $rules);
+        $validator = Validator::make($request->all(), $rules, $messages);
 
         // If validation fails, return with errors and keep modal open
         if ($validator->fails()) {
