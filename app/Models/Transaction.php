@@ -19,6 +19,7 @@ class Transaction extends Model
         'program',
         'type_of_defense',
         'transaction_code',
+        'status',
     ];
 
     public function group()

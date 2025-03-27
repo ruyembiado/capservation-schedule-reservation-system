@@ -17,7 +17,7 @@
                             <div class="col-5">
                                 <div class="col-12 mb-2">
                                     <label for="email" class="form-label">Email</label>
-                                    <input type="text" name="email" placeholder="Enter your email address"
+                                    <input type="email" name="email" placeholder="Enter your email address"
                                         class="form-control @error('email') is-invalid @enderror" id="email"
                                         value="{{ old('email') }}">
                                     @error('email')
@@ -26,7 +26,7 @@
                                 </div>
                                 <div class="col-12 mb-2">
                                     <label for="username" class="form-label">Username/Group Name</label>
-                                    <input type="username" name="username" placeholder="Enter your username/group name"
+                                    <input type="text" name="username" placeholder="Enter your username/group name"
                                         class="form-control @error('username') is-invalid @enderror" id="username"
                                         value="{{ old('username') }}">
                                     @error('username')
@@ -78,17 +78,23 @@
                             <div class="col-5">
                                 <div class="col-12 mb-2">
                                     <label for="program" class="form-label">Program</label>
-                                    <input type="program" name="program" placeholder="Enter your program"
-                                        class="form-control @error('program') is-invalid @enderror" id="program"
-                                        value="{{ old('program') }}">
+                                    <select name="program" id="program"
+                                        class="form-control @error('program') is-invalid @enderror">
+                                        <option value="">-- Select Program --</option>
+                                        <option value="BSIT" {{ old('program') == 'BSIT' ? 'selected' : '' }}>BSIT
+                                        </option>
+                                        <option value="BSCS" {{ old('program') == 'BSCS' ? 'selected' : '' }}>BSCS
+                                        </option>
+                                        <option value="BSIS" {{ old('program') == 'BSIS' ? 'selected' : '' }}>BSIS
+                                        </option>
+                                    </select>
                                     @error('program')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
                                 </div>
                                 <div class="col-12 mb-2">
                                     <label for="yearsection" class="form-label">Year & Section</label>
-                                    <input type="yearsection" name="yearsection"
-                                        placeholder="Enter your year and section"
+                                    <input type="text" name="yearsection" placeholder="Enter your year and section"
                                         class="form-control @error('yearsection') is-invalid @enderror" id="yearsection"
                                         value="{{ old('yearsection') }}">
                                     @error('yearsection')
@@ -97,7 +103,7 @@
                                 </div>
                                 <div class="col-12 mb-2">
                                     <label for="capstone_adviser" class="form-label">Capstone Adviser</label>
-                                    <input type="capstone_adviser" name="capstone_adviser"
+                                    <input type="text" name="capstone_adviser"
                                         placeholder="Enter your capstone adviser"
                                         class="form-control @error('capstone_adviser') is-invalid @enderror"
                                         id="capstone_adviser" value="{{ old('capstone_adviser') }}">

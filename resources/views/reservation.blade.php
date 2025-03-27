@@ -73,6 +73,15 @@
                                             Panelists</a>
                                     @endif
                                     {{-- @endif --}}
+                                    @if ($reservation['status'] === 'reserved')
+                                        <form action="" method="POST"
+                                            style="display: inline;">
+                                            @csrf
+                                            <button type="submit" class="btn btn-danger text-light">
+                                                Re-schedule
+                                            </button>
+                                        </form>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach

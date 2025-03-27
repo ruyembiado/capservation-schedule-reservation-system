@@ -147,10 +147,10 @@
                                     <i class="text-primary fas fa-user fa-sm fa-fw mr-2"></i>
                                     Profile
                                 </a>
-                                <a class="dropdown-item" href="#">
+                                {{-- <a class="dropdown-item" href="#">
                                     <i class="text-primary fas fa-cogs fa-sm fa-fw mr-2"></i>
                                     Settings
-                                </a>
+                                </a> --}}
                                 <a class="dropdown-item" href="#">
                                     <i class="text-primary fas fa-list fa-sm fa-fw mr-2"></i>
                                     Activity Log

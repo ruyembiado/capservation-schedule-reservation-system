@@ -58,6 +58,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Transaction
     Route::get('/transactions', [TransactionController::class, 'index']);
+    Route::post('/update_transaction/{id}', [TransactionController::class, 'update'])->name('transaction.update');
 
     // Panelists
     Route::get('/panelists', [PanelistController::class, 'index']);

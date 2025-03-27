@@ -16,7 +16,7 @@
                                 {{-- Email Input --}}
                                 <div class="col-12 mb-2">
                                     <label for="email" class="form-label">Email</label>
-                                    <input type="text" name="email" placeholder="Enter your email"
+                                    <input type="email" name="email" placeholder="Enter your email"
                                         class="form-control @error('email') is-invalid @enderror" id="email"
                                         value="{{ old('email') }}">
                                     @error('email')

@@ -83,3 +83,91 @@
 
     <!-- Content Row -->
 @endsection <!-- End the content section -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('FullCalendar');
+
+        if (calendarEl) {
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                selectable: true,
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay,list'
+                },
+                events: function(fetchInfo, successCallback, failureCallback) {
+                    fetch('/schedules')
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log("Events Loaded:", data);
+                            successCallback(data);
+                        })
+                        .catch(error => {
+                            console.error("Error loading events:", error);
+                            failureCallback(error);
+                        });
+                },
+                eventContent: function(arg) {
+                    return {
+                        html: `<div class="fc-event-time">
+                                ${arg.event.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
+                           </div>
+                           <div class="fc-event-title">
+                                ${arg.event.title}
+                           </div>`
+                    };
+                },
+                validRange: {
+                    start: null
+                },
+                selectAllow: function(selectInfo) {
+                    return selectInfo.start >= new Date().setHours(0, 0, 0, 0);
+                },
+                dateClick: function(info) {
+                    console.log("Date clicked:", info.dateStr);
+
+                    // Ensure the element exists before setting the value
+                    let scheduleDateEl = document.getElementById('schedule_date');
+                    if (scheduleDateEl) {
+                        scheduleDateEl.value = info.dateStr;
+                    }
+                },
+                dayCellDidMount: function(info) {
+                    let today = new Date().setHours(0, 0, 0, 0);
+                    let cellDate = new Date(info.date).setHours(0, 0, 0, 0);
+
+                    if (cellDate < today) {
+                        info.el.style.backgroundColor = "#f8d7da";
+                        info.el.style.color = "#6c757d";
+                        info.el.style.pointerEvents = "none";
+                        info.el.style.opacity = "0.6";
+                    }
+                },
+                select: function(info) {
+                    let dateTimeParts = info.startStr.split('T');
+                    let selectedDate = dateTimeParts[0];
+                    let selectedTime = dateTimeParts[1]?.slice(0, 5) || '';
+
+                    let scheduleDateEl = document.getElementById('schedule_date');
+                    let scheduleTimeEl = document.getElementById('schedule_time');
+
+                    if (scheduleDateEl) {
+                        scheduleDateEl.value = selectedDate;
+                    }
+
+                    if (scheduleTimeEl) {
+                        scheduleTimeEl.value = selectedTime;
+                    }
+                },
+                selectMirror: true,
+                slotDuration: '00:30:00',
+                slotMinTime: '08:00:00',
+                slotMaxTime: '18:00:00',
+            });
+
+            calendar.render();
+        }
+    });
+</script>
