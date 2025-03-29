@@ -136,10 +136,9 @@
                                     }
                                 }
                             @endphp
-
-                            <input type="text" name="group_id" value="{{ $selectedGroup ?? auth()->user()->id }}">
-                            <input type="text" name="type_of_defense" value="{{ $type_of_defense }}">
-                            <input type="text" name="capstone_title_id" value="{{ $defendedCapstones[0]->id?:$defendedCapstones['id'] }}">
+                            <input type="hidden" name="group_id" value="{{ $selectedGroup ?? auth()->user()->id }}">
+                            <input type="hidden" name="type_of_defense" value="{{ $type_of_defense }}">
+                            <input type="hidden" name="capstone_title_id" value="{{ $defendedCapstones[0]->id?:$defendedCapstones['id'] }}">
                             <div class="col-12 mb-2">
                                 <textarea disabled class="form-control">{{ $defendedCapstones[0]->title?:$defendedCapstones['title'] }}</textarea>
                                 @error('title_1')

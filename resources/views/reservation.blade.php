@@ -38,6 +38,10 @@
                                     @php $bg = 'bg-primary'; @endphp
                                 @break
 
+                                @case('approved')
+                                    @php $bg = 'bg-info'; @endphp
+                                @break
+
                                 @default
                                     @php $bg = ''; @endphp
                             @endswitch
@@ -74,8 +78,8 @@
                                     @endif
                                     {{-- @endif --}}
                                     @if ($reservation['status'] === 'reserved')
-                                        <form action="" method="POST"
-                                            style="display: inline;">
+                                        <form action="{{ route('schedule.reschedule', $reservation['id']) }}" method="POST"
+                                            style="display: inline;" onsubmit="return confirmReschedule(event)">
                                             @csrf
                                             <button type="submit" class="btn btn-danger text-light">
                                                 Re-schedule
@@ -94,9 +98,9 @@
 @endsection <!-- End the content section -->
 
 <script>
-    function confirmDelete(event) {
+    function confirmReschedule(event) {
         event.preventDefault();
-        if (confirm('Are you sure you want to delete this reservation? This action cannot be undone.')) {
+        if (confirm('Are you sure you want to reschedule this reservation? This action cannot be undone.')) {
             event.target.submit();
         }
     }

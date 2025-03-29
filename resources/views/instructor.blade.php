@@ -50,7 +50,6 @@
     <!-- Content Row -->
 @endsection <!-- End the content section -->
 
-
 <script>
     function confirmDelete(event) {
         event.preventDefault();

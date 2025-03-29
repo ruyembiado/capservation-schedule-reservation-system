@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Reservation;
 use App\Models\Schedule;
+use App\Models\Reservation;
 use Illuminate\Http\Request;
+use App\Models\ReservationHistory;
 use Illuminate\Support\Facades\Validator;
 
 class ScheduleController extends Controller
@@ -99,9 +100,18 @@ class ScheduleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Schedule $schedule)
+    public function update(Request $request)
     {
-        //
+        $reservation = Reservation::findOrFail($request->id);
+
+        ReservationHistory::create([
+            'reservation_id' => $reservation->id,
+        ]);
+
+        $reservation->status = 'approved';
+        $reservation->save();
+
+        return redirect()->back()->with('success', 'Reservation Re-scheduled.');
     }
 
     /**

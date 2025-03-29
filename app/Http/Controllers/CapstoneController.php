@@ -17,6 +17,7 @@ class CapstoneController extends Controller
     public function index()
     {
         $capstones = Capstone::with('user')
+            ->orderBy('created_at', 'desc')
             ->get()
             ->groupBy('group_id');
 
@@ -85,19 +86,8 @@ class CapstoneController extends Controller
             $capstone = Capstone::find($id);
             if ($capstone) {
                 $groupId = $capstone->group_id;
-
-                if ($capstone->capstone_status == 'title_defense') {
-                    $capstone->title = $request->title[$index];
-                    $capstone->title_status = 'pending';
-                    $capstone->capstone_status = 'pre_oral_defense';
-                } elseif ($capstone->capstone_status == 'pre_oral_defense') {
-                    $capstone->title = $request->title[$index];
-                    $capstone->title_status = 'pending';
-                    $capstone->capstone_status = 'final_defense';
-                } else {
-                    $capstone->title = $request->title[$index];
-                    $capstone->title_status = $request->title_status[$index];
-                }
+                $capstone->title = $request->title[$index];
+                $capstone->title_status = $request->title_status[$index];
                 $capstone->save();
             }
         }

@@ -11,16 +11,16 @@ class AdminController extends Controller
     public function groups()
     {
         if (Auth::user()->user_type === 'instructor') {
-            $groups = User::where('user_type', 'student')->where('instructor_id', Auth::user()->id)->with('instructor')->get();
+            $groups = User::where('user_type', 'student')->where('instructor_id', Auth::user()->id)->with('instructor')->orderBy('created_at', 'desc')->get();
         } else {
-            $groups = User::where('user_type', 'student')->with('instructor')->get();
+            $groups = User::where('user_type', 'student')->with('instructor')->orderBy('created_at', 'desc')->get();
         }
         return view('group', compact('groups'));
     }
 
     public function instructors()
     {
-        $instructors = User::where('user_type', 'instructor')->get();
+        $instructors = User::where('user_type', 'instructor')->orderBy('created_at', 'desc')->get();
         return view('instructor', compact('instructors'));
     }
 

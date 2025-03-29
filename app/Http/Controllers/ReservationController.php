@@ -20,6 +20,7 @@ class ReservationController extends Controller
         if (Auth::user()->user_type === 'student') {
             $reservations = Reservation::where('group_id', Auth::user()->id)
                 ->with(['user', 'reserveBy'])
+                ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(function ($reservation) {
                     $titles = $this->getTitlesForReservation($reservation);
@@ -37,6 +38,7 @@ class ReservationController extends Controller
             $studentIds = User::where('instructor_id', Auth::user()->id)->pluck('id');
             $reservations = Reservation::whereIn('group_id', $studentIds)
                 ->with(['user', 'reserveBy'])
+                ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(function ($reservation) {
                     $titles = $this->getTitlesForReservation($reservation);
@@ -52,6 +54,7 @@ class ReservationController extends Controller
                 });
         } else {
             $reservations = Reservation::with(['user', 'reserveBy'])
+                ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(function ($reservation) {
                     $titles = $this->getTitlesForReservation($reservation);

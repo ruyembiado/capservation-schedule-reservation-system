@@ -31,11 +31,9 @@ class TransactionController extends Controller
         if (!empty($status)) {
             $query->where('status', $status);
         }
-
-        $transactions = $query->get();
+        $transactions = $query->orderBy('created_at', 'desc')->get();
         return view('transaction', compact('transactions'));
     }
-
 
     /**
      * Show the form for creating a new resource.

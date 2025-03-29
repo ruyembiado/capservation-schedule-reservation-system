@@ -103,9 +103,9 @@
                     </li>
                 @endif
                 <li class="sidebar-item">
-                    <a href="/inbox" class="sidebar-link">
+                    <a href="/notification" class="sidebar-link">
                         <i class="fa fa-envelope-open-text"></i>
-                        <span>Inbox</span>
+                        <span>Notification</span>
                     </a>
                 </li>
             </ul>

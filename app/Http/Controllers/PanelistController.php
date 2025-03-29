@@ -15,7 +15,7 @@ class PanelistController extends Controller
      */
     public function index()
     {
-        $panelists = Panelist::all();
+        $panelists = Panelist::orderBy('created_at', 'desc')->get();
         return view('panelist', compact('panelists'));
     }
 
@@ -28,15 +28,15 @@ class PanelistController extends Controller
     }
 
     public function showForm($id)
-{
-    $reservation = Reservation::findOrFail($id);
-    $panelists = Panelist::all();
+    {
+        $reservation = Reservation::findOrFail($id);
+        $panelists = Panelist::all();
 
-    $capstoneIds = json_decode($reservation->capstone_title_id, true) ?? [];
-    $capstones = Capstone::whereIn('id', $capstoneIds)->get();
+        $capstoneIds = (array) json_decode($reservation->capstone_title_id, true);
+        $capstones = Capstone::whereIn('id', $capstoneIds)->get();
 
-    return view('assign_panelist_form', compact('reservation', 'panelists', 'capstones'));
-}
+        return view('assign_panelist_form', compact('reservation', 'panelists', 'capstones'));
+    }
 
 
     public function updateForm($id)

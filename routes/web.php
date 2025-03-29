@@ -55,6 +55,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/get-all-groups', [ReservationController::class, 'getGroups']);
     Route::post('/reserve-group', [ReservationController::class, 'store'])->name('reservation.store');
     Route::delete('/delete_reservation/{reservation_id}', [ReservationController::class, 'destroy'])->name('reservation.destroy');
+    Route::post('/reservation/reschedule/{id}', [ScheduleController::class, 'update'])->name('schedule.reschedule');
 
     // Transaction
     Route::get('/transactions', [TransactionController::class, 'index']);
