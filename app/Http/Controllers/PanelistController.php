@@ -45,6 +45,17 @@ class PanelistController extends Controller
         return view('update_panelist', compact('panelist'));
     }
 
+    public function viewPanelist($id)
+    {
+        $reservation = Reservation::findOrFail($id);
+        $panelists = Panelist::all();
+
+        $capstoneIds = (array) json_decode($reservation->capstone_title_id, true);
+        $capstones = Capstone::whereIn('id', $capstoneIds)->get();
+
+        return view('view_panelist', compact('reservation', 'panelists', 'capstones'));
+    }
+
     public function updatePanelist(Request $request, $id)
     {
         $rules = [

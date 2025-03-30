@@ -151,7 +151,7 @@
                                     <i class="text-primary fas fa-cogs fa-sm fa-fw mr-2"></i>
                                     Settings
                                 </a> --}}
-                                <a class="dropdown-item" href="#">
+                                <a class="dropdown-item" href="/activity_log">
                                     <i class="text-primary fas fa-list fa-sm fa-fw mr-2"></i>
                                     Activity Log
                                 </a>

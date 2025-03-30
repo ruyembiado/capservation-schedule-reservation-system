@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\ActivityLog;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -139,7 +141,22 @@ class AuthController extends Controller
         }
 
         // Create the user
-        User::create($data);
+        $created_user = User::create($data);
+
+        if ($created_user) {
+            $activity_logs = new ActivityLog();
+            $activity_logs->user_id = $created_user->id;
+            $activity_logs->user_type = $created_user->user_type;
+            $activity_logs->action = 'Register';
+            if ($request->user_type === 'student') {
+                $group_name = Str::ucfirst($created_user->username);
+                $activity_logs->instructor_id = $request->instructor;
+                $activity_logs->description = $group_name . ' registered to the system.';
+            } else {
+                $activity_logs->description = $created_user->name . ' registered to the system.';
+            }
+            $activity_logs->save();
+        }
 
         // Redirect back with success message
         return redirect()->back()->with('success', 'Registration successful!');

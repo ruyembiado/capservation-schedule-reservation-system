@@ -4,12 +4,13 @@ use App\Models\Transaction;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\CapstoneController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\CapstoneController;
 use App\Http\Controllers\PanelistController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\InstructorController;
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\TransactionController;
 
@@ -70,6 +71,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/update_panelist/{id}', [PanelistController::class, 'updateForm']);
     Route::post('/update_panelist/{id}', [PanelistController::class, 'updatePanelist'])->name('panelist.update');
     Route::delete('/delete_panelist/{id}', [PanelistController::class, 'destroy'])->name('panelist.destroy');
+    Route::get('/view_panelists/{id}', [PanelistController::class, 'viewPanelist'])->name('view_panelists');
 
     // Group
     Route::get('/update_group/{id}', [GroupController::class, 'updateGroupForm']);
@@ -85,4 +87,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/capstones', [CapstoneController::class, 'index']);
     Route::get('/update_capstone/{ids}', [CapstoneController::class, 'create'])->where('ids', '.*');
     Route::post('/update_capstone/{ids}', [CapstoneController::class, 'update'])->name('capstone.update');
+
+    // Activity Log
+    Route::get('/activity_log', [ActivityLogController::class, 'index']);
 });

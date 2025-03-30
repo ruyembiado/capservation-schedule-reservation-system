@@ -166,3 +166,27 @@
         </div>
     </div>
 </div>
+
+<script>
+    const repeater = document.getElementById("membersRepeater");
+    const addMemberBtn = document.getElementById("addMemberBtn");
+
+    // Add new input field on button click
+    addMemberBtn.addEventListener("click", function() {
+        let newItem = document.createElement("div");
+        newItem.classList.add("input-group", "mb-2");
+        newItem.innerHTML = `
+            <input type="text" name="members[]" class="form-control" placeholder="Member Name">
+            <button type="button" class="btn btn-danger remove-member">x</button>
+        `;
+        repeater.appendChild(newItem);
+    });
+
+    // Remove input field when clicking the remove button
+    repeater.addEventListener("click", function(e) {
+        if (e.target.classList.contains("remove-member")) {
+            e.target.closest(".input-group").remove();
+        }
+    });
+    
+</script>

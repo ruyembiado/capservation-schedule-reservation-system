@@ -28,25 +28,6 @@ $(document).ready(function () {
         });
     });
 
-    const credentialsRepeater = document.getElementById("credentialsRepeater");
-    const addCredentialBtn = document.getElementById("addCredentialBtn");
-
-    addCredentialBtn.addEventListener("click", function () {
-        let newItem = document.createElement("div");
-        newItem.classList.add("input-group", "mb-2", "credential-item");
-        newItem.innerHTML = `
-            <input type="text" name="credentials[]" class="form-control" placeholder="Enter credential">
-            <button type="button" class="btn btn-danger remove-credential">x</button>
-        `;
-        credentialsRepeater.appendChild(newItem);
-    });
-
-    credentialsRepeater.addEventListener("click", function (e) {
-        if (e.target.classList.contains("remove-credential")) {
-            e.target.closest(".credential-item").remove();
-        }
-    });
-
     const vacantTimeRepeater = $("#vacantTimeRepeater");
     const addVacantTimeBtn = $("#addVacantTimeBtn");
 
@@ -70,27 +51,6 @@ $(document).ready(function () {
 
     vacantTimeRepeater.on("click", ".remove-vacant-time", function () {
         $(this).closest(".vacant-time-item").remove();
-    });
-
-    const repeater = document.getElementById("membersRepeater");
-    const addMemberBtn = document.getElementById("addMemberBtn");
-
-    // Add new input field on button click
-    addMemberBtn.addEventListener("click", function () {
-        let newItem = document.createElement("div");
-        newItem.classList.add("input-group", "mb-2");
-        newItem.innerHTML = `
-            <input type="text" name="members[]" class="form-control" placeholder="Member Name">
-            <button type="button" class="btn btn-danger remove-member">x</button>
-        `;
-        repeater.appendChild(newItem);
-    });
-
-    // Remove input field when clicking the remove button
-    repeater.addEventListener("click", function (e) {
-        if (e.target.classList.contains("remove-member")) {
-            e.target.closest(".input-group").remove();
-        }
     });
 
     const $selectBox = $("#custom-select");
@@ -209,5 +169,24 @@ $(document).ready(function () {
         width: '100%',
         placeholder: "Select a group",
         allowClear: true
+    });
+
+    const credentialsRepeater = document.getElementById("credentialsRepeater");
+    const addCredentialBtn = document.getElementById("addCredentialBtn");
+
+    addCredentialBtn.addEventListener("click", function () {
+        let newItem = document.createElement("div");
+        newItem.classList.add("input-group", "mb-2", "credential-item");
+        newItem.innerHTML = `
+            <input type="text" name="credentials[]" class="form-control" placeholder="Enter credential">
+            <button type="button" class="btn btn-danger remove-credential">x</button>
+        `;
+        credentialsRepeater.appendChild(newItem);
+    });
+
+    credentialsRepeater.addEventListener("click", function (e) {
+        if (e.target.classList.contains("remove-credential")) {
+            e.target.closest(".credential-item").remove();
+        }
     });
 });
