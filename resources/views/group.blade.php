@@ -35,7 +35,7 @@
                                         <li>{{ $member }}</li>
                                     @endforeach
                                 </td>
-                                <td>{{ $group->created_at->format('Y-m-d g:i A') }}</td>
+                                <td>{{ $group->created_at->format('Y-m-d h:i A') }}</td>
                                 <td>
                                     <a href="/update_group/{{ $group->id }}" class="btn btn-warning btn-sm">Edit</a>
                                     @if (auth()->user()->user_type == 'admin')

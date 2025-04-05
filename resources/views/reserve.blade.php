@@ -55,7 +55,7 @@
 
             @if (
                 ($selectedGroup && ($reservation === null || $reservation->status === 'done')) ||
-                    (auth()->user()->user_type === 'student' && $reservation->status == 'done'))
+                    (auth()->user()->user_type === 'student' && ($reservation !== null && $reservation->status == 'done')))
                 <div class="history-container col-6 text-center m-auto">
                     <ul class="base-timeline m-auto p-0">
                         <li class="base-timeline__item {{ empty($reservation) ? 'base-timeline__item--active' : '' }}"></li>
@@ -94,7 +94,9 @@
                         <span>Your reservation is now set for the {{ $stage }} of your Capstone Defense</span>
                         <h2>{{ $title }}</h2>
                     </div>
-                    @if ($transaction == null || ($transaction->type_of_defense != 'title_defense' && $transaction->type_of_defense != 'pre_oral_defense'))
+                    @if (
+                        $transaction == null ||
+                            ($transaction->type_of_defense != 'title_defense' && $transaction->type_of_defense != 'pre_oral_defense'))
                         <p class="mt-3 mb-2">Input your three titles for checking</p>
                         <form action="{{ route('reservation.store') }}" method="POST">
                             @csrf
@@ -138,9 +140,10 @@
                             @endphp
                             <input type="hidden" name="group_id" value="{{ $selectedGroup ?? auth()->user()->id }}">
                             <input type="hidden" name="type_of_defense" value="{{ $type_of_defense }}">
-                            <input type="hidden" name="capstone_title_id" value="{{ $defendedCapstones[0]->id?:$defendedCapstones['id'] }}">
+                            <input type="hidden" name="capstone_title_id"
+                                value="{{ $defendedCapstones[0]->id ?: $defendedCapstones['id'] }}">
                             <div class="col-12 mb-2">
-                                <textarea disabled class="form-control">{{ $defendedCapstones[0]->title?:$defendedCapstones['title'] }}</textarea>
+                                <textarea disabled class="form-control">{{ $defendedCapstones[0]->title ?: $defendedCapstones['title'] }}</textarea>
                                 @error('title_1')
                                     <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror

@@ -11,6 +11,7 @@ use App\Http\Controllers\PanelistController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\TransactionController;
 
@@ -42,7 +43,6 @@ Route::middleware(['auth'])->group(function () {
     // Admin views
     Route::get('/groups', [AdminController::class, 'groups']);
     Route::get('/instructors', [AdminController::class, 'instructors']);
-    Route::get('/transactions', [AdminController::class, 'transactions']);
 
     // Schedule
     Route::get('/calendar', [ScheduleController::class, 'index']);
@@ -50,7 +50,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/schedules', [ScheduleController::class, 'getSchedules']);
 
     // Reservation
-    Route::get('/reservations', [ReservationController::class, 'index']);
+    Route::get('/reservations', [ReservationController::class, 'index'])->name('reservation.index');
+    Route::get('/reservation/{id}', [ReservationController::class, 'show'])->name('reservation.show');
     Route::get('/reserve', [ReservationController::class, 'create'])->name('reservation.create');
     Route::post('/reserve/select-group', [ReservationController::class, 'storeGroup'])->name('reservation.storeGroup');
     Route::get('/get-all-groups', [ReservationController::class, 'getGroups']);
@@ -90,4 +91,6 @@ Route::middleware(['auth'])->group(function () {
 
     // Activity Log
     Route::get('/activity_log', [ActivityLogController::class, 'index']);
+    Route::get('/notification', [NotificationController::class, 'index']);
+    
 });

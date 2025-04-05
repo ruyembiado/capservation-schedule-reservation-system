@@ -26,7 +26,7 @@
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $panelist->name }}</td>
                                 <td>{{ $panelist->email }}</td>
-                                <td>{{ $panelist->created_at->format('Y-m-d g:i A') }}</td>
+                                <td>{{ $panelist->created_at->format('Y-m-d h:i A') }}</td>
                                 <td>
                                     <a href="/update_panelist/{{ $panelist->id }}" class="btn btn-warning btn-sm">Edit</a>
                                     <form action="{{ route('panelist.destroy', $panelist->id) }}" method="POST" onsubmit="return confirmDelete(event)" style="display: inline;">

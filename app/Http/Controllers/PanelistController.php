@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Capstone;
 use App\Models\Panelist;
 use App\Models\Reservation;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -174,7 +175,27 @@ class PanelistController extends Controller
             return redirect()->back()->with('error', 'Failed to assign panelists.');
         }
 
-        return redirect('/reservations')->with('success', 'Panelists assigned successfully!');
+        if ($request->type_of_action == 'add_panelists') {
+            Notification::create([
+                'user_id' => $reservation->group_id,
+                '_link_id' => $reservation->id,
+                'notification_type' => 'system_alert',
+                'notification_title' => 'Panelist Assigned',
+                'notification_message' => ucwords($reservation->user->username) . '\'s reservation has been approved for scheduling and panelists have been assigned.',
+            ]);
+
+            return redirect('/reservations')->with('success', 'Panelists assigned successfully!');
+        } else if ($request->type_of_action == 'update_panelists') {
+            Notification::create([
+                'user_id' => $reservation->group_id,
+                '_link_id' => $reservation->id,
+                'notification_type' => 'status_update',
+                'notification_title' => 'Panelist Updated',
+                'notification_message' => ucwords($reservation->user->username) . '\'s reservation has been updated and panelists have been re-assigned.',
+            ]);
+
+            return redirect('/reservations')->with('success', 'Panelists updated successfully!');
+        }
     }
 
     /**

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Schedule;
 use App\Models\Reservation;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use App\Models\ReservationHistory;
 use Illuminate\Support\Facades\Validator;
@@ -64,24 +65,36 @@ class ScheduleController extends Controller
                 ->withInput($request->all());
         }
 
-        $data = [
-            'group_id' => $request->group,
-            'schedule_date' => $request->schedule_date,
-            'schedule_time' => $request->schedule_time,
-            'schedule_category' => $request->schedule_category ?: '',
-            'schedule_remarks' => $request->schedule_remarks ?: '',
-        ];
-
-        Schedule::create($data);
-
-        Reservation::where('group_id', $request->group)
+        $reservation = Reservation::where('group_id', $request->group)
             ->where('status', 'approved')
-            ->update(['status' => 'reserved']);
+            ->first();
+
+        if ($reservation) {
+            $reservation->status = 'reserved';
+            $reservation->save();
+
+            Schedule::create([
+                'group_id' => $request->group,
+                'reservation_id' => $reservation->id,
+                'schedule_date' => $request->schedule_date,
+                'schedule_time' => $request->schedule_time,
+                'schedule_category' => $request->schedule_category ?: '',
+                'schedule_remarks' => $request->schedule_remarks ?: '',
+            ]);
+
+            Notification::create([
+                'user_id' => $request->group,
+                '_link_id' => $reservation->id,
+                'notification_type' => 'system_alert',
+                'notification_title' => 'Schedule Created',
+                'notification_message' => ucfirst($reservation->user->username) . '\'s reservation has been scheduled for defense.',
+            ]);
+        }
 
         return redirect()->back()->with('success', 'Schedule created successfully.');
     }
 
-    /**
+    /** 
      * Display the specified resource.
      */
     public function show(Schedule $schedule)

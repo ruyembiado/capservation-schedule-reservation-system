@@ -105,7 +105,7 @@
                 <li class="sidebar-item">
                     <a href="/notification" class="sidebar-link">
                         <i class="fa fa-envelope-open-text"></i>
-                        <span>Notification</span>
+                        <span>Notifications</span>
                     </a>
                 </li>
             </ul>
@@ -126,13 +126,7 @@
                 <div class="navbar-collapse collapse">
                     <ul class="navbar-nav ms-auto">
                         @auth
-                            @if (auth()->user()->user_type == 'admin')
-                                <span class="m-auto me-1">Admin</span>
-                            @elseif (auth()->user()->user_type == 'student')
-                                <span class="m-auto me-1">Student</span>
-                            @elseif (auth()->user()->user_type == 'instructor')
-                                <span class="m-auto me-1">Instructor</span>
-                            @endif
+                            <span class="m-auto me-1">{{ Str::ucfirst(auth()->user()->username) }}</span>
                         @endauth
                         <li class="nav-item dropdown">
                             <a href="#" data-bs-toggle="dropdown" class="nav-stat-icon pe-md-0">
@@ -169,6 +163,11 @@
                 @if (session('success'))
                     <div class="alert alert-success">
                         {{ session('success') }}
+                    </div>
+                @endif
+                @if (session('error'))
+                    <div class="alert alert-danger">
+                        {{ session('error') }}
                     </div>
                 @endif
                 <div class="container-fluid">

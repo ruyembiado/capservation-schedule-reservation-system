@@ -88,6 +88,10 @@
 
                     <form action="{{ route('assign_panelist.store') }}" method="POST">
                         @csrf
+
+                        <input type="hidden" name="type_of_action"
+                            value="{{ empty($selectedPanelists) ? 'add_panelists' : 'update_panelists' }}">
+
                         <input type="hidden" name="reservation_id" value="{{ $reservation->id }}">
                         <div class="col-12 mb-2 d-none">
                             <label for="panelists" class="form-label">Select Panelists</label>
@@ -106,7 +110,7 @@
                             </select>
                         </div>
                         <div class="mt-3 text-end">
-                            <button class="btn btn-primary text-light" type="submit">Assign Panelist</button>
+                            <button class="btn btn-primary text-light" type="submit">{{ empty($selectedPanelists) ? 'Assign Panelists' : 'Update Panelists' }}</button>
                         </div>
                     </form>
                 </div>

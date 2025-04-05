@@ -27,9 +27,14 @@ class Reservation extends Model
     {
         return $this->belongsTo(Capstone::class, 'capstone_id', 'id');
     }
-    
+
     public function reserveBy()
     {
         return $this->belongsTo(User::class, 'reserve_by');
+    }
+
+    public function schedule()
+    {
+        return $this->hasOne(Schedule::class, 'reservation_id');
     }
 }

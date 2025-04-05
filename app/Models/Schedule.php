@@ -12,6 +12,7 @@ class Schedule extends Model
     protected $table = 'schedules';
     protected $fillable = [
         'group_id',
+        'reservation_id',
         'schedule_date',
         'schedule_time',
         'schedule_category',
@@ -21,5 +22,10 @@ class Schedule extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'group_id');
+    }
+
+    public function reservation()
+    {
+        return $this->belongsTo(Reservation::class, 'reservation_id');
     }
 }

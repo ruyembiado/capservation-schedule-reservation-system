@@ -20,6 +20,8 @@ class TransactionController extends Controller
         if (Auth::user()->user_type === 'instructor') {
             $studentIds = User::where('instructor_id', Auth::user()->id)->pluck('id');
             $query = Transaction::whereIn('group_id', $studentIds);
+        } else if (Auth::user()->user_type === 'student') {
+            $query = Transaction::where('group_id', Auth::user()->id);
         } else {
             $query = Transaction::query();
         }

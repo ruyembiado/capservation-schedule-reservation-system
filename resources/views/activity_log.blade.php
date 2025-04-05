@@ -56,7 +56,7 @@
                                 <td>{{ Str::ucfirst($activity_log->user_type) }}</td>
                                 <td>{{ $activity_log->action }}</td>
                                 <td>{{ $activity_log->description }}</td>
-                                <td>{{ \Carbon\Carbon::parse($activity_log['created_at'])->format('Y-m-d g:i A') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($activity_log['created_at'])->format('Y-m-d h:i A') }}</td>
                             </tr>
                         @endforeach
                     </tbody>

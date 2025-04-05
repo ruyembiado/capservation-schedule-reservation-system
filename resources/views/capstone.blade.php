@@ -61,7 +61,7 @@
                                         <li>{{ Str::title(Str::replace('_', ' ', $capstone->capstone_status)) }}</li>
                                     @endforeach
                                 </td>
-                                <td>{{ $groupCapstones->first()->created_at->format('Y-m-d g:i A') }}</td>
+                                <td>{{ $groupCapstones->first()->created_at->format('Y-m-d h:i A') }}</td>
                                 <td>
                                     @if (auth()->user()->user_type === 'admin' || auth()->user()->user_type === 'instructor')
                                         @php

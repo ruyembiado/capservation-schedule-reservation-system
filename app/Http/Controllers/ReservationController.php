@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Capstone;
+use App\Models\Notification;
 use App\Models\User;
 use App\Models\Reservation;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Mockery\Matcher\Not;
 
 class ReservationController extends Controller
 {
@@ -19,7 +21,7 @@ class ReservationController extends Controller
     {
         if (Auth::user()->user_type === 'student') {
             $reservations = Reservation::where('group_id', Auth::user()->id)
-                ->with(['user', 'reserveBy'])
+                ->with(['user', 'reserveBy', 'schedule'])
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(function ($reservation) {
@@ -32,12 +34,16 @@ class ReservationController extends Controller
                         'titles' => $titles,
                         'status' => $reservation->status,
                         'created_at' => $reservation->created_at,
+                        'schedule_date' => $reservation->schedule ? $reservation->schedule->schedule_date : 'No date available',
+                        'schedule_time' => $reservation->schedule && $reservation->schedule->schedule_time
+                            ? \Carbon\Carbon::parse($reservation->schedule->schedule_time)->format('h:i A')
+                            : 'No time available',
                     ];
                 });
         } elseif (Auth::user()->user_type === 'instructor') {
             $studentIds = User::where('instructor_id', Auth::user()->id)->pluck('id');
             $reservations = Reservation::whereIn('group_id', $studentIds)
-                ->with(['user', 'reserveBy'])
+                ->with(['user', 'reserveBy', 'schedule'])
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(function ($reservation) {
@@ -50,10 +56,14 @@ class ReservationController extends Controller
                         'titles' => $titles,
                         'status' => $reservation->status,
                         'created_at' => $reservation->created_at,
+                        'schedule_date' => $reservation->schedule ? $reservation->schedule->schedule_date : 'No date available',
+                        'schedule_time' => $reservation->schedule && $reservation->schedule->schedule_time
+                            ? \Carbon\Carbon::parse($reservation->schedule->schedule_time)->format('h:i A')
+                            : 'No time available',
                     ];
                 });
         } else {
-            $reservations = Reservation::with(['user', 'reserveBy'])
+            $reservations = Reservation::with(['user', 'reserveBy', 'schedule'])
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(function ($reservation) {
@@ -66,6 +76,10 @@ class ReservationController extends Controller
                         'titles' => $titles,
                         'status' => $reservation->status,
                         'created_at' => $reservation->created_at,
+                        'schedule_date' => $reservation->schedule ? $reservation->schedule->schedule_date : 'No date available',
+                        'schedule_time' => $reservation->schedule && $reservation->schedule->schedule_time
+                            ? \Carbon\Carbon::parse($reservation->schedule->schedule_time)->format('h:i A')
+                            : 'No time available',
                     ];
                 });
         }
@@ -246,11 +260,22 @@ class ReservationController extends Controller
                 'type_of_defense' => $type_of_defense,
                 'transaction_code' => $transactionCode
             ]);
+
+            Notification::create([
+                'user_id' => $request->group_id,
+                '_link_id' => $reservation->id,
+                'notification_type' => 'system_alert',
+                'notification_title' => 'Reservation Created',
+                'notification_message' => ucwords($reservation->user->username) . ' has reserved a ' . ucwords(str_replace('_', ' ', $type_of_defense)) . '.',
+            ]);
         }
 
         session()->forget('selected_group');
-
-        return redirect()->back()->with('success', 'Reserved successfully.');
+        if (auth()->user()->user_type === 'admin') {
+            return redirect()->back()->with('success', 'Reserved successfully.');
+        } else {
+            return redirect('/transactions')->with('success', 'Reserved successfully.');
+        }
     }
 
     private function generateTransactionCode()
@@ -266,10 +291,34 @@ class ReservationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Reservation $reservation)
+    public function show(Reservation $reservation, $id)
     {
-        //
+        $reservation = Reservation::with(['user', 'reserveBy', 'schedule'])->find($id);
+
+        if (!$reservation) {
+            return redirect()->route('reservations.index')->with('error', 'Reservation not found.');
+        }
+
+        $titles = $this->getTitlesForReservation($reservation);
+        $reservations = [
+            [
+                'id' => $reservation->id,
+                'group_id' => $reservation->group_id,
+                'user' => $reservation->user,
+                'reserveBy' => $reservation->reserveBy,
+                'titles' => $titles,
+                'status' => $reservation->status,
+                'created_at' => $reservation->created_at,
+                'schedule_date' => $reservation->schedule ? $reservation->schedule->schedule_date : 'No date available',
+                'schedule_time' => $reservation->schedule && $reservation->schedule->schedule_time
+                    ? \Carbon\Carbon::parse($reservation->schedule->schedule_time)->format('h:i A')
+                    : 'No time available',
+            ]
+        ];
+
+        return view('reservation', compact('reservations'));
     }
+
 
     /**
      * Show the form for editing the specified resource.
