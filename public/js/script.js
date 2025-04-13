@@ -13,6 +13,16 @@ $(document).ready(function () {
         $("#dataTable1").DataTable();
     }
 
+    // Initialize DataTable
+    if ($("#dataTable2").length) {
+        $("#dataTable2").DataTable();
+    }
+
+    // Initialize DataTable
+    if ($("#dataTable3").length) {
+        $("#dataTable3").DataTable();
+    }
+
     const selectPanelists = document.getElementById("panelists");
     const panelistCards = document.querySelectorAll(".panelist-card");
 
