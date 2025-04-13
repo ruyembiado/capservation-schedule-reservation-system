@@ -123,22 +123,31 @@
                     start: null
                 },
                 selectAllow: function(selectInfo) {
-                    return selectInfo.start >= new Date().setHours(0, 0, 0, 0);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const startDate = new Date(selectInfo.start);
+                    startDate.setHours(0, 0, 0, 0);
+
+                    return startDate > today;
                 },
                 dateClick: function(info) {
-                    console.log("Date clicked:", info.dateStr);
+                    let clickedDate = new Date(info.dateStr);
+                    let today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    clickedDate.setHours(0, 0, 0, 0);
 
-                    // Ensure the element exists before setting the value
-                    let scheduleDateEl = document.getElementById('schedule_date');
-                    if (scheduleDateEl) {
-                        scheduleDateEl.value = info.dateStr;
+                    if (clickedDate > today) {
+                        let scheduleDateEl = document.getElementById('schedule_date');
+                        if (scheduleDateEl) {
+                            scheduleDateEl.value = info.dateStr;
+                        }
                     }
                 },
                 dayCellDidMount: function(info) {
                     let today = new Date().setHours(0, 0, 0, 0);
                     let cellDate = new Date(info.date).setHours(0, 0, 0, 0);
 
-                    if (cellDate < today) {
+                    if (cellDate <= today) {
                         info.el.style.backgroundColor = "#f8d7da";
                         info.el.style.color = "#6c757d";
                         info.el.style.pointerEvents = "none";
