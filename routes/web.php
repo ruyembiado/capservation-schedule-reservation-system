@@ -92,5 +92,7 @@ Route::middleware(['auth'])->group(function () {
     // Activity Log
     Route::get('/activity_log', [ActivityLogController::class, 'index']);
     Route::get('/notification', [NotificationController::class, 'index']);
-    
+
+    // Custom Reminders
+    Route::post('/create-custom-reminder', [NotificationController::class, 'storeCustomReminder'])->name('custom.reminder');
 });

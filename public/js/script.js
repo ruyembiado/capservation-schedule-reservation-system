@@ -23,6 +23,11 @@ $(document).ready(function () {
         $("#dataTable3").DataTable();
     }
 
+     // Initialize DataTable
+     if ($("#dataTable4").length) {
+        $("#dataTable4").DataTable();
+    }
+
     const selectPanelists = document.getElementById("panelists");
     const panelistCards = document.querySelectorAll(".panelist-card");
 

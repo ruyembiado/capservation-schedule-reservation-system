@@ -19,8 +19,16 @@
                         aria-controls="update-status" aria-selected="false">Update Status</a>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <a class="nav-link" id="reminders-tab" data-bs-toggle="tab" href="#read" role="tab"
-                        aria-controls="read" aria-selected="false">Reminders</a>
+                    <a class="nav-link" id="reminders-tab" data-bs-toggle="tab" href="#reminders" role="tab"
+                        aria-controls="reminders" aria-selected="false">Reminders</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="custom-reminder-tab" data-bs-toggle="tab" href="#custom-reminder" role="tab"
+                        aria-controls="custom-reminder" aria-selected="false">Custom Reminders</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="custom-reminder-tab" data-bs-toggle="tab" href="#create-reminder" role="tab"
+                        aria-controls="create-reminder" aria-selected="false">Create Custom Reminder</a>
                 </li>
             </ul>
 
@@ -40,23 +48,25 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($notifications->where('notification_type', 'system_alert') as $notification)
-                                    <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $notification->notification_title }}</td>
-                                        <td>{{ $notification->notification_message }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($notification->created_at)->format('Y-m-d h:i A') }}
-                                        </td>
-                                        <td>
-                                            <a href="/reservation/{{ $notification->_link_id }}"
-                                                class="btn btn-secondary btn-sm">View</a>
-                                        </td>
-                                    </tr>
-                                @empty
+                                @if (empty($notifications->where('notification_type', 'system_alert')))
                                     <tr>
                                         <td colspan="5" class="text-center">No notifications available.</td>
                                     </tr>
-                                @endforelse
+                                @else
+                                    @foreach ($notifications->where('notification_type', 'system_alert') as $notification)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $notification->notification_title }}</td>
+                                            <td>{{ $notification->notification_message }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($notification->created_at)->format('Y-m-d h:i A') }}
+                                            </td>
+                                            <td>
+                                                <a href="/reservation/{{ $notification->_link_id }}"
+                                                    class="btn btn-secondary btn-sm">View</a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @endif
                             </tbody>
                         </table>
                     </div>
@@ -76,30 +86,32 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($notifications->where('notification_type', 'status_update') as $notification)
-                                    <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $notification->notification_title }}</td>
-                                        <td>{{ $notification->notification_message }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($notification->created_at)->format('Y-m-d h:i A') }}
-                                        </td>
-                                        <td>
-                                            <a href="/reservation/{{ $notification->_link_id }}"
-                                                class="btn btn-secondary btn-sm">View</a>
-                                        </td>
-                                    </tr>
-                                @empty
+                                @if (empty($notifications->where('notification_type', 'update_status')))
                                     <tr>
                                         <td colspan="5" class="text-center">No notifications available.</td>
                                     </tr>
-                                @endforelse
+                                @else
+                                    @foreach ($notifications->where('notification_type', 'update_status') as $notification)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $notification->notification_title }}</td>
+                                            <td>{{ $notification->notification_message }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($notification->created_at)->format('Y-m-d h:i A') }}
+                                            </td>
+                                            <td>
+                                                <a href="/reservation/{{ $notification->_link_id }}"
+                                                    class="btn btn-secondary btn-sm">View</a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @endif
                             </tbody>
                         </table>
                     </div>
                 </div>
 
                 <!-- Reminders Tab -->
-                <div class="tab-pane fade" id="read" role="tabpanel" aria-labelledby="reminders-tab">
+                <div class="tab-pane fade" id="reminders" role="tabpanel" aria-labelledby="reminders-tab">
                     <div class="table-responsive mt-3">
                         <table class="table table-bordered" id="dataTable3" width="100%" cellspacing="0">
                             <thead>
@@ -112,26 +124,111 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($notifications->where('notification_type', 'reminder') as $notification)
-                                    <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $notification->notification_title }}</td>
-                                        <td>{{ $notification->notification_message }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($notification->created_at)->format('Y-m-d h:i A') }}
-                                        </td>
-                                        <td>
-                                            <a href="/reservation/{{ $notification->_link_id }}"
-                                                class="btn btn-secondary btn-sm">View</a>
-                                        </td>
-                                    </tr>
-                                @empty
+                                @if (empty($notifications->where('notification_type', 'reminder')))
                                     <tr>
                                         <td colspan="5" class="text-center">No notifications available.</td>
                                     </tr>
-                                @endforelse
+                                @else
+                                    @foreach ($notifications->where('notification_type', 'reminder') as $notification)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $notification->notification_title }}</td>
+                                            <td>{{ $notification->notification_message }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($notification->created_at)->format('Y-m-d h:i A') }}
+                                            </td>
+                                            <td>
+                                                <a href="/reservation/{{ $notification->_link_id }}"
+                                                    class="btn btn-secondary btn-sm">View</a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @endif
                             </tbody>
                         </table>
                     </div>
+                </div>
+
+                <!-- Custom Reminders Tab -->
+                <div class="tab-pane fade" id="custom-reminder" role="tabpanel" aria-labelledby="custom-reminder-tab">
+                    <div class="table-responsive mt-3">
+                        <table class="table table-bordered" id="dataTable4" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>No.</th>
+                                    <th>Title Status</th>
+                                    <th>Message</th>
+                                    <th>Recipient</th>
+                                    <th>Defense Stage</th>
+                                    <th>Schedule Date & Time</th>
+                                    <th>Date Created</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if ($customReminders->isEmpty())
+                                    <tr>
+                                        <td colspan="7" class="text-center">No notifications available.</td>
+                                    </tr>
+                                @else
+                                    @foreach ($customReminders as $customReminder)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $customReminder->title_status }}</td>
+                                            <td>{{ $customReminder->message }}</td>
+                                            <td>
+                                                {{ $customReminder->group->username ?? 'Unknown' }}
+                                            </td>
+                                            <td>{{ $customReminder->defense_stage ?? '—' }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($customReminder->schedule_datetime)->format('Y-m-d h:i A') }}
+                                            </td>
+                                            <td>{{ \Carbon\Carbon::parse($customReminder->created_at)->format('Y-m-d h:i A') }}
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Create Custom Reminders Tab -->
+                <div class="tab-pane fade" id="create-reminder" role="tabpanel" aria-labelledby="custom-reminders-tab">
+                    <form action="{{ route('custom.reminder') }}" method="POST" class="col-12 col-md-8 col-xl-4 m-auto py-5">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="title_status" class="form-label">Title Status</label>
+                            <input type="text" name="title_status" id="title_status" class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Message</label>
+                            <textarea name="message" id="message" class="form-control" rows="4" required></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="recipient" class="form-label">Recipient</label>
+                            <select name="group_id" id="reserve_group" class="form-select select2" required>
+                                <option value="">Select Group</option>
+                                @foreach ($groups as $group)
+                                    <option value="{{ $group->id }}">{{ ucfirst($group->username) }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="defense_stage" class="form-label">Defense Stage (Optional)</label>
+                            <input type="text" name="defense_stage" id="defense_stage" class="form-control">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="schedule_datetime" class="form-label">Schedule Date & Time</label>
+                            <input type="datetime-local" name="schedule_datetime" id="schedule_datetime"
+                                class="form-control" required>
+                        </div>
+
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">Create Reminder</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
