@@ -108,6 +108,14 @@
                         <span>Notifications</span>
                     </a>
                 </li>
+                @if (auth()->user()->user_type == 'student')
+                    <li class="sidebar-item">
+                        <a href="/capstone_history" class="sidebar-link">
+                            <i class="fa-solid fa-timeline"></i>
+                            <span>Capstone History</span>
+                        </a>
+                    </li>
+                @endif
             </ul>
         </aside>
         <div class="main bg-gradient">
@@ -150,7 +158,8 @@
                                     Activity Log
                                 </a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="/logout" data-toggle="modal" data-target="#logoutModal">
+                                <a class="dropdown-item" href="/logout" data-toggle="modal"
+                                    data-target="#logoutModal">
                                     <i class="text-primary fas fa-sign-out-alt fa-sm fa-fw mr-2"></i>
                                     Logout
                                 </a>
@@ -175,7 +184,7 @@
                 </div>
             </main>
             <footer class="footer py-3 shadow text-center">
-                <div class="d-flex justify-content-between px-3">
+                <div class="d-flex justify-content-center px-3">
                     <div class="">© 2025 Capservation. All rights reserved.</div>
                 </div>
             </footer>

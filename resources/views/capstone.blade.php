@@ -83,7 +83,6 @@
                                         @endif
                                     @endif
                                 </td>
-
                             </tr>
                         @endforeach
                     </tbody>

@@ -31,7 +31,7 @@
                                 @php
                                     $today = now()->toDateString();
                                 @endphp
-                                <select name="title_status[]" @if (($reservation->status == 'pending' || $reservation->status == 'reserved') && $today <= optional($schedule)->schedule_date) disabled @endif
+                                <select name="title_status[]" @if (($reservation->status == 'pending' || $reservation->status == 'reserved') && $today < optional($schedule)->schedule_date) disabled @endif
                                     class="form-select @error('title_status_{{ $loop->iteration }}') is-invalid @enderror">
                                     <option value="defended" @if ($capstone->title_status == 'defended') selected @endif>Defended
                                     </option>

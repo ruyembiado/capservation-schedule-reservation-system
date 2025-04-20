@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Capstone;
 use App\Models\Schedule;
 use App\Models\Reservation;
+use App\Models\Transaction;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -110,5 +111,15 @@ class CapstoneController extends Controller
     public function destroy(Capstone $capstone)
     {
         //
+    }
+
+    public function history()
+    {
+        $reservations = Reservation::with(['schedule', 'transaction', 'reservationHistory'])
+            ->where('group_id', auth()->id())
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        return view('capstone_history', compact('reservations'));
     }
 }

@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Transaction;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
@@ -11,9 +10,9 @@ use App\Http\Controllers\PanelistController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\InstructorController;
 use App\Http\Controllers\ActivityLogController;
-use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -95,4 +94,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Custom Reminders
     Route::post('/create-custom-reminder', [NotificationController::class, 'storeCustomReminder'])->name('custom.reminder');
+
+    // Capstone history
+    Route::get('/capstone_history', [CapstoneController::class, 'history'])->name('capstone.history');
 });
