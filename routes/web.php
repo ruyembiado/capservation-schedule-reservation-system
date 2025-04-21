@@ -74,6 +74,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/view_panelists/{id}', [PanelistController::class, 'viewPanelist'])->name('view_panelists');
 
     // Group
+    Route::get('/view_group/{id}', [GroupController::class, 'viewGroup']);
     Route::get('/update_group/{id}', [GroupController::class, 'updateGroupForm']);
     Route::post('/update_group/{id}', [GroupController::class, 'updateGroup'])->name('group.update');
     Route::delete('/delete_group/{id}', [GroupController::class, 'deleteGroup'])->name('groups.delete');
@@ -96,5 +97,5 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/create-custom-reminder', [NotificationController::class, 'storeCustomReminder'])->name('custom.reminder');
 
     // Capstone history
-    Route::get('/capstone_history', [CapstoneController::class, 'history'])->name('capstone.history');
+    Route::get('/capstone_history/{id?}', [CapstoneController::class, 'history'])->name('capstone.history');
 });

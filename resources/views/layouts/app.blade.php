@@ -139,7 +139,6 @@
                         <li class="nav-item dropdown">
                             <a href="#" data-bs-toggle="dropdown" class="nav-stat-icon pe-md-0">
                                 <a data-bs-toggle="dropdown" class="nav-stat-icon pe-md-0"
-                                    title="Google, Chromium project, BSD &lt;http://opensource.org/licenses/bsd-license.php&gt;, via Wikimedia Commons"
                                     href="https://commons.wikimedia.org/wiki/File:Profile_avatar_placeholder_large.png">
                                     <i class="text-primary fas fa-user-circle avatar"></i>
                                 </a>

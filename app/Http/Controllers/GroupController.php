@@ -9,6 +9,14 @@ use Illuminate\Support\Facades\Validator;
 
 class GroupController extends Controller
 {
+    public function viewGroup($id)
+    {
+        $group = User::where('id', $id)->get()->first();
+        $instructors = User::where('user_type', 'instructor')->get();
+
+        return view('view_group', compact('group', 'instructors'));
+    }
+
     public function updateGroupForm($id)
     {
         $group = User::where('id', $id)->get()->first();

@@ -113,12 +113,19 @@ class CapstoneController extends Controller
         //
     }
 
-    public function history()
+    public function history($id = '')
     {
-        $reservations = Reservation::with(['schedule', 'transaction', 'reservationHistory'])
-            ->where('group_id', auth()->id())
-            ->orderBy('created_at', 'asc')
-            ->get();
+        if (auth()->user()->user_type == 'student') {
+            $reservations = Reservation::with(['schedule', 'transaction', 'reservationHistory'])
+                ->where('group_id', auth()->id())
+                ->orderBy('created_at', 'asc')
+                ->get();
+        } else {
+            $reservations = Reservation::with(['schedule', 'transaction', 'reservationHistory'])
+                ->where('group_id', $id)
+                ->orderBy('created_at', 'asc')
+                ->get();
+        }
 
         return view('capstone_history', compact('reservations'));
     }
