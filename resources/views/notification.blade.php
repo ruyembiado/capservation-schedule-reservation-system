@@ -26,10 +26,12 @@
                     <a class="nav-link" id="custom-reminder-tab" data-bs-toggle="tab" href="#custom-reminder" role="tab"
                         aria-controls="custom-reminder" aria-selected="false">Custom Reminders</a>
                 </li>
-                <li class="nav-item" role="presentation">
-                    <a class="nav-link" id="custom-reminder-tab" data-bs-toggle="tab" href="#create-reminder" role="tab"
-                        aria-controls="create-reminder" aria-selected="false">Create Custom Reminder</a>
-                </li>
+                @if (auth()->user()->user_type == 'admin')
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="custom-reminder-tab" data-bs-toggle="tab" href="#create-reminder"
+                            role="tab" aria-controls="create-reminder" aria-selected="false">Create Custom Reminder</a>
+                    </li>
+                @endif
             </ul>
 
             <!-- Tab content -->
