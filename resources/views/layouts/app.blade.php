@@ -42,6 +42,14 @@
                         <span>Dashboard</span>
                     </a>
                 </li>
+                @if (auth()->user()->user_type == 'instructor')
+                    <li class="sidebar-item">
+                        <a href="/code" class="sidebar-link">
+                            <i class="fa fa-tag"></i>
+                            <span>Instructor Code</span>
+                        </a>
+                    </li>
+                @endauth
                 @if (auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'instructor')
                     <li class="sidebar-item">
                         <a href="/groups" class="sidebar-link">
@@ -116,11 +124,11 @@
                         </a>
                     </li>
                 @endif
-            </ul>
-        </aside>
-        <div class="main bg-gradient">
-            <nav class="navbar navbar-expand px-4 py-3">
-                {{-- <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-md-0 my-1 mw-100 navbar-search">
+        </ul>
+    </aside>
+    <div class="main bg-gradient">
+        <nav class="navbar navbar-expand px-4 py-3">
+            {{-- <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-md-0 my-1 mw-100 navbar-search">
                     <div class="input-group">
                         <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
                             aria-label="Search" aria-describedby="basic-addon2">
@@ -131,102 +139,102 @@
                         </div>
                     </div>
                 </form> --}}
-                <div class="navbar-collapse collapse">
-                    <ul class="navbar-nav ms-auto">
-                        @auth
-                            <span class="m-auto me-1">{{ Str::ucfirst(auth()->user()->username) }}</span>
-                        @endauth
-                        <li class="nav-item dropdown">
-                            <a href="#" data-bs-toggle="dropdown" class="nav-stat-icon pe-md-0">
-                                <a data-bs-toggle="dropdown" class="nav-stat-icon pe-md-0"
-                                    href="https://commons.wikimedia.org/wiki/File:Profile_avatar_placeholder_large.png">
-                                    <i class="text-primary fas fa-user-circle avatar"></i>
-                                </a>
+            <div class="navbar-collapse collapse">
+                <ul class="navbar-nav ms-auto">
+                    @auth
+                        <span class="m-auto me-1">{{ Str::ucfirst(auth()->user()->username) }}</span>
+                    @endauth
+                    <li class="nav-item dropdown">
+                        <a href="#" data-bs-toggle="dropdown" class="nav-stat-icon pe-md-0">
+                            <a data-bs-toggle="dropdown" class="nav-stat-icon pe-md-0"
+                                href="https://commons.wikimedia.org/wiki/File:Profile_avatar_placeholder_large.png">
+                                <i class="text-primary fas fa-user-circle avatar"></i>
                             </a>
-                            <div class="dropdown-menu dropdown-menu-end rounded animated--fade-in">
-                                <a class="dropdown-item" href="#">
-                                    <i class="text-primary fas fa-user fa-sm fa-fw mr-2"></i>
-                                    Profile
-                                </a>
-                                {{-- <a class="dropdown-item" href="#">
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end rounded animated--fade-in">
+                            <a class="dropdown-item" href="#">
+                                <i class="text-primary fas fa-user fa-sm fa-fw mr-2"></i>
+                                Profile
+                            </a>
+                            {{-- <a class="dropdown-item" href="#">
                                     <i class="text-primary fas fa-cogs fa-sm fa-fw mr-2"></i>
                                     Settings
                                 </a> --}}
-                                <a class="dropdown-item" href="/activity_log">
-                                    <i class="text-primary fas fa-list fa-sm fa-fw mr-2"></i>
-                                    Activity Log
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="/logout" data-toggle="modal"
-                                    data-target="#logoutModal">
-                                    <i class="text-primary fas fa-sign-out-alt fa-sm fa-fw mr-2"></i>
-                                    Logout
-                                </a>
-                            </div>
-                        </li>
-                    </ul>
+                            <a class="dropdown-item" href="/activity_log">
+                                <i class="text-primary fas fa-list fa-sm fa-fw mr-2"></i>
+                                Activity Log
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="/logout" data-toggle="modal"
+                                data-target="#logoutModal">
+                                <i class="text-primary fas fa-sign-out-alt fa-sm fa-fw mr-2"></i>
+                                Logout
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <main class="content px-3 py-4" id="page-top">
+            @if (session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
                 </div>
-            </nav>
-            <main class="content px-3 py-4" id="page-top">
-                @if (session('success'))
-                    <div class="alert alert-success">
-                        {{ session('success') }}
-                    </div>
-                @endif
-                @if (session('error'))
-                    <div class="alert alert-danger">
-                        {{ session('error') }}
-                    </div>
-                @endif
-                <div class="container-fluid">
-                    @yield('content')
+            @endif
+            @if (session('error'))
+                <div class="alert alert-danger">
+                    {{ session('error') }}
                 </div>
-            </main>
-            <footer class="footer py-3 shadow text-center">
-                <div class="d-flex justify-content-center px-3">
-                    <div class="">© 2025 Capservation. All rights reserved.</div>
-                </div>
-            </footer>
-        </div>
+            @endif
+            <div class="container-fluid">
+                @yield('content')
+            </div>
+        </main>
+        <footer class="footer py-3 shadow text-center">
+            <div class="d-flex justify-content-center px-3">
+                <div class="">© 2025 Capservation. All rights reserved.</div>
+            </div>
+        </footer>
     </div>
+</div>
 
-    <!-- Bootstrap Script -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
-    </script>
+<!-- Bootstrap Script -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
+</script>
 
-    <!-- Fontawesome Script -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/js/all.min.js"
-        integrity="sha512-6sSYJqDreZRZGkJ3b+YfdhB3MzmuP9R7X1QZ6g5aIXhRvR1Y/N/P47jmnkENm7YL3oqsmI6AK+V6AD99uWDnIw=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- Fontawesome Script -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/js/all.min.js"
+    integrity="sha512-6sSYJqDreZRZGkJ3b+YfdhB3MzmuP9R7X1QZ6g5aIXhRvR1Y/N/P47jmnkENm7YL3oqsmI6AK+V6AD99uWDnIw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-    <!-- jQuery Script -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
-        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- jQuery Script -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+    integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-    <!-- Datatables -->
-    <script src="https://cdn.datatables.net/2.1.6/js/dataTables.js"></script>
+<!-- Datatables -->
+<script src="https://cdn.datatables.net/2.1.6/js/dataTables.js"></script>
 
-    <!-- Select2 Script -->
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<!-- Select2 Script -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-    <!-- FullCalendar JS -->
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+<!-- FullCalendar JS -->
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
 
-    <!--Custom Script -->
-    <script src="{{ asset('js/script.js') }}"></script>
-    <script>
-        function hideAlerts(delay = 3000) {
-            console.log('Hiding alerts');
-            if ($('.alert-success, .alert-danger').length) {
-                setTimeout(function() {
-                    $('.alert-success, .alert-danger').fadeOut('slow');
-                }, delay);
-            }
+<!--Custom Script -->
+<script src="{{ asset('js/script.js') }}"></script>
+<script>
+    function hideAlerts(delay = 3000) {
+        console.log('Hiding alerts');
+        if ($('.alert-success, .alert-danger').length) {
+            setTimeout(function() {
+                $('.alert-success, .alert-danger').fadeOut('slow');
+            }, delay);
         }
-        hideAlerts();
-    </script>
+    }
+    hideAlerts();
+</script>
 
 </body>
 

@@ -33,6 +33,7 @@ class User extends Authenticatable
         'instructor_id',
         'user_type',
         'status',
+        'code',
     ];
 
     /**

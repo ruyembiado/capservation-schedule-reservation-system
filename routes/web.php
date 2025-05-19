@@ -98,4 +98,8 @@ Route::middleware(['auth'])->group(function () {
 
     // Capstone history
     Route::get('/capstone_history/{id?}', [CapstoneController::class, 'history'])->name('capstone.history');
+
+    // Instructor Code
+    Route::get('/code', [AuthController::class, 'code']);
+    Route::post('/add-code', [AuthController::class, 'addCode'])->name('code.create');
 });

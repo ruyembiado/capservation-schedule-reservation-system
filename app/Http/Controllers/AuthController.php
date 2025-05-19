@@ -178,4 +178,33 @@ class AuthController extends Controller
             return redirect('/')->withErrors(['error' => 'Unauthorized access. Please login.']);
         }
     }
+
+    public function code()
+    {
+        $instructor_id = auth()->user()->id;
+
+        $user = User::where('id', $instructor_id)
+            ->where('user_type', 'instructor')
+            ->first();
+
+        return view('code', compact('user'));
+    }
+
+    public function addCode(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'code' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $user = User::findOrFail($request->instructor_id);
+        $user->code = $request->code;
+        $user->save();
+
+        return redirect('/code')->with('success', 'Code added successfully!');
+    }
 }
