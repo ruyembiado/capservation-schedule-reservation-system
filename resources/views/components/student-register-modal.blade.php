@@ -45,8 +45,11 @@
                                     <label for="password_confirmation" class="form-label">Confirm Password</label>
                                     <input type="password" name="password_confirmation"
                                         placeholder="Confirm your passsword"
-                                        class="form-control @error('password') is-invalid @enderror"
+                                        class="form-control @error('password_confirmation') is-invalid @enderror"
                                         id="password_confirmation">
+                                    @error('password_confirmation')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-12 mb-2">
                                     <label for="members" class="form-label">Members</label>
@@ -95,8 +98,8 @@
                                 <div class="col-12 mb-2">
                                     <label for="yearsection" class="form-label">Year & Section</label>
                                     <input type="text" name="yearsection" placeholder="Enter your year and section"
-                                        class="form-control @error('yearsection') is-invalid @enderror" id="yearsection"
-                                        value="{{ old('yearsection') }}">
+                                        class="form-control @error('yearsection') is-invalid @enderror"
+                                        id="yearsection" value="{{ old('yearsection') }}">
                                     @error('yearsection')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
@@ -112,7 +115,7 @@
                                     @enderror
                                 </div>
                                 <div class="col-12 mb-2">
-                                    <label for="instructor" class="form-label">Instructor</label>
+                                    {{-- <label for="instructor" class="form-label">Instructor</label>
                                     <div class="custom-select-container">
                                         <div class="custom-select" id="custom-select">-- Select an instructor --</div>
                                         <div class="custom-dropdown" id="custom-dropdown">
@@ -134,9 +137,13 @@
                                                 {{ $instructor->name }}
                                             </option>
                                         @endforeach
-                                    </select>
+                                    </select> --}}
+                                    <label for="code" class="form-label">Instructor Code</label>
+                                    <input type="text" name="code" placeholder="Enter your instructor code"
+                                        class="form-control @error('code') is-invalid @enderror" id="code"
+                                        value="{{ old('code') }}">
 
-                                    @error('instructor')
+                                    @error('code')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -188,5 +195,4 @@
             e.target.closest(".input-group").remove();
         }
     });
-    
 </script>

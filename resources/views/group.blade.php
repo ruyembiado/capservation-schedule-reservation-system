@@ -37,16 +37,18 @@
                                 </td>
                                 <td>{{ $group->created_at->format('Y-m-d h:i A') }}</td>
                                 <td>
-                                    <a href="/view_group/{{ $group->id }}" class="btn btn-secondary btn-sm">View</a>
-                                    <a href="/update_group/{{ $group->id }}" class="btn btn-warning btn-sm">Edit</a>
-                                    @if (auth()->user()->user_type == 'admin')
-                                        <form action="{{ route('groups.delete', $group->id) }}" method="POST"
-                                            onsubmit="return confirmDelete(event)" style="display: inline;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                        </form>
-                                    @endif
+                                    <div class="d-flex gap-1">
+                                        <a href="/view_group/{{ $group->id }}" class="btn btn-secondary btn-sm">View</a>
+                                        <a href="/update_group/{{ $group->id }}" class="btn btn-warning btn-sm">Edit</a>
+                                        @if (auth()->user()->user_type == 'admin')
+                                            <form action="{{ route('groups.delete', $group->id) }}" method="POST"
+                                                onsubmit="return confirmDelete(event)" style="display: inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                            </form>
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach
