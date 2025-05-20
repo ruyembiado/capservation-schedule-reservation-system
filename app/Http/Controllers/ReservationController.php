@@ -137,7 +137,7 @@ class ReservationController extends Controller
                 $capstoneIds = json_decode($reservation->capstone_title_id ?? '[]', true);
                 if (is_array($capstoneIds)) {
                     $defendedCapstones = Capstone::whereIn('id', $capstoneIds)
-                        ->where('title_status', 'defended')
+                        ->whereIn('title_status', ['defended', 'pending'])
                         ->get();
                 }
             }
