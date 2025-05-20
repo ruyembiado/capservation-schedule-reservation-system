@@ -71,11 +71,20 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
+        // Instructor code validation for students
+        if ($request->code != null) {
+            $user = User::where('code', $request->code)->first();
+            if ($user) {
+                $instructor_id = $user->id;
+            }
+        }
+
         // Define validation rules based on user type
         $rules = [
             'email' => 'required|email|unique:users,email',
             'username' => 'required|string|unique:users,username',
-            'password' => 'required|confirmed|min:6',
+            'password' => 'required|min:6',
+            'password_confirmation' => 'required|same:password',
             'user_type' => 'required|in:student,instructor',
         ];
 
@@ -85,7 +94,7 @@ class AuthController extends Controller
                 'program' => 'required|string',
                 'yearsection' => 'required|string',
                 'capstone_adviser' => 'required|string',
-                'instructor' => 'required|string',
+                'code' => 'required|string|exists:users,code',
                 'members.*' => 'required|string',
             ];
         }
@@ -130,7 +139,7 @@ class AuthController extends Controller
                 'program' => $request->program,
                 'year_section' => $request->yearsection,
                 'capstone_adviser' => $request->capstone_adviser,
-                'instructor_id' => $request->instructor,
+                'instructor_id' => $instructor_id,
                 'members' => json_encode($request->members ?? []),
             ];
         } elseif ($request->user_type === 'instructor') {
@@ -190,7 +199,8 @@ class AuthController extends Controller
         return view('code', compact('user'));
     }
 
-    public function addCode(Request $request) {
+    public function addCode(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'code' => 'required|string',
         ]);
