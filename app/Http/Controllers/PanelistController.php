@@ -153,7 +153,7 @@ class PanelistController extends Controller
     public function assignPanelists(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'panelists' => 'required|array|size:4',
+            'panelists' => 'required|array|min:5|max:6',
         ]);
 
         if ($validator->fails()) {

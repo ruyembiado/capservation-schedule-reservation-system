@@ -4,7 +4,7 @@
     <!-- Start the content section -->
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0">Instructors</h1>
+        <h1 class="h3 mb-0">Capstone Instructors</h1>
     </div>
     <div class="card shadow mb-4">
         <div class="card-body">

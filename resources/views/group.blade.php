@@ -16,7 +16,7 @@
                             <th>Group Name</th>
                             <th>Email</th>
                             <th>Program</th>
-                            <th>Instructor</th>
+                            <th>Capstone Instructor</th>
                             <th>Members</th>
                             <th>Date Created</th>
                             <th>Action</th>

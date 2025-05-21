@@ -49,7 +49,7 @@
                     </div>
                     
                     <div class="mb-4">
-                        <h6 style="font-weight: 700">Instructor</h6>
+                        <h6 style="font-weight: 700">Capstone Instructor</h6>
                         <p class="mb-0">
                             @foreach($instructors as $instructor)
                                 @if($instructor->id == $group->instructor_id)

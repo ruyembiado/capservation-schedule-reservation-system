@@ -138,7 +138,7 @@
                                             </option>
                                         @endforeach
                                     </select> --}}
-                                    <label for="code" class="form-label">Instructor Code</label>
+                                    <label for="code" class="form-label">Capstone Instructor Code</label>
                                     <input type="text" name="code" placeholder="Enter your instructor code"
                                         class="form-control @error('code') is-invalid @enderror" id="code"
                                         value="{{ old('code') }}">

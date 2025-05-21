@@ -55,7 +55,8 @@
 
             @if (
                 ($selectedGroup && ($reservation === null || $reservation->status === 'done')) ||
-                    (auth()->user()->user_type === 'student' && ($reservation !== null && $reservation->status == 'done')))
+                    ((auth()->user()->user_type === 'student' && $reservation === null) ||
+                        ($reservation !== null && $reservation->status == 'done')))
                 <div class="history-container col-6 text-center m-auto">
                     <ul class="base-timeline m-auto p-0">
                         <li class="base-timeline__item {{ empty($reservation) ? 'base-timeline__item--active' : '' }}"></li>
