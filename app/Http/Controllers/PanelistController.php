@@ -87,48 +87,69 @@ class PanelistController extends Controller
      */
     public function store(Request $request)
     {
-        // Remove empty credentials before validation
-        $request->merge([
-            'credentials' => array_filter($request->credentials, function ($credential) {
-                return !empty($credential);
-            })
-        ]);
+        // Clean up empty credentials
+        if (is_array($request->credentials)) {
+            $request->merge([
+                'credentials' => array_filter($request->credentials, function ($credential) {
+                    return !empty($credential);
+                })
+            ]);
+        } else {
+            $request->merge(['credentials' => []]);
+        }
 
+        // Custom messages
         $messages = [];
+
         if ($request->credentials) {
             foreach ($request->credentials as $index => $credential) {
                 $messages["credentials.$index.required"] = "Credential " . ($index + 1) . " is required.";
             }
         }
 
-        if ($request->vacant_time['start_time']) {
+        if (isset($request->vacant_time['start_time'])) {
             foreach ($request->vacant_time['start_time'] as $index => $startTime) {
                 $messages["vacant_time.end_time.$index.after"] = "The vacant time end time " . ($index + 1) . " must be a time after start time " . ($index + 1) . ".";
             }
         }
 
+        // Validation
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'email' => 'required|email',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:panelists,email',
             'vacant_time.day.*' => 'required',
             'vacant_time.start_time.*' => 'required|date_format:H:i',
-            'vacant_time.end_time.*' => 'required|date_format:H:i|after:vacant_time.start_time.*',
+            'vacant_time.end_time.*' => 'required|date_format:H:i',
             'credentials.*' => 'required|string|max:255',
         ], $messages);
 
-        if ($validator->fails()) {
-            // dd($validator->errors());
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput($request->all());
+        // Manual time comparison before checking `fails()`
+        if (isset($request->vacant_time['start_time'])) {
+            foreach ($request->vacant_time['start_time'] as $index => $startTime) {
+                $endTime = $request->vacant_time['end_time'][$index] ?? null;
+                if ($endTime && strtotime($endTime) <= strtotime($startTime)) {
+                    $validator->after(function ($validator) use ($index) {
+                        $validator->errors()->add(
+                            "vacant_time.end_time.$index",
+                            "The vacant time end time " . ($index + 1) . " must be a time after start time " . ($index + 1) . "."
+                        );
+                    });
+                }
+            }
         }
 
-        $panelist = Panelist::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-        ]);
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
 
+        // Save Panelist
+        $panelist = new Panelist();
+        $panelist->name = $request->name;
+        $panelist->email = $request->email;
+
+        // Save vacant times if provided
         if ($request->has('vacant_time')) {
             $vacantTimes = [];
             foreach ($request->vacant_time['day'] as $index => $day) {
@@ -139,13 +160,14 @@ class PanelistController extends Controller
                 ];
             }
             $panelist->vacant_time = json_encode($vacantTimes);
-            $panelist->save();
         }
 
+        // Save credentials
         if ($request->has('credentials')) {
             $panelist->credentials = json_encode($request->credentials);
-            $panelist->save();
         }
+
+        $panelist->save();
 
         return redirect()->back()->with('success', 'Panelist added successfully!');
     }

@@ -88,4 +88,24 @@ class TransactionController extends Controller
     {
         //
     }
+
+    public function uploadProof(Request $request)
+    {
+        $request->validate([
+            'transaction_id' => 'required|exists:transactions,id',
+            'proof' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+        ]);
+
+        $transaction = Transaction::findOrFail($request->transaction_id);
+
+        $filename = time() . '_' . $request->file('proof')->getClientOriginalName();
+        $request->file('proof')->move(public_path('proofs'), $filename);
+
+        // Save path to DB (relative to /public)
+        $transaction->proof_file = 'proofs/' . $filename;
+        $transaction->save();
+
+
+        return redirect()->back()->with('success', 'Proof of payment uploaded successfully.');
+    }
 }

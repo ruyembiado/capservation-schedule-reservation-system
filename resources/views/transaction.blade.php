@@ -47,12 +47,12 @@
                         <tr>
                             <th>No.</th>
                             <th>Group Name</th>
-                            <th>Members</th>
+                            {{-- <th>Members</th> --}}
                             <th>Program</th>
                             <th>Type of Defense</th>
                             <th>Status</th>
                             <th>Date</th>
-                            <th>Time</th>
+                            {{-- <th>Time</th> --}}
                             <th>Transaction Code</th>
                             <th>Action</th>
                         </tr>
@@ -62,11 +62,11 @@
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ Str::ucfirst($transaction->group->username) }}</td>
-                                <td>
+                                {{-- <td>
                                     @foreach (json_decode($transaction->members, true) as $member)
                                         <li>{{ $member }}</li>
                                     @endforeach
-                                </td>
+                                </td> --}}
                                 <td>{{ $transaction->program }}</td>
                                 <td>{{ Str::title(str_replace('_', ' ', $transaction->type_of_defense)) }}</td>
                                 <td>
@@ -89,7 +89,7 @@
                                     </li>
                                 </td>
                                 <td>{{ \Carbon\Carbon::parse($transaction->created_at)->format('Y-m-d') }}</td>
-                                <td>{{ \Carbon\Carbon::parse($transaction->created_at)->format('h:i A') }}</td>
+                                {{-- <td>{{ \Carbon\Carbon::parse($transaction->created_at)->format('h:i A') }}</td> --}}
                                 <td>{{ $transaction->transaction_code }}</td>
                                 <td>
                                     @if (auth()->user()->user_type == 'admin')
@@ -103,6 +103,41 @@
                                             </form>
                                         @endif
                                     @endif
+                                    @if (auth()->user()->user_type == 'student')
+                                        @if (!$transaction->proof_file)
+                                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                                data-bs-target="#uploadModal"
+                                                onclick="setTransactionId({{ $transaction->id }})">
+                                                <i class="fas fa-upload"></i> Upload Proof of Payment
+                                            </button>
+                                        @endif
+                                    @endif
+                                    @if ($transaction->proof_file)
+                                        <!-- Button trigger modal -->
+                                        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#proofModal{{ $transaction->id }}">
+                                            View Proof
+                                        </button>
+
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="proofModal{{ $transaction->id }}" tabindex="-1"
+                                            aria-labelledby="proofModalLabel{{ $transaction->id }}" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered modal-lg">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="proofModalLabel{{ $transaction->id }}">
+                                                            Proof of Payment</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body text-center">
+                                                        <img src="{{ asset($transaction->proof_file) }}"
+                                                            alt="Proof of Payment" class="img-fluid rounded">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach
@@ -112,4 +147,36 @@
         </div>
     </div>
     <!-- Content Row -->
+
+    <!-- Upload Proof of Payment Modal -->
+    <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form action="{{ route('transaction.upload_proof') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <input type="hidden" name="transaction_id" id="transactionIdInput">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="uploadModalLabel">Upload Proof of Payment</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="proof" class="form-label">Choose file</label>
+                            <input type="file" class="form-control" name="proof" id="proof" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Upload</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 @endsection <!-- End the content section -->
+
+<script>
+    function setTransactionId(id) {
+        document.getElementById('transactionIdInput').value = id;
+    }
+</script>
