@@ -155,7 +155,7 @@
                             </a>
                         </a>
                         <div class="dropdown-menu dropdown-menu-end rounded animated--fade-in">
-                            <a class="dropdown-item" href="#">
+                            <a class="dropdown-item" href="/profile">
                                 <i class="text-primary fas fa-user fa-sm fa-fw mr-2"></i>
                                 Profile
                             </a>

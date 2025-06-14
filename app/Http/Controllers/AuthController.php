@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\ActivityLog;
+use App\Models\Panelist;
+use App\Models\Reservation;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,16 +23,20 @@ class AuthController extends Controller
                 'groups' => User::where('user_type', 'student')->get(),
                 'instructors' => User::where('user_type', 'instructor')->get(),
                 'transactions' => Transaction::all(),
+                'reservations' => Reservation::all(),
+                'panelists' => Panelist::all(),
             ];
         } elseif (Auth::user()->user_type === 'instructor') {
             $studentIds = User::where('instructor_id', Auth::user()->id)->pluck('id');
             $data = [
                 'groups' => User::whereIn('id', $studentIds)->get(),
                 'transactions' => Transaction::whereIn('group_id', $studentIds)->get(),
+                'reservations' => Reservation::whereIn('group_id', $studentIds)->get(),
             ];
         } elseif (Auth::user()->user_type === 'student') {
             $data = [
                 'transactions' => Transaction::where('group_id', Auth::user()->id)->get(),
+                'reservations' => Reservation::where('group_id', Auth::user()->id)->get(),
             ];
         }
         return view('dashboard', compact('data'));
@@ -216,5 +222,67 @@ class AuthController extends Controller
         $user->save();
 
         return redirect('/code')->with('success', 'Code added successfully!');
+    }
+
+    public function profile()
+    {
+        $profile = User::findOrFail(auth()->user()->id);
+        $instructors = User::where('user_type', 'instructor')->get();
+
+        return view('profile', compact('profile', 'instructors'));
+    }
+
+    public function updateProfile(Request $request, $id)
+    {
+        $isAdmin = auth()->user()->user_type === 'admin';
+
+        $rules = [
+            'email' => 'required|email',
+            'username' => 'required|string|max:255',
+            'password' => 'nullable|string|min:8|confirmed',
+        ];
+
+        if (!$isAdmin) {
+            $rules += [
+                'members.*' => 'required|string',
+                'program' => 'required|string|max:255',
+                'yearsection' => 'required|string|max:255',
+                'capstone_adviser' => 'required|string|max:255',
+                'instructor' => 'required|exists:users,id',
+            ];
+        }
+
+        $messages = [];
+        if (!$isAdmin && $request->members) {
+            foreach ($request->members as $index => $member) {
+                $messages["members.$index.required"] = "Member " . ($index + 1) . " is required.";
+            }
+        }
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $user = User::findOrFail($id);
+        $user->email = $request->email;
+        $user->username = $request->username;
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        if (!$isAdmin) {
+            $user->program = $request->program;
+            $user->year_section = $request->yearsection;
+            $user->capstone_adviser = $request->capstone_adviser;
+            $user->instructor_id = $request->instructor;
+            $user->members = json_encode($request->members);
+        }
+
+        $user->save();
+
+        return redirect('/profile')->with('success', 'Profile updated successfully!');
     }
 }

@@ -103,4 +103,8 @@ Route::middleware(['auth'])->group(function () {
     // Instructor Code
     Route::get('/code', [AuthController::class, 'code']);
     Route::post('/add-code', [AuthController::class, 'addCode'])->name('code.create');
+
+    // Profile
+    Route::get('/profile', [AuthController::class, 'profile'])->name('profile.view');
+    Route::post('/update_profile/{id}', [AuthController::class, 'updateProfile'])->name('profile.update');
 });

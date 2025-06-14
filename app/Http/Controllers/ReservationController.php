@@ -295,6 +295,14 @@ class ReservationController extends Controller
     {
         $reservation = Reservation::with(['user', 'reserveBy', 'schedule'])->find($id);
 
+        if ($reservation && auth()->user()->user_type == 'student') {
+            $notification = Notification::where('_link_id', $reservation->id)->first();
+            if ($notification) {
+                $notification->status = 'read';
+                $notification->save();
+            }
+        }
+
         if (!$reservation) {
             return redirect()->route('reservations.index')->with('error', 'Reservation not found.');
         }

@@ -33,7 +33,6 @@
             </div>
         @endif
 
-
         @if (auth()->user()->user_type === 'admin')
             <div class="col-xl-3 col-md-6 mb-4">
                 <div class="card shadow h-100 py-2">
@@ -41,16 +40,16 @@
                         <div class="d-flex h-100 flex-column justify-content-between">
                             <div class="row align-items-center justify-content-between">
                                 <div class="col mr-2">
-                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                         Total Instructors</div>
                                     <div class="h5 mb-0 font-weight-bold">{{ count($data['instructors']) }}</div>
                                 </div>
                                 <div class="col-auto">
-                                    <i class="fas fa-file fa-2x text-success"></i>
+                                    <i class="fas fa-file fa-2x text-primary"></i>
                                 </div>
                             </div>
                             <div class="">
-                                <a class="text-dark" href="/instructors">All Instructor</a>
+                                <a class="text-dark" href="/instructors">All Instructors</a>
                             </div>
                         </div>
                     </div>
@@ -64,12 +63,12 @@
                     <div class="d-flex h-100 flex-column justify-content-between">
                         <div class="row align-items-center justify-content-between">
                             <div class="col mr-2">
-                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                     Total Transactions</div>
                                 <div class="h5 mb-0 font-weight-bold">{{ count($data['transactions']) }}</div>
                             </div>
                             <div class="col-auto">
-                                <i class="fas fa-file fa-2x text-info"></i>
+                                <i class="fas fa-file fa-2x text-primary"></i>
                             </div>
                         </div>
                         <div class="">
@@ -79,6 +78,52 @@
                 </div>
             </div>
         </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="d-flex h-100 flex-column justify-content-between">
+                        <div class="row align-items-center justify-content-between">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    Total Reservations</div>
+                                <div class="h5 mb-0 font-weight-bold">{{ count($data['reservations']) }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-file fa-2x text-primary"></i>
+                            </div>
+                        </div>
+                        <div class="">
+                            <a class="text-dark" href="/reservations">All Reservations</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (auth()->user()->user_type === 'admin')
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="d-flex h-100 flex-column justify-content-between">
+                            <div class="row align-items-center justify-content-between">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Total Panelists</div>
+                                    <div class="h5 mb-0 font-weight-bold">{{ count($data['panelists']) }}</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-file fa-2x text-primary"></i>
+                                </div>
+                            </div>
+                            <div class="">
+                                <a class="text-dark" href="/panelists">All Panelists</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
     </div>
     <!-- Content Row -->
 @endsection <!-- End the content section -->

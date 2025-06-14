@@ -52,7 +52,8 @@
                             <tbody>
                                 @foreach ($notifications->where('notification_type', 'system_alert') as $notification)
                                     <tr>
-                                        <td>{{ $loop->iteration }}</td>
+                                        <td>
+                                            {{ $loop->iteration }}</td>
                                         <td>{{ $notification->notification_title }}</td>
                                         <td>{{ $notification->notification_message }}</td>
                                         <td>{{ \Carbon\Carbon::parse($notification->created_at)->format('Y-m-d h:i A') }}
