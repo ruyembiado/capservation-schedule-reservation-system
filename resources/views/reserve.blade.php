@@ -122,7 +122,7 @@
                             </div>
                             <div class="col-12 mb-2">
                                 <button class="w-100 btn btn-primary text-light"type="submit">
-                                    RESERVE
+                                    SUBMIT
                                 </button>
                             </div>
                         </form>
@@ -151,7 +151,7 @@
                             </div>
                             <div class="col-12 mb-2">
                                 <button class="w-100 btn btn-primary text-light"type="submit">
-                                    RESERVE
+                                    SUBMIT
                                 </button>
                             </div>
                         </form>
