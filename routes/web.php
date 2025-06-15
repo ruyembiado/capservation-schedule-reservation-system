@@ -73,6 +73,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/update_panelist/{id}', [PanelistController::class, 'updatePanelist'])->name('panelist.update');
     Route::delete('/delete_panelist/{id}', [PanelistController::class, 'destroy'])->name('panelist.destroy');
     Route::get('/view_panelists/{id}', [PanelistController::class, 'viewPanelist'])->name('view_panelists');
+    Route::get('/view_panelist/{id}', [PanelistController::class, 'viewSinglePanelist'])->name('view_panelist');
 
     // Group
     Route::get('/view_group/{id}', [GroupController::class, 'viewGroup']);

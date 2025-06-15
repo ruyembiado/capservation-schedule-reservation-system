@@ -46,6 +46,12 @@ class PanelistController extends Controller
         return view('update_panelist', compact('panelist'));
     }
 
+    public function viewSinglePanelist($id)
+    {
+        $panelist = Panelist::where('id', $id)->get()->first();
+        return view('view_single_panelist', compact('panelist'));
+    }
+
     public function viewPanelist($id)
     {
         $reservation = Reservation::findOrFail($id);

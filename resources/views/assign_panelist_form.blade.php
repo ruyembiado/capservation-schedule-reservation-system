@@ -29,12 +29,17 @@
                         @endif
                     </div>
 
+                    <div class="mb-3 col-12 col-sm-6 col-md-4 mx-auto">
+                        <strong>Search Panelist:</strong>
+                        <input type="text" id="panelist-search" class="form-control"
+                            placeholder="Search panelist by name...">
+                    </div>
 
                     <div class="d-flex flex-wrap justify-content-center gap-4">
                         @foreach ($panelists as $panelist)
                             <div style="width: 31%;"
                                 class="border rounded p-3 panelist-card {{ in_array($panelist->id, $selectedPanelists) ? 'bg-selected-panelist' : '' }}"
-                                data-id="{{ $panelist->id }}">
+                                data-id="{{ $panelist->id }}" data-name="{{ strtolower($panelist->name) }}">
                                 <h5 style="font-weight: 600;" class="text-dark">{{ $panelist->name }}</h5>
 
                                 <!-- Vacant Time -->
@@ -110,7 +115,8 @@
                             </select>
                         </div>
                         <div class="mt-3 text-end">
-                            <button class="btn btn-primary text-light" type="submit">{{ empty($selectedPanelists) ? 'Assign Panelists' : 'Update Panelists' }}</button>
+                            <button class="btn btn-primary text-light"
+                                type="submit">{{ empty($selectedPanelists) ? 'Assign Panelists' : 'Update Panelists' }}</button>
                         </div>
                     </form>
                 </div>
@@ -118,3 +124,23 @@
         </div>
     </div>
 @endsection
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('panelist-search');
+        const panelistCards = document.querySelectorAll('.panelist-card');
+
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+
+            panelistCards.forEach(card => {
+                const name = card.getAttribute('data-name');
+                if (name.includes(query)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
