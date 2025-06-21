@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Capstone;
 use App\Models\Notification;
+use App\Models\NotificationUser;
 use App\Models\User;
 use App\Models\Reservation;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Notifications\Action;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Mockery\Matcher\Not;
@@ -112,11 +114,13 @@ class ReservationController extends Controller
     {
         $selectedGroup = session('selected_group', null);
 
-        if (Auth::user()->user_type === 'student') {
-            $reservation = Reservation::with('capstone')->where('group_id', Auth::user()->id)->latest()->first();
-        } else {
-            $reservation = Reservation::with('capstone')->where('group_id', $selectedGroup)->latest()->first();
-        }
+        // if (Auth::user()->user_type === 'student') {
+        //     $reservation = Reservation::with('capstone')->where('group_id', Auth::user()->id)->latest()->first();
+        // } else {
+        //     $reservation = Reservation::with('capstone')->where('group_id', $selectedGroup)->latest()->first();
+        // }
+
+        $reservation = Reservation::with('capstone')->where('group_id', $selectedGroup)->latest()->first();
 
         $transaction = Transaction::where('group_id', $reservation->group_id ?? null)
             ->latest()
@@ -291,15 +295,18 @@ class ReservationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Reservation $reservation, $id)
+    public function show(Reservation $reservation, $id, $action = null)
     {
         $reservation = Reservation::with(['user', 'reserveBy', 'schedule'])->find($id);
 
-        if ($reservation && auth()->user()->user_type == 'student') {
+        if ($reservation) {
             $notification = Notification::where('_link_id', $reservation->id)->first();
-            if ($notification) {
-                $notification->status = 'read';
-                $notification->save();
+            if ($notification && $action == 'read') {
+                $notification_user = NotificationUser::updateOrCreate([
+                    'notification_id' => $notification->id,
+                    'user_id' => auth()->user()->id,
+                    'status' => 'read',
+                ]);
             }
         }
 

@@ -70,6 +70,14 @@
                 @endif
                 @if (auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'instructor')
                     <li class="sidebar-item">
+                        <a href="/reserve" class="sidebar-link {{ request()->is('reserve') ? 'active' : '' }}">
+                            <i class="fa fa-pen-to-square"></i>
+                            <span>Reserve</span>
+                        </a>
+                    </li>
+                @endif
+                @if (auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'instructor')
+                    <li class="sidebar-item">
                         <a href="/reservations"
                             class="sidebar-link {{ request()->is('reservations', 'reservation*', 'view_panelists*', 'assign_panelist*') ? 'active' : '' }}">
                             <i class="fa fa-pen-to-square"></i>
@@ -88,14 +96,6 @@
                         <a href="/panelists" class="sidebar-link {{ request()->is('panelists', 'add_panelist', 'update_panelist*') ? 'active' : '' }}">
                             <i class="fas fa-user-friends"></i>
                             <span>Panelists</span>
-                        </a>
-                    </li>
-                @endif
-                @if (auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'student')
-                    <li class="sidebar-item">
-                        <a href="/reserve" class="sidebar-link {{ request()->is('reserve') ? 'active' : '' }}">
-                            <i class="fa fa-pen-to-square"></i>
-                            <span>Reserve</span>
                         </a>
                     </li>
                 @endif

@@ -6,7 +6,7 @@
     </div>
     <div class="card shadow mb-4">
         <div class="card-body">
-            @if (auth()->user()->user_type === 'admin')
+            @if (auth()->user()->user_type === 'admin' || auth()->user()->user_type === 'instructor')
                 <div class="col-4 m-auto mb-5">
                     <!-- Group Selection Form -->
                     <form action="{{ route('reservation.storeGroup') }}" method="POST">
@@ -139,7 +139,7 @@
                                     }
                                 }
                             @endphp
-                            <input type="hidden" name="group_id" value="{{ $selectedGroup ?? auth()->user()->id }}">
+                            <input type="hidden" name="group_id" value="{{ $selectedGroup ?? '' }}">
                             <input type="hidden" name="type_of_defense" value="{{ $type_of_defense }}">
                             <input type="hidden" name="capstone_title_id"
                                 value="{{ isset($defendedCapstones[0]) ? $defendedCapstones[0]->id : $defendedCapstones['id'] ?? '' }}">

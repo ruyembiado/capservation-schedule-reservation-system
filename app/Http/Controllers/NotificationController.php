@@ -9,6 +9,7 @@ use App\Models\Reservation;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use App\Models\CustomReminder;
+use App\Models\NotificationUser;
 
 class NotificationController extends Controller
 {
@@ -34,9 +35,14 @@ class NotificationController extends Controller
             $notifications = [];
         }
 
+        $readNotifications = NotificationUser::where('status', 'read')
+            ->where('user_id', auth()->user()->id)
+            ->pluck('notification_id')
+            ->toArray();
+
         $groups = User::where('user_type', 'student')->get();
 
-        return view('notification', compact('notifications', 'customReminders', 'groups'));
+        return view('notification', compact('notifications', 'customReminders', 'groups', 'readNotifications'));
     }
 
     public function createScheduleReminder()

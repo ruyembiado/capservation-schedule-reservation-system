@@ -17,6 +17,6 @@ class Notification extends Model
         'notification_type',
         'notification_title',
         'notification_message',
-        'status',
+        // 'status',
     ];
 }
