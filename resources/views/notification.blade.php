@@ -88,13 +88,18 @@
                             </thead>
                             <tbody>
                                 @foreach ($notifications->where('notification_type', 'update_status') as $notification)
+                                    @php
+                                        $isRead = in_array($notification->id, $readNotifications);
+                                        $highlightClass = $isRead ? '' : 'bg-theme-primary text-light';
+                                    @endphp
                                     <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $notification->notification_title }}</td>
-                                        <td>{{ $notification->notification_message }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($notification->created_at)->format('Y-m-d h:i A') }}
+                                        <td class="{{ $highlightClass }}">{{ $loop->iteration }}</td>
+                                        <td class="{{ $highlightClass }}">{{ $notification->notification_title }}</td>
+                                        <td class="{{ $highlightClass }}">{{ $notification->notification_message }}</td>
+                                        <td class="{{ $highlightClass }}">
+                                            {{ \Carbon\Carbon::parse($notification->created_at)->format('Y-m-d h:i A') }}
                                         </td>
-                                        <td>
+                                        <td class="{{ $highlightClass }}">
                                             <a href="/reservation/{{ $notification->_link_id }}"
                                                 class="btn btn-secondary btn-sm">View</a>
                                         </td>
@@ -120,13 +125,17 @@
                             </thead>
                             <tbody>
                                 @foreach ($notifications->where('notification_type', 'reminder') as $notification)
+                                    @php
+                                        $isRead = in_array($notification->id, $readNotifications);
+                                        $highlightClass = $isRead ? '' : 'bg-theme-primary text-light';
+                                    @endphp
                                     <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $notification->notification_title }}</td>
-                                        <td>{{ $notification->notification_message }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($notification->created_at)->format('Y-m-d h:i A') }}
+                                        <td class="{{ $highlightClass }}">{{ $loop->iteration }}</td>
+                                        <td class="{{ $highlightClass }}">{{ $notification->notification_title }}</td>
+                                        <td class="{{ $highlightClass }}">{{ $notification->notification_message }}</td>
+                                        <td class="{{ $highlightClass }}">{{ \Carbon\Carbon::parse($notification->created_at)->format('Y-m-d h:i A') }}
                                         </td>
-                                        <td>
+                                        <td class="{{ $highlightClass }}">
                                             <a href="/reservation/{{ $notification->_link_id }}"
                                                 class="btn btn-secondary btn-sm">View</a>
                                         </td>
