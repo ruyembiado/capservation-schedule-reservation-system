@@ -93,7 +93,7 @@
                                 <td>{{ $transaction->transaction_code }}</td>
                                 <td>
                                     @if (auth()->user()->user_type == 'admin')
-                                        @if ($transaction->status === 'pending')
+                                        @if ($transaction->status === 'pending' && $transaction->proof_file)
                                             <form action="{{ route('transaction.update', $transaction->id) }}"
                                                 method="POST" style="display: inline;">
                                                 @csrf
