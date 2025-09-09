@@ -21,7 +21,8 @@
                             @enderror
                         </div>
                         <div class="col-12 mb-2">
-                            <label for="username" class="form-label">Username @if (auth()->user()->user_type != 'admin')
+                            <label for="username" class="form-label">Username
+                                @if (auth()->user()->user_type == 'student')
                                     /Group Name
                                 @endif
                             </label>
@@ -32,6 +33,17 @@
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                         </div>
+                        @if (auth()->user()->user_type == 'instructor')
+                            <div class="col-12 mb-2">
+                                <label for="name" class="form-label">Full Name</label>
+                                <input type="text" name="name" placeholder="Enter full name"
+                                    class="form-control @error('name') is-invalid @enderror" id="name"
+                                    value="{{ $profile->name }}">
+                                @error('name')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        @endif
                         <div class="col-12 mb-2">
                             <label for="password" class="form-label">Password</label>
                             <input type="password" name="password" placeholder="Enter passsword"
@@ -54,7 +66,7 @@
                                 </div>
                             </div>
                         @endif
-                        @if (auth()->user()->user_type != 'admin')
+                        @if (auth()->user()->user_type != 'admin' && auth()->user()->user_type != 'instructor')
                             <div class="col-12 mb-2">
                                 <label for="members" class="form-label">Members</label>
                                 <div id="membersRepeater">
@@ -87,60 +99,68 @@
                     </div>
                     @if (auth()->user()->user_type != 'admin')
                         <div class="col-5">
-                            <div class="col-12 mb-2">
-                                <label for="program" class="form-label">Program</label>
-                                <input type="text" name="program" placeholder="Enter program"
-                                    class="form-control @error('program') is-invalid @enderror" id="program"
-                                    value="{{ $profile->program }}">
-                                @error('program')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-12 mb-2">
-                                <label for="yearsection" class="form-label">Year & Section</label>
-                                <input type="yearsection" name="yearsection" placeholder="Enter year and section"
-                                    class="form-control @error('yearsection') is-invalid @enderror" id="yearsection"
-                                    value="{{ $profile->year_section }}">
-                                @error('yearsection')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-12 mb-2">
-                                <label for="capstone_adviser" class="form-label">Capstone Adviser</label>
-                                <input type="capstone_adviser" name="capstone_adviser" placeholder="Enter capstone adviser"
-                                    class="form-control @error('capstone_adviser') is-invalid @enderror"
-                                    id="capstone_adviser" value="{{ $profile->capstone_adviser }}">
-                                @error('capstone_adviser')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-12 mb-2">
-                                <label for="instructor" class="form-label">Instructor</label>
-                                <!-- Hidden actual select input -->
-                                <select name="instructor" class="form-control select2" id="select_instructor"
-                                    class="">
-                                    <option value="" disabled>-- Select an instructor --</option>
-                                    @foreach ($instructors as $instructor)
-                                        <option value="{{ $instructor->id }}"
-                                            {{ old('instructor', $profile->instructor_id) == $instructor->id ? 'selected' : '' }}>
-                                            {{ $instructor->name }}
+                            @if (auth()->user()->user_type != 'instructor')
+                                <div class="col-12 mb-2">
+                                    <label for="program" class="form-label">Program</label>
+                                    <select name="program" id="program"
+                                        class="form-control @error('program') is-invalid @enderror">
+                                        <option value="">-- Select Program --</option>
+                                        <option value="BSIT" {{ $profile->program == 'BSIT' ? 'selected' : '' }}>BSIT
                                         </option>
-                                    @endforeach
-                                </select>
+                                        <option value="BSCS" {{ $profile->program == 'BSCS' ? 'selected' : '' }}>BSCS
+                                        </option>
+                                        <option value="BSIS" {{ $profile->program == 'BSIS' ? 'selected' : '' }}>BSIS
+                                        </option>
+                                    </select>
+                                    @error('program')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-12 mb-2">
+                                    <label for="yearsection" class="form-label">Year & Section</label>
+                                    <input type="yearsection" name="yearsection" placeholder="Enter year and section"
+                                        class="form-control @error('yearsection') is-invalid @enderror" id="yearsection"
+                                        value="{{ $profile->year_section }}">
+                                    @error('yearsection')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-12 mb-2">
+                                    <label for="capstone_adviser" class="form-label">Capstone Adviser</label>
+                                    <input type="capstone_adviser" name="capstone_adviser"
+                                        placeholder="Enter capstone adviser"
+                                        class="form-control @error('capstone_adviser') is-invalid @enderror"
+                                        id="capstone_adviser" value="{{ $profile->capstone_adviser }}">
+                                    @error('capstone_adviser')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-12 mb-2">
+                                    <label for="instructor" class="form-label">Instructor</label>
+                                    <!-- Hidden actual select input -->
+                                    <select name="instructor" class="form-control select2" id="select_instructor"
+                                        class="">
+                                        <option value="" disabled>-- Select an instructor --</option>
+                                        @foreach ($instructors as $instructor)
+                                            <option value="{{ $instructor->id }}"
+                                                {{ old('instructor', $profile->instructor_id) == $instructor->id ? 'selected' : '' }}>
+                                                {{ $instructor->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
 
-                                @error('instructor')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            @if (auth()->user()->user_type != 'admin')
-                                <div class="login-logo-container m-auto text-center">
-                                    <div class="mt-3">
-                                        <div class="d-flex gap-1">
-                                            <button class="btn btn-primary w-100" type="submit">Update</button>
-                                        </div>
-                                    </div>
+                                    @error('instructor')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             @endif
+                            <div class="login-logo-container m-auto text-center">
+                                <div class="mt-3">
+                                    <div class="d-flex gap-1">
+                                        <button class="btn btn-primary w-100" type="submit">Update</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     @endif
                 </div>

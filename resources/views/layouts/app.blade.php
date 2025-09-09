@@ -68,6 +68,15 @@
                         </a>
                     </li>
                 @endif
+                {{-- @if (auth()->user()->user_type == 'admin')
+                    <li class="sidebar-item">
+                        <a href="/"
+                            class="sidebar-link {{ request()->is('instructors', 'update_instructor*') ? 'active' : '' }}">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Smart Scheduler</span>
+                        </a>
+                    </li>
+                @endif --}}
                 @if (auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'instructor')
                     <li class="sidebar-item">
                         <a href="/reserve" class="sidebar-link {{ request()->is('reserve') ? 'active' : '' }}">
@@ -85,7 +94,8 @@
                         </a>
                     </li>
                     <li class="sidebar-item">
-                        <a href="/capstones" class="sidebar-link {{ request()->is('capstones', 'capstone_history*', 'update_capstone*') ? 'active' : '' }}">
+                        <a href="/capstones"
+                            class="sidebar-link {{ request()->is('capstones', 'capstone_history*', 'update_capstone*') ? 'active' : '' }}">
                             <i class="fa fa-book"></i>
                             <span>Capstones</span>
                         </a>
@@ -93,14 +103,16 @@
                 @endif
                 @if (auth()->user()->user_type == 'admin')
                     <li class="sidebar-item">
-                        <a href="/panelists" class="sidebar-link {{ request()->is('panelists', 'add_panelist', 'update_panelist*') ? 'active' : '' }}">
+                        <a href="/panelists"
+                            class="sidebar-link {{ request()->is('panelists', 'add_panelist', 'update_panelist*') ? 'active' : '' }}">
                             <i class="fas fa-user-friends"></i>
                             <span>Panelists</span>
                         </a>
                     </li>
                 @endif
                 <li class="sidebar-item">
-                    <a href="/transactions" class="sidebar-link {{ request()->is('transactions') ? 'active' : '' }}">
+                    <a href="/transactions"
+                        class="sidebar-link {{ request()->is('transactions') ? 'active' : '' }}">
                         <i class="fa fa-file-lines"></i>
                         <span>Transactions</span>
                     </a>
@@ -114,8 +126,9 @@
                     </li>
                 @endif
                 <li class="sidebar-item">
-                    <a href="/notification" class="sidebar-link {{ request()->is('notification') ? 'active' : '' }}">
-                        <i class="fa fa-envelope-open-text"></i>
+                    <a href="/notification"
+                        class="sidebar-link {{ request()->is('notification') ? 'active' : '' }}">
+                        <i class="fa fa-bell"></i>
                         <span>Notifications</span>
                     </a>
                 </li>

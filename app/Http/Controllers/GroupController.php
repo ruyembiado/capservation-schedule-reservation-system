@@ -9,6 +9,12 @@ use Illuminate\Support\Facades\Validator;
 
 class GroupController extends Controller
 {
+
+    public function create()
+    {
+        return view('add_group');
+    }
+
     public function viewGroup($id)
     {
         $group = User::where('id', $id)->get()->first();

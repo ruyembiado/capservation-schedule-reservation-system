@@ -58,7 +58,7 @@
                                 <td>{{ $reservation['reserveBy']['name'] ?? $reservation['reserveBy']['username'] }}</td>
                                 <td>
                                     <span
-                                        class="badge {{ $bg }}">{{ Str::ucfirst($reservation['status']) }}</span>
+                                        class="badge {{ $bg }}">{{ Str::ucfirst($reservation['status'] == 'reserved' ? 'Scheduled' : $reservation['status']) }}</span>
                                 </td>
                                 <td>{{ $reservation['schedule_date'] }} | {{ $reservation['schedule_time'] }}</td>
                                 <td>{{ \Carbon\Carbon::parse($reservation['created_at'])->format('Y-m-d h:i A') }}</td>

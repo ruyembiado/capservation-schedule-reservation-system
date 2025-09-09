@@ -75,9 +75,16 @@
                     <div class="col-5">
                         <div class="col-12 mb-2">
                             <label for="program" class="form-label">Program</label>
-                            <input type="program" name="program" placeholder="Enter program"
-                                class="form-control @error('program') is-invalid @enderror" id="program"
-                                value="{{ $group->program }}">
+                            <select name="program" id="program"
+                                        class="form-control @error('program') is-invalid @enderror">
+                                        <option value="">-- Select Program --</option>
+                                        <option value="BSIT" {{ $group->program == 'BSIT' ? 'selected' : '' }}>BSIT
+                                        </option>
+                                        <option value="BSCS" {{ $group->program == 'BSCS' ? 'selected' : '' }}>BSCS
+                                        </option>
+                                        <option value="BSIS" {{ $group->program == 'BSIS' ? 'selected' : '' }}>BSIS
+                                        </option>
+                                    </select>
                             @error('program')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror

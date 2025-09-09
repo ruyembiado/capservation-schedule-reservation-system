@@ -50,7 +50,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Reservation
     Route::get('/reservations', [ReservationController::class, 'index'])->name('reservation.index');
-    Route::get('/reservation/{id}/{action}', [ReservationController::class, 'show'])->name('reservation.show');
+    Route::get('/reservation/{id}/{action}/{notif_id}', [ReservationController::class, 'show'])->name('reservation.show');
     Route::get('/reserve', [ReservationController::class, 'create'])->name('reservation.create');
     Route::post('/reserve/select-group', [ReservationController::class, 'storeGroup'])->name('reservation.storeGroup');
     Route::get('/get-all-groups', [ReservationController::class, 'getGroups']);
@@ -76,6 +76,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/view_panelist/{id}', [PanelistController::class, 'viewSinglePanelist'])->name('view_panelist');
 
     // Group
+    Route::get('/add_group', [GroupController::class, 'create'])->name('group.create');
     Route::get('/view_group/{id}', [GroupController::class, 'viewGroup']);
     Route::get('/update_group/{id}', [GroupController::class, 'updateGroupForm']);
     Route::post('/update_group/{id}', [GroupController::class, 'updateGroup'])->name('group.update');
@@ -108,4 +109,6 @@ Route::middleware(['auth'])->group(function () {
     // Profile
     Route::get('/profile', [AuthController::class, 'profile'])->name('profile.view');
     Route::post('/update_profile/{id}', [AuthController::class, 'updateProfile'])->name('profile.update');
+
+    Route::get('/test-scheduler', [AdminController::class, 'testScheduler']);
 });

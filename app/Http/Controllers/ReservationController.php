@@ -295,15 +295,14 @@ class ReservationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Reservation $reservation, $id, $action = null)
+    public function show($id, $action = null, $notif_id = null)
     {
         $reservation = Reservation::with(['user', 'reserveBy', 'schedule'])->find($id);
-
-        if ($reservation) {
-            $notification = Notification::where('_link_id', $reservation->id)->first();
+        if ($notif_id) {
+            $notification = Notification::where('_link_id', $id)->first();
             if ($notification && $action == 'read') {
                 $notification_user = NotificationUser::updateOrCreate([
-                    'notification_id' => $notification->id,
+                    'notification_id' => $notif_id,
                     'user_id' => auth()->user()->id,
                     'status' => 'read',
                 ]);

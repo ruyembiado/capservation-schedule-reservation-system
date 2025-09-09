@@ -45,7 +45,7 @@
                                     <th>No.</th>
                                     <th>Notification Title</th>
                                     <th>Notification Message</th>
-                                    <th>Date Created</th>
+                                    <th class="text-start">Date Created</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -59,11 +59,11 @@
                                         <td class="{{ $highlightClass }}">{{ $loop->iteration }}</td>
                                         <td class="{{ $highlightClass }}">{{ $notification->notification_title }}</td>
                                         <td class="{{ $highlightClass }}">{{ $notification->notification_message }}</td>
-                                        <td class="{{ $highlightClass }}">
-                                            {{ \Carbon\Carbon::parse($notification->created_at)->format('Y-m-d h:i A') }}
+                                        <td class="{{ $highlightClass }} text-start">
+                                            {{ \Carbon\Carbon::parse($notification->created_at)->format('Y-m-d') }}
                                         </td>
                                         <td class="{{ $highlightClass }}">
-                                            <a href="/reservation/{{ $notification->_link_id }}/read"
+                                            <a href="/reservation/{{ $notification->_link_id }}/read/{{ $notification->id }}"
                                                 class="btn btn-secondary btn-sm">View</a>
                                         </td>
                                     </tr>
@@ -97,7 +97,7 @@
                                         <td class="{{ $highlightClass }}">{{ $notification->notification_title }}</td>
                                         <td class="{{ $highlightClass }}">{{ $notification->notification_message }}</td>
                                         <td class="{{ $highlightClass }}">
-                                            {{ \Carbon\Carbon::parse($notification->created_at)->format('Y-m-d h:i A') }}
+                                            {{ \Carbon\Carbon::parse($notification->created_at)->format('Y-m-d') }}
                                         </td>
                                         <td class="{{ $highlightClass }}">
                                             <a href="/reservation/{{ $notification->_link_id }}"
@@ -133,7 +133,8 @@
                                         <td class="{{ $highlightClass }}">{{ $loop->iteration }}</td>
                                         <td class="{{ $highlightClass }}">{{ $notification->notification_title }}</td>
                                         <td class="{{ $highlightClass }}">{{ $notification->notification_message }}</td>
-                                        <td class="{{ $highlightClass }}">{{ \Carbon\Carbon::parse($notification->created_at)->format('Y-m-d h:i A') }}
+                                        <td class="{{ $highlightClass }}">
+                                            {{ \Carbon\Carbon::parse($notification->created_at)->format('Y-m-d') }}
                                         </td>
                                         <td class="{{ $highlightClass }}">
                                             <a href="/reservation/{{ $notification->_link_id }}"
@@ -171,9 +172,9 @@
                                             {{ $customReminder->group->username ?? 'Unknown' }}
                                         </td>
                                         <td>{{ $customReminder->defense_stage ?? '—' }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($customReminder->schedule_datetime)->format('Y-m-d h:i A') }}
+                                        <td>{{ \Carbon\Carbon::parse($customReminder->schedule_datetime)->format('Y-m-d') }}
                                         </td>
-                                        <td>{{ \Carbon\Carbon::parse($customReminder->created_at)->format('Y-m-d h:i A') }}
+                                        <td>{{ \Carbon\Carbon::parse($customReminder->created_at)->format('Y-m-d') }}
                                         </td>
                                     </tr>
                                 @endforeach
