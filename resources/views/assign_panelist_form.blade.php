@@ -17,16 +17,35 @@
                 <div class="col-12 mb-2">
                     <h4 class="mb-3">Select Panelists</h4>
 
-                    <div class="titles mb-3">
-                        <strong>Capstone Title/s:</strong>
-                        @foreach ($capstones as $capstone)
-                            <li>
-                                <i class="fa fa-book"></i> <strong>{{ $capstone->title }}</strong>
-                            </li>
-                        @endforeach
-                        @if (count($capstones) == 0)
-                            <li>No Capstone Assigned</li>
-                        @endif
+                    <div class="d-flex gap-5">
+                        <div class="titles mb-3">
+                            <strong>Capstone Title/s:</strong>
+                            @foreach ($capstones as $capstone)
+                                <li>
+                                    <i class="fa fa-book"></i> <span>{{ $capstone->title }}</span>
+                                </li>
+                            @endforeach
+                            @if (count($capstones) == 0)
+                                <li>No Capstone Assigned</li>
+                            @endif
+                        </div>
+
+                        {{-- Group Topic Tags --}}
+                        <div class="titles mb-3">
+                            <strong>Group Topic Tags:</strong>
+                            @php
+                                $credentials = json_decode($group->credentials, true);
+                            @endphp
+                            @if ($credentials && count($credentials) > 0)
+                                <ul class="list-unstyled mb-0">
+                                    @foreach ($credentials as $credential)
+                                        <li><i class="fa fa-tags"></i><span> {{ $credential }}</span></li>
+                                    @endforeach
+                                </ul>
+                            @else
+                                <li>No Topic Tags Assigned</li>
+                            @endif
+                        </div>
                     </div>
 
                     <div class="mb-3 col-12 col-sm-6 col-md-4 mx-auto">
@@ -64,9 +83,9 @@
                                     @endif
                                 </div>
 
-                                <!-- Credentials -->
+                                <!-- Expertise Tags -->
                                 <div class="mb-2">
-                                    <strong>Credentials:</strong>
+                                    <strong>Expertise Tags:</strong>
                                     @php
                                         $credentials = json_decode($panelist->credentials, true);
                                     @endphp

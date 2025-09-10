@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Capstone;
 use App\Models\Panelist;
 use App\Models\Reservation;
@@ -31,12 +32,20 @@ class PanelistController extends Controller
     public function showForm($id)
     {
         $reservation = Reservation::findOrFail($id);
-        $panelists = Panelist::all();
+
+        $group = User::where('id', $reservation->group_id)->first();
+        $tags = json_decode($group->credentials, true);
+
+        $panelists = Panelist::where(function ($query) use ($tags) {
+            foreach ($tags as $tag) {
+                $query->orWhereJsonContains('credentials', $tag);
+            }
+        })->get();
 
         $capstoneIds = (array) json_decode($reservation->capstone_title_id, true);
         $capstones = Capstone::whereIn('id', $capstoneIds)->get();
 
-        return view('assign_panelist_form', compact('reservation', 'panelists', 'capstones'));
+        return view('assign_panelist_form', compact('reservation', 'panelists', 'capstones', 'group'));
     }
 
 
