@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Capstone;
-use App\Models\Notification;
-use App\Models\NotificationUser;
 use App\Models\User;
+use App\Models\Capstone;
+use Mockery\Matcher\Not;
 use App\Models\Reservation;
 use App\Models\Transaction;
+use App\Models\Notification;
 use Illuminate\Http\Request;
+use App\Models\NotificationUser;
 use Illuminate\Notifications\Action;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Mockery\Matcher\Not;
 
 class ReservationController extends Controller
 {
@@ -205,11 +206,42 @@ class ReservationController extends Controller
             ]);
         } else {
             $validator = Validator::make($request->all(), [
-                'title_1' => 'required',
-                'title_2' => 'required',
-                'title_3' => 'required',
-                'group_id' => 'required'
-            ]);
+                'title_1' => 'required|string|max:255',
+                'title_2' => 'required|string|max:255',
+                'title_3' => 'required|string|max:255',
+
+                // optional file validation rules
+                'attachment_1' => 'nullable|file|mimes:pdf,doc,docx,ppt,pptx',
+                'attachment_2' => 'nullable|file|mimes:pdf,doc,docx,ppt,pptx',
+                'attachment_3' => 'nullable|file|mimes:pdf,doc,docx,ppt,pptx',
+            ])->after(function ($validator) use ($request) {
+                $titles = [
+                    'title_1' => $request->title_1,
+                    'title_2' => $request->title_2,
+                    'title_3' => $request->title_3,
+                ];
+
+                $filteredTitles = array_filter($titles, fn($value) => !empty($value));
+
+                // Check for duplicates within the request
+                $counts = array_count_values($filteredTitles);
+                foreach ($counts as $fieldValue => $count) {
+                    if ($count > 1) {
+                        foreach ($titles as $key => $value) {
+                            if ($value === $fieldValue) {
+                                $validator->errors()->add($key, 'Duplicate titles are not allowed.');
+                            }
+                        }
+                    }
+                }
+
+                // Check for duplicates in the database
+                foreach ($filteredTitles as $key => $value) {
+                    if (DB::table('capstones')->where('title', $value)->exists()) {
+                        $validator->errors()->add($key, "The title '{$value}' already exists.");
+                    }
+                }
+            });
 
             if ($validator->fails()) {
                 return redirect()->back()
@@ -224,12 +256,28 @@ class ReservationController extends Controller
             ];
 
             $capstoneIds = [];
-            foreach ($titles as $title) {
+
+            foreach ($titles as $key => $title) {
                 if (!empty($title)) {
                     $capstone = Capstone::create([
                         'group_id' => $request->group_id,
-                        'title' => $title,
+                        'title'    => $title,
                     ]);
+
+                    // Match attachment key (attachment_1, attachment_2, ...)
+                    $attachmentKey = str_replace('title', 'attachment', $key);
+
+                    if ($request->hasFile($attachmentKey)) {
+                        $file     = $request->file($attachmentKey);
+                        $filename = time() . '_' . $file->getClientOriginalName();
+
+                        // Move to public/capstones
+                        $file->move(public_path('capstones'), $filename);
+
+                        // Save relative path (optional: you can store just filename)
+                        $capstone->attachment = 'capstones/' . $filename;
+                        $capstone->save();
+                    }
 
                     $capstoneIds[] = $capstone->id;
                 }

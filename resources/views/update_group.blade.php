@@ -71,20 +71,31 @@
                             <!-- Add Member Button Outside the Repeater -->
                             <button type="button" class="btn btn-sm btn-primary" id="addMemberBtn">Add Member</button>
                         </div>
+                        <div class="col-12 mb-2">
+                            <label for="capacity" class="form-label">Required Panelists</label>
+                            <div class="col-2">
+                                <input type="number" name="capacity"
+                                    class="form-control @error('capacity') is-invalid @enderror" id="capacity"
+                                    value="{{ $group->capacity }}">
+                            </div>
+                            @error('capacity')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
                     <div class="col-5">
                         <div class="col-12 mb-2">
                             <label for="program" class="form-label">Program</label>
                             <select name="program" id="program"
-                                        class="form-control @error('program') is-invalid @enderror">
-                                        <option value="">-- Select Program --</option>
-                                        <option value="BSIT" {{ $group->program == 'BSIT' ? 'selected' : '' }}>BSIT
-                                        </option>
-                                        <option value="BSCS" {{ $group->program == 'BSCS' ? 'selected' : '' }}>BSCS
-                                        </option>
-                                        <option value="BSIS" {{ $group->program == 'BSIS' ? 'selected' : '' }}>BSIS
-                                        </option>
-                                    </select>
+                                class="form-control @error('program') is-invalid @enderror">
+                                <option value="">-- Select Program --</option>
+                                <option value="BSIT" {{ $group->program == 'BSIT' ? 'selected' : '' }}>BSIT
+                                </option>
+                                <option value="BSCS" {{ $group->program == 'BSCS' ? 'selected' : '' }}>BSCS
+                                </option>
+                                <option value="BSIS" {{ $group->program == 'BSIS' ? 'selected' : '' }}>BSIS
+                                </option>
+                            </select>
                             @error('program')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
@@ -122,6 +133,36 @@
                             </select>
 
                             @error('instructor')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-12 mb-2">
+                            <label for="credentials" class="form-label">Topic Tags</label>
+                            <div id="credentialsRepeater">
+                                @php
+                                    $credentials = old('credentials', json_decode($group->credentials) ?? ['']);
+                                @endphp
+                                @foreach ($credentials as $index => $credential)
+                                    <div class="input-group mb-2 credential-item">
+                                        <input type="text" name="credentials[]" class="form-control"
+                                            value="{{ $credential }}" placeholder="Enter Topic Tag">
+                                        <button type="button" class="btn btn-danger remove-credential">x</button>
+                                        @error("credentials.$index")
+                                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                @endforeach
+                            </div>
+                            <button type="button" class="btn btn-sm btn-primary" id="addCredentialBtn">Add
+                                Topic Tag</button>
+                        </div>
+
+                        <div class="col-12 mb-2">
+                            <label for="vacant_time" class="form-label">Defense Time</label>
+                            <input type="time" name="vacant_time" placeholder="Enter passsword" value="{{ $group->vacant_time }}"
+                                class="form-control @error('vacant_time') is-invalid @enderror" id="vacant_time">
+                            @error('vacant_time')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                         </div>

@@ -28,6 +28,18 @@
             </div>
 
             <div class="col-12 mb-2">
+                <label for="capacity" class="form-label">Capacity</label>
+                <div class="col-2">
+                    <input type="text" readonly name="capacity"
+                        class="form-control @error('capacity') is-invalid @enderror" id="capacity"
+                        value="{{ $panelist->capacity }}">
+                    @error('capacity')
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+
+            <div class="col-12 mb-2">
                 <label for="vacant_time" class="form-label">Vacant Time</label>
                 <div id="vacantTimeRepeater">
                     @php
@@ -65,13 +77,13 @@
                             @enderror
                         @endforeach
                     @else
-                         <span class="text-muted">No vacant time available</span>
+                        <span class="text-muted">No vacant time available</span>
                     @endif
                 </div>
                 {{-- <button type="button" class="btn btn-sm btn-primary" id="addVacantTimeBtn">Add Vacant Time</button> --}}
             </div>
             <div class="col-12 mb-2">
-                <label for="credentials" class="form-label">Credentials</label>
+                <label for="credentials" class="form-label">Expertise Tags</label>
                 <div id="credentialsRepeater">
                     @php
                         $credentials = old('credentials', json_decode($panelist->credentials, true) ?? ['']);
@@ -82,14 +94,13 @@
                                 <input readonly type="text" name="credentials[]"
                                     class="form-control @error("credentials.$index") is-invalid @enderror"
                                     value="{{ $credential }}" placeholder="Enter credential">
-                                <button type="button" class="btn btn-danger remove-credential">x</button>
                                 @error("credentials.$index")
                                     <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
                             </div>
                         @endforeach
                     @else
-                        <span class="text-muted">No credentials available</span>
+                        <span class="text-muted">No expertise tags available</span>
                     @endif
                 </div>
                 {{-- <button type="button" class="btn btn-sm btn-primary" id="addCredentialBtn">Add Credential</button> --}}

@@ -13,6 +13,7 @@ class Capstone extends Model
     protected $fillable = [
         'group_id',
         'title',
+        'attachment',
         'capstone_status',
         'title_status'
     ];

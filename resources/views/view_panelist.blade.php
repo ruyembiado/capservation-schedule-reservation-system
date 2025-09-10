@@ -59,7 +59,7 @@
 
                                     <!-- Credentials -->
                                     <div class="mb-2">
-                                        <strong>Credentials:</strong>
+                                        <strong>Expertise Tags:</strong>
                                         @php
                                             $credentials = json_decode($panelist->credentials, true);
                                         @endphp
@@ -71,7 +71,7 @@
                                                 @endforeach
                                             </ul>
                                         @else
-                                            <span class="text-muted">No credentials available</span>
+                                            <span class="text-muted">No expertise tags available</span>
                                         @endif
                                     </div>
                                 </div>

@@ -94,7 +94,7 @@
                         </a>
                     </li>
                     <li class="sidebar-item">
-                        <a href="/capstones"
+                        <a href="/capstones-list"
                             class="sidebar-link {{ request()->is('capstones', 'capstone_history*', 'update_capstone*') ? 'active' : '' }}">
                             <i class="fa fa-book"></i>
                             <span>Capstones</span>

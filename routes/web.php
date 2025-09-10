@@ -83,12 +83,13 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/delete_group/{id}', [GroupController::class, 'deleteGroup'])->name('groups.delete');
 
     // Instructor
+    Route::get('/view_instructor/{id}', [InstructorController::class, 'viewInstructor']);
     Route::get('/update_instructor/{id}', [InstructorController::class, 'updateInstructorForm']);
     Route::post('/update_instructor/{id}', [InstructorController::class, 'updateInstructor'])->name('instructor.update');
     Route::delete('/delete_instructor/{id}', [InstructorController::class, 'deleteInstructor'])->name('instructor.delete');
 
     // Capstones
-    Route::get('/capstones', [CapstoneController::class, 'index']);
+    Route::get('/capstones-list', [CapstoneController::class, 'index'])->name('capstones.list');
     Route::get('/update_capstone/{ids}', [CapstoneController::class, 'create'])->where('ids', '.*');
     Route::post('/update_capstone/{ids}', [CapstoneController::class, 'update'])->name('capstone.update');
 

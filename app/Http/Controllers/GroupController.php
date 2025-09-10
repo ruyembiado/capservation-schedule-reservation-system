@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -42,6 +43,9 @@ class GroupController extends Controller
             'yearsection' => 'required|string|max:255',
             'capstone_adviser' => 'required|string|max:255',
             'instructor' => 'required|exists:users,id',
+            'capacity' => 'required|integer|min:1',
+            'credentials.*' => 'nullable|string',
+            'vacant_time' => 'nullable|date_format:H:i',
         ];
 
         $messages = [];
@@ -67,12 +71,15 @@ class GroupController extends Controller
         $group->year_section = $request->yearsection;
         $group->capstone_adviser = $request->capstone_adviser;
         $group->instructor_id = $request->instructor;
+        $group->vacant_time = $request->vacant_time;
+        $group->capacity = $request->capacity;
 
         if ($request->password) {
             $group->password = Hash::make($request->password);
         }
 
         $group->members = json_encode($request->members);
+        $group->credentials = json_encode($request->credentials);
 
         $group->save();
 

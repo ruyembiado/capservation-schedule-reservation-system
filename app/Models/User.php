@@ -34,6 +34,9 @@ class User extends Authenticatable
         'user_type',
         'status',
         'code',
+        'credentials',
+        'capacity',
+        'vacant_time',
     ];
 
     /**

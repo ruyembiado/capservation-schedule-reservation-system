@@ -99,12 +99,17 @@
                         $transaction == null ||
                             ($transaction->type_of_defense != 'title_defense' && $transaction->type_of_defense != 'pre_oral_defense'))
                         <p class="mt-3 mb-2">Input your three titles for checking</p>
-                        <form action="{{ route('reservation.store') }}" method="POST">
+                        <form action="{{ route('reservation.store') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <input type="hidden" name="group_id" value="{{ $selectedGroup ?? auth()->user()->id }}">
                             <div class="col-12 mb-2">
                                 <textarea class="form-control @error('title_1') is-invalid @enderror" name="title_1">{{ old('title_1') }}</textarea>
                                 @error('title_1')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                                <label for="name" class="form-label mt-2">Attachment 1</label>
+                                <input type="file" class="form-control" name="attachment_1">
+                                @error('attachment_1')
                                     <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -113,10 +118,20 @@
                                 @error('title_2')
                                     <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
+                                <label for="name" class="form-label mt-2">Attachment 2</label>
+                                <input type="file" class="form-control" name="attachment_2">
+                                @error('attachment_2')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
                             </div>
                             <div class="col-12 mb-2">
                                 <textarea class="form-control @error('title_3') is-invalid @enderror" name="title_3">{{ old('title_3') }}</textarea>
                                 @error('title_3')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                                <label for="name" class="form-label mt-2">Attachment 3</label>
+                                <input type="file" class="form-control" name="attachment_3">
+                                @error('attachment_3')
                                     <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
                             </div>

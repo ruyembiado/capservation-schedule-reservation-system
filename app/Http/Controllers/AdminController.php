@@ -307,7 +307,7 @@ class AdminController extends Controller
                 $assigned = array_slice($bestCandidates, 0, $required);
 
                 foreach ($assigned as $cand) {
-                    $cand['schedule_date'] = $scheduleDate; // Add schedule date
+                    $cand['schedule_date'] = $scheduleDate;
                     $assignments[$groupId][] = $cand;
 
                     $instructors[$cand['instructor']]['capacity']--;

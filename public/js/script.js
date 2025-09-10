@@ -189,6 +189,10 @@ $(document).ready(function () {
     const credentialsRepeater = document.getElementById("credentialsRepeater");
     const addCredentialBtn = document.getElementById("addCredentialBtn");
 
+    if (!credentialsRepeater || !addCredentialBtn) {
+        return;
+    }
+
     addCredentialBtn.addEventListener("click", function () {
         let newItem = document.createElement("div");
         newItem.classList.add("input-group", "mb-2", "credential-item");

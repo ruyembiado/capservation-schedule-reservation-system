@@ -8,7 +8,7 @@
     </div>
     <div class="card shadow col-12 mb-4">
         <div class="card-body">
-            <form action="{{ route('capstone.update', implode(',', $capstones->pluck('id')->toArray())) }}" method="POST">
+            <form action="{{ route('capstone.update', implode(',', $capstones->pluck('id')->toArray())) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="d-flex justify-content-between gab-5">
                     @foreach ($capstones as $capstone)
@@ -18,6 +18,11 @@
                                 <textarea name="title[]" class="form-control @error('title_{{ $loop->iteration }}') is-invalid @enderror" id=""
                                     rows="3">{{ $capstone->title }}</textarea>
                                 @error('name')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                                <label for="name" class="form-label mt-2">Attachment {{ $loop->iteration }}</label>
+                                <input type="file" class="form-control" name="attachment_{{ $loop->iteration }}">
+                                @error('attachment_{{ $loop->iteration }}')
                                     <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -31,7 +36,9 @@
                                 @php
                                     $today = now()->toDateString();
                                 @endphp
-                                <select name="title_status[]" @if (($reservation->status == 'pending' || $reservation->status == 'reserved') && $today < optional($schedule)->schedule_date) disabled @endif
+                                <select name="title_status[]" @if (
+                                    ($reservation->status == 'pending' || $reservation->status == 'reserved') &&
+                                        $today < optional($schedule)->schedule_date) disabled @endif
                                     class="form-select @error('title_status_{{ $loop->iteration }}') is-invalid @enderror">
                                     <option value="defended" @if ($capstone->title_status == 'defended') selected @endif>Defended
                                     </option>

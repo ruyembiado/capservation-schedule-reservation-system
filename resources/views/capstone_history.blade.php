@@ -82,8 +82,10 @@
                                                     <h6>
                                                         <strong>{{ $capstone->title }}</strong>
                                                         @if ($reservation->status == 'done')
-                                                            @if ($capstone->title_status == 'pending')
+                                                            @if ($capstone->title_status == 'defended')
                                                                 <span class="badge bg-success">Defended</span>
+                                                            @elseif ($capstone->title_status == 'pending')
+                                                                <span class="badge bg-warning">Pending</span>
                                                             @else
                                                                 <span
                                                                     class="badge bg-danger">{{ Str::ucfirst($capstone->title_status) }}</span>

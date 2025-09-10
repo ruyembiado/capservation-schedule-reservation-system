@@ -8,6 +8,7 @@ use App\Models\Reservation;
 use App\Models\Transaction;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class CapstoneController extends Controller
@@ -71,8 +72,25 @@ class CapstoneController extends Controller
         $idsArray = explode(',', $ids);
 
         $validator = Validator::make($request->all(), [
-            'title.*' => 'required|string|max:255',
+            'title.*' => [
+                'required',
+                'string',
+                'max:255',
+                function ($attribute, $value, $fail) use ($idsArray) {
+                    if (DB::table('capstones')
+                        ->where('title', $value)
+                        ->whereNotIn('id', $idsArray)
+                        ->exists()
+                    ) {
+                        $fail("The $attribute must be unique.");
+                    }
+                }
+            ],
             'title_status.*' => 'required|in:defended,pending,rejected',
+            // Optional file validation rules
+            'attachment_1' => 'nullable|file|mimes:pdf,doc,docx,ppt,pptx',
+            'attachment_2' => 'nullable|file|mimes:pdf,doc,docx,ppt,pptx',
+            'attachment_3' => 'nullable|file|mimes:pdf,doc,docx,ppt,pptx',
         ]);
 
         if ($validator->fails()) {
@@ -89,20 +107,38 @@ class CapstoneController extends Controller
                 $groupId = $capstone->group_id;
                 $capstone->title = $request->title[$index];
                 $capstone->title_status = $request->title_status[$index];
+
+                // Handle attachments
+                $attachmentKey = 'attachment_' . ($index + 1); // attachment_1, attachment_2, ...
+                if ($request->hasFile($attachmentKey)) {
+                    $file = $request->file($attachmentKey);
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $file->move(public_path('capstones'), $filename);
+                    $capstone->attachment = 'capstones/' . $filename;
+                }
+
                 $capstone->save();
             }
         }
+
         if ($groupId) {
             $reservation = Reservation::where('group_id', $groupId)
                 ->latest()
                 ->first();
 
             if ($reservation) {
-                $reservation->status = 'done';
+                // Check if any title status is still pending
+                if (in_array('pending', $request->title_status)) {
+                    $reservation->status = 'pending';
+                } else {
+                    $reservation->status = 'done';
+                }
+
                 $reservation->save();
             }
         }
-        return redirect('/capstones')->with('success', 'Capstone(s) updated successfully!');
+
+        return redirect('/capstones-list')->with('success', 'Capstone(s) updated successfully!');
     }
 
     /**

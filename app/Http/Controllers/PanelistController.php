@@ -68,6 +68,8 @@ class PanelistController extends Controller
         $rules = [
             'name' => 'required|unique:panelists,name,' . $id,
             'email' => 'required|email|unique:panelists,email,' . $id,
+            'vacant_time' => 'nullable|array',
+            'credentials.*' => 'nullable|string',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -82,6 +84,22 @@ class PanelistController extends Controller
 
         $panelist->name = $request->name;
         $panelist->email = $request->email;
+        $panelist->capacity = $request->capacity;
+        if ($request->has('credentials')) {
+            $panelist->credentials = json_encode($request->credentials);
+        }
+
+        if ($request->has('vacant_time')) {
+            $vacantTimes = [];
+            foreach ($request->vacant_time['day'] as $index => $day) {
+                $vacantTimes[] = [
+                    'day' => $day,
+                    'start_time' => $request->vacant_time['start_time'][$index],
+                    'end_time' => $request->vacant_time['end_time'][$index],
+                ];
+            }
+            $panelist->vacant_time = json_encode($vacantTimes);
+        }
 
         $panelist->save();
 

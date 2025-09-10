@@ -68,7 +68,7 @@
                 </div>
 
                 <div class="col-12 mb-2">
-                    <label for="credentials" class="form-label">Credentials</label>
+                    <label for="credentials" class="form-label">Expertise Tags</label>
                     <div id="credentialsRepeater">
                         @php
                             $credentials = old('credentials', ['']);

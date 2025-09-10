@@ -30,6 +30,17 @@
                 </div>
 
                 <div class="col-12 mb-2">
+                    <label for="capacity" class="form-label">Capacity</label>
+                    <div class="col-2">
+                        <input type="number" name="capacity" class="form-control @error('capacity') is-invalid @enderror"
+                            id="capacity" value="{{ $panelist->capacity }}">
+                    </div>
+                    @error('capacity')
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="col-12 mb-2">
                     <label for="vacant_time" class="form-label">Vacant Time</label>
                     <div id="vacantTimeRepeater">
                         @php
@@ -69,7 +80,7 @@
                     <button type="button" class="btn btn-sm btn-primary" id="addVacantTimeBtn">Add Vacant Time</button>
                 </div>
                 <div class="col-12 mb-2">
-                    <label for="credentials" class="form-label">Credentials</label>
+                    <label for="credentials" class="form-label">Expertise Tags</label>
                     <div id="credentialsRepeater">
                         @php
                             $credentials = old('credentials', json_decode($panelist->credentials, true) ?? ['']);

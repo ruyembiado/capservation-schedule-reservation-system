@@ -14,6 +14,7 @@
                             <th>No.</th>
                             <th>Group</th>
                             <th>Titles</th>
+                            <th>Attachment</th>
                             <th>Title Status</th>
                             <th>Capstone Status</th>
                             <th>Date Created</th>
@@ -29,6 +30,18 @@
                                     @foreach ($groupCapstones as $capstone)
                                         <li><i class="fa fa-book"></i> {{ $capstone->title }}</li>
                                     @endforeach
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-1 flex-column">
+                                        @foreach ($groupCapstones as $capstone)
+                                            @if ($capstone->attachment)
+                                                <a href="{{ asset($capstone->attachment) }}"
+                                                    class="btn btn-secondary btn-sm" target="_blank">
+                                                    View
+                                                </a>
+                                            @endif
+                                        @endforeach
+                                    </div>
                                 </td>
                                 <td>
                                     @foreach ($groupCapstones as $capstone)
@@ -63,30 +76,32 @@
                                 </td>
                                 <td>{{ $groupCapstones->first()->created_at->format('Y-m-d h:i A') }}</td>
                                 <td>
-                                    @if (auth()->user()->user_type === 'admin' || auth()->user()->user_type === 'instructor')
-                                        @php
-                                            $filteredCapstones = $groupCapstones->filter(function ($capstone) {
-                                                return $capstone->capstone_status !== 'title_defense';
-                                            });
-                                        @endphp
+                                    <div class="d-flex gap-1">
+                                        @if (auth()->user()->user_type === 'admin' || auth()->user()->user_type === 'instructor')
+                                            @php
+                                                $filteredCapstones = $groupCapstones->filter(function ($capstone) {
+                                                    return $capstone->capstone_status !== 'title_defense';
+                                                });
+                                            @endphp
 
-                                        <a href="/capstone_history/{{ $groupCapstones->first()->user->id }}"
-                                            class="btn btn-secondary btn-sm">
-                                            View
-                                        </a>
+                                            <a href="/capstone_history/{{ $groupCapstones->first()->user->id }}"
+                                                class="btn btn-secondary btn-sm">
+                                                View
+                                            </a>
 
-                                        @if ($filteredCapstones->isNotEmpty())
-                                            <a href="/update_capstone/{{ implode('/', $filteredCapstones->pluck('id')->toArray()) }}"
-                                                class="btn btn-warning btn-sm">
-                                                Edit
-                                            </a>
-                                        @else
-                                            <a href="/update_capstone/{{ implode('/', $groupCapstones->pluck('id')->toArray()) }}"
-                                                class="btn btn-warning btn-sm">
-                                                Edit
-                                            </a>
+                                            @if ($filteredCapstones->isNotEmpty())
+                                                <a href="/update_capstone/{{ implode('/', $filteredCapstones->pluck('id')->toArray()) }}"
+                                                    class="btn btn-warning btn-sm">
+                                                    Edit
+                                                </a>
+                                            @else
+                                                <a href="/update_capstone/{{ implode('/', $groupCapstones->pluck('id')->toArray()) }}"
+                                                    class="btn btn-warning btn-sm">
+                                                    Edit
+                                                </a>
+                                            @endif
                                         @endif
-                                    @endif
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach

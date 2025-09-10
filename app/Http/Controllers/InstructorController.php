@@ -47,6 +47,9 @@ class InstructorController extends Controller
             'password' => 'nullable|string|min:8|confirmed',
             'name' => 'required|string|max:255',
             'position' => 'required|string|max:255',
+            'capacity' => 'required|integer|min:1',
+            'credentials.*' => 'nullable|string',
+            'vacant_time' => 'nullable|array',
         ];
         $validator = Validator::make($request->all(), $rules);
 
@@ -62,6 +65,24 @@ class InstructorController extends Controller
         $instructor->username = $request->username;
         $instructor->name = $request->name;
         $instructor->position = $request->position;
+        $instructor->capacity = $request->capacity;
+        $instructor->credentials = json_encode($request->credentials);
+
+        if ($request->has('credentials')) {
+            $instructor->credentials = json_encode($request->credentials);
+        }
+
+        if ($request->has('vacant_time')) {
+            $vacantTimes = [];
+            foreach ($request->vacant_time['day'] as $index => $day) {
+                $vacantTimes[] = [
+                    'day' => $day,
+                    'start_time' => $request->vacant_time['start_time'][$index],
+                    'end_time' => $request->vacant_time['end_time'][$index],
+                ];
+            }
+            $instructor->vacant_time = json_encode($vacantTimes);
+        }
 
         if ($request->password) {
             $instructor->password = Hash::make($request->password);
@@ -78,5 +99,12 @@ class InstructorController extends Controller
         $instructor->delete();
 
         return redirect('/instructors')->with('success', 'Instructor deleted successfully!');
+    }
+
+    public function viewInstructor($id)
+    {
+        $instructor = User::where('id', $id)->get()->first();
+
+        return view('view_instructor', compact('instructor'));
     }
 }

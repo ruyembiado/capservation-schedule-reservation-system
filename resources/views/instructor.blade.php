@@ -31,6 +31,7 @@
                                 <td>{{ $instructor->position }}</td>
                                 <td>{{ $instructor->created_at->format('Y-m-d h:i A') }}</td>
                                 <td>
+                                    <a href="/view_instructor/{{ $instructor->id }}" class="btn btn-secondary btn-sm">View</a>
                                     <a href="/update_instructor/{{ $instructor->id }}"
                                         class="btn btn-warning btn-sm">Edit</a>
                                     <form action="{{ route('instructor.delete', $instructor->id) }}" method="POST"

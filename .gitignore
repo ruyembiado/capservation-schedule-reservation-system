@@ -19,3 +19,5 @@ yarn-error.log
 /.vscode
 /public/proofs/*
 !public/proofs/.gitkeep
+/public/capstones/*
+!public/capstones/.gitkeep
