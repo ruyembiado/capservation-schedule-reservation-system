@@ -46,6 +46,8 @@
                                     </option>
                                     <option value="rejected" @if ($capstone->title_status == 'rejected') selected @endif>Rejected
                                     </option>
+                                    <option value="redefense" @if ($capstone->title_status == 'redefense') selected @endif>Re-defense
+                                    </option>
                                 </select>
                                 @error('name')
                                     <div class="invalid-feedback d-block">{{ $message }}</div>

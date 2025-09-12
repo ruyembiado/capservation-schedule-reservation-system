@@ -14,7 +14,7 @@
                             <th>No.</th>
                             <th>Group</th>
                             <th>Titles</th>
-                            <th>Attachment</th>
+                            <th>Attachments</th>
                             <th>Title Status</th>
                             <th>Capstone Status</th>
                             <th>Date Created</th>
@@ -59,13 +59,17 @@
                                                 @php $bg = 'bg-danger'; @endphp
                                             @break
 
+                                            @case('redefense')
+                                                @php $bg = 'bg-redefense'; @endphp
+                                            @break
+
                                             @default
                                                 @php $bg = ''; @endphp
                                         @endswitch
 
                                         <li>
                                             <span
-                                                class="badge {{ $bg }}">{{ Str::title(Str::replace('_', ' ', $capstone->title_status)) }}</span>
+                                                class="badge {{ $bg }}">{{ ucfirst($capstone->title_status == 'redefense') ? 'Re-defense' : ucfirst($capstone->title_status) }}</span>
                                         </li>
                                     @endforeach
                                 </td>

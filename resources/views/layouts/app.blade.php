@@ -191,7 +191,7 @@
                 </ul>
             </div>
         </nav>
-        <main class="content px-3 py-4" id="page-top">
+        <main class="content px-3 py-4 auth" id="page-top">
             @if (session('success'))
                 <div class="alert alert-success">
                     {{ session('success') }}

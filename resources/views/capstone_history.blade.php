@@ -56,9 +56,9 @@
                                         {{ $reservation->transaction->status == 'paid' ? 'Paid' : 'Pending' }}
                                     </h4>
                                     @if ($reservation->reservationHistory->isNotEmpty())
-                                        <h4 class="badge bg-danger position-relative">
+                                        <h4 class="badge bg-redefense position-relative">
                                             @foreach ($reservation->reservationHistory as $history)
-                                                Re-Defense
+                                                Re-defense
                                                 <span
                                                     class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary text-light">
                                                     {{ $loop->iteration }}
@@ -86,6 +86,8 @@
                                                                 <span class="badge bg-success">Defended</span>
                                                             @elseif ($capstone->title_status == 'pending')
                                                                 <span class="badge bg-warning">Pending</span>
+                                                            @elseif ($capstone->title_status == 'redefense')
+                                                                <span class="badge bg-redefense">Re-defense</span>
                                                             @else
                                                                 <span
                                                                     class="badge bg-danger">{{ Str::ucfirst($capstone->title_status) }}</span>
@@ -93,12 +95,13 @@
                                                         @else
                                                             @if ($loop->parent->last)
                                                                 <span
-                                                                    class="badge {{ $capstone->title_status == 'pending'
-                                                                        ? 'bg-warning'
-                                                                        : ($capstone->title_status == 'defended'
-                                                                            ? 'bg-success'
-                                                                            : 'bg-danger') }}">
-                                                                    {{ ucfirst($capstone->title_status) }}
+                                                                    class="badge 
+                                                                    {{ $capstone->title_status == 'pending' ? 'bg-warning' : '' }}
+                                                                    {{ $capstone->title_status == 'redefense' ? 'bg-redefense' : '' }}
+                                                                    {{ $capstone->title_status == 'defended' ? 'bg-success' : '' }}
+                                                                    {{ $capstone->title_status == 'rejected' ? 'bg-danger' : '' }}
+                                                                ">
+                                                                    {{ $capstone->title_status == 'redefense' ? 'Re-defense' : ucfirst($capstone->title_status) }}
                                                                 </span>
                                                             @else
                                                                 <span class="badge bg-success">Defended</span>

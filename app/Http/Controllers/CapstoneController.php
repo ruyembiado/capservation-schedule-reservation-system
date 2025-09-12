@@ -8,6 +8,7 @@ use App\Models\Reservation;
 use App\Models\Transaction;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\ReservationHistory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -86,7 +87,7 @@ class CapstoneController extends Controller
                     }
                 }
             ],
-            'title_status.*' => 'required|in:defended,pending,rejected',
+            'title_status.*' => 'required|in:defended,pending,rejected,redefense',
             // Optional file validation rules
             'attachment_1' => 'nullable|file|mimes:pdf,doc,docx,ppt,pptx',
             'attachment_2' => 'nullable|file|mimes:pdf,doc,docx,ppt,pptx',
@@ -128,10 +129,16 @@ class CapstoneController extends Controller
 
             if ($reservation) {
                 // Check if any title status is still pending
-                if (in_array('pending', $request->title_status)) {
+                if (in_array('pending', $request->title_status) || in_array('redefense', $request->title_status)) {
                     $reservation->status = 'pending';
                 } else {
                     $reservation->status = 'done';
+                }
+
+                if ($request->title_status) {
+                    ReservationHistory::create([
+                        'reservation_id' => $reservation->id,
+                    ]);
                 }
 
                 $reservation->save();

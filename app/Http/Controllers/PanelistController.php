@@ -42,6 +42,8 @@ class PanelistController extends Controller
             }
         })->get();
 
+        // $panelists = Panelist::all();
+
         $capstoneIds = (array) json_decode($reservation->capstone_title_id, true);
         $capstones = Capstone::whereIn('id', $capstoneIds)->get();
 
