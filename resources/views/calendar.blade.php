@@ -52,12 +52,12 @@
                                 <label for="schedule_category" class="form-label">Select Category</label>
                                 <select name="schedule_category" class="form-control" id="schedule_category">
                                     <option value="">-- Select Category --</option>
-                                    <option value="available"
+                                    {{-- <option value="available"
                                         {{ old('schedule_category') == 'available' ? 'selected' : '' }}>
                                         Available</option>
                                     <option value="occupied"
                                         {{ old('schedule_category') == 'occupied' ? 'selected' : '' }}>
-                                        Occupied</option>
+                                        Occupied</option> --}}
                                     <option value="unavailable"
                                         {{ old('schedule_category') == 'unavailable' ? 'selected' : '' }}>Unavailable
                                     </option>
@@ -88,7 +88,16 @@
     document.addEventListener('DOMContentLoaded', function() {
         var calendarEl = document.getElementById('FullCalendar');
 
+        function formatDateLocal(date) {
+            let y = date.getFullYear();
+            let m = String(date.getMonth() + 1).padStart(2, "0");
+            let d = String(date.getDate()).padStart(2, "0");
+            return `${y}-${m}-${d}`;
+        }
+
         if (calendarEl) {
+            var unavailableDates = [];
+
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 selectable: true,
@@ -101,7 +110,10 @@
                     fetch('/schedules')
                         .then(response => response.json())
                         .then(data => {
-                            console.log("Events Loaded:", data);
+                            unavailableDates = data
+                                .filter(ev => ev.isUnavailable === true)
+                                .map(ev => ev.start.split("T")[0]);
+
                             successCallback(data);
                         })
                         .catch(error => {
@@ -111,45 +123,64 @@
                 },
                 eventContent: function(arg) {
                     return {
-                        html: `<div class="fc-event-time">
+                        html: `<div class="fc-event-time isUnavailable-${arg.event.extendedProps.isUnavailable}">
                                 ${arg.event.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
-                           </div>
-                           <div class="fc-event-title">
+                            </div>
+                            <div class="fc-event-title">
                                 ${arg.event.title}
-                           </div>`
+                            </div>`
                     };
-                },
-                validRange: {
-                    start: null
                 },
                 selectAllow: function(selectInfo) {
                     const today = new Date();
                     today.setHours(0, 0, 0, 0);
+
                     const startDate = new Date(selectInfo.start);
                     startDate.setHours(0, 0, 0, 0);
 
-                    return startDate > today;
+                    const startDateStr = formatDateLocal(startDate);
+
+                    if (startDate <= today) return false;
+                    if (unavailableDates.includes(startDateStr)) return false;
+
+                    return true;
                 },
                 dateClick: function(info) {
-                    let clickedDate = new Date(info.dateStr);
+                    let clickedDate = new Date(info.date);
                     let today = new Date();
                     today.setHours(0, 0, 0, 0);
                     clickedDate.setHours(0, 0, 0, 0);
 
-                    if (clickedDate > today) {
+                    const dateStr = formatDateLocal(clickedDate);
+
+                    // only allow clicking if future & not unavailable
+                    if (clickedDate > today && !unavailableDates.includes(dateStr)) {
                         let scheduleDateEl = document.getElementById('schedule_date');
                         if (scheduleDateEl) {
-                            scheduleDateEl.value = info.dateStr;
+                            scheduleDateEl.value = dateStr;
                         }
                     }
                 },
                 dayCellDidMount: function(info) {
-                    let today = new Date().setHours(0, 0, 0, 0);
-                    let cellDate = new Date(info.date).setHours(0, 0, 0, 0);
+                    let today = new Date();
+                    today.setHours(0, 0, 0, 0);
 
+                    let cellDate = new Date(info.date);
+                    cellDate.setHours(0, 0, 0, 0);
+
+                    let dateStr = formatDateLocal(info.date);
+
+                    // style past dates
                     if (cellDate <= today) {
                         info.el.style.backgroundColor = "#f8d7da";
                         info.el.style.color = "#6c757d";
+                        info.el.style.pointerEvents = "none";
+                        info.el.style.opacity = "0.6";
+                    }
+
+                    // style unavailable dates
+                    if (unavailableDates.includes(dateStr)) {
+                        info.el.style.backgroundColor = "#ffcccc";
                         info.el.style.pointerEvents = "none";
                         info.el.style.opacity = "0.6";
                     }
@@ -165,7 +196,6 @@
                     if (scheduleDateEl) {
                         scheduleDateEl.value = selectedDate;
                     }
-
                     if (scheduleTimeEl) {
                         scheduleTimeEl.value = selectedTime;
                     }
@@ -177,6 +207,10 @@
             });
 
             calendar.render();
+
+            setInterval(() => {
+                calendar.refetchEvents();
+            }, 2000);
         }
     });
 </script>

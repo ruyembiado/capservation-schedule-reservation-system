@@ -28,6 +28,7 @@ class ReservationController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(function ($reservation) {
+                    $latestSchedule = $reservation->schedule->sortByDesc('schedule_date')->first();
                     $titles = $this->getTitlesForReservation($reservation);
                     return [
                         'id' => $reservation->id,
@@ -37,9 +38,9 @@ class ReservationController extends Controller
                         'titles' => $titles,
                         'status' => $reservation->status,
                         'created_at' => $reservation->created_at,
-                        'schedule_date' => $reservation->schedule ? $reservation->schedule->schedule_date : 'No date available',
-                        'schedule_time' => $reservation->schedule && $reservation->schedule->schedule_time
-                            ? \Carbon\Carbon::parse($reservation->schedule->schedule_time)->format('h:i A')
+                        'schedule_date' => $latestSchedule ? $latestSchedule->schedule_date : 'No date available',
+                        'schedule_time' => $latestSchedule && $latestSchedule->schedule_time
+                            ? \Carbon\Carbon::parse($latestSchedule->schedule_time)->format('h:i A')
                             : 'No time available',
                     ];
                 });
@@ -50,6 +51,7 @@ class ReservationController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(function ($reservation) {
+                    $latestSchedule = $reservation->schedule->sortByDesc('schedule_date')->first();
                     $titles = $this->getTitlesForReservation($reservation);
                     return [
                         'id' => $reservation->id,
@@ -59,9 +61,9 @@ class ReservationController extends Controller
                         'titles' => $titles,
                         'status' => $reservation->status,
                         'created_at' => $reservation->created_at,
-                        'schedule_date' => $reservation->schedule ? $reservation->schedule->schedule_date : 'No date available',
-                        'schedule_time' => $reservation->schedule && $reservation->schedule->schedule_time
-                            ? \Carbon\Carbon::parse($reservation->schedule->schedule_time)->format('h:i A')
+                        'schedule_date' => $latestSchedule ? $latestSchedule->schedule_date : 'No date available',
+                        'schedule_time' => $latestSchedule && $latestSchedule->schedule_time
+                            ? \Carbon\Carbon::parse($latestSchedule->schedule_time)->format('h:i A')
                             : 'No time available',
                     ];
                 });
@@ -70,6 +72,7 @@ class ReservationController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(function ($reservation) {
+                    $latestSchedule = $reservation->schedule->sortByDesc('schedule_date')->first();
                     $titles = $this->getTitlesForReservation($reservation);
                     return [
                         'id' => $reservation->id,
@@ -79,9 +82,9 @@ class ReservationController extends Controller
                         'titles' => $titles,
                         'status' => $reservation->status,
                         'created_at' => $reservation->created_at,
-                        'schedule_date' => $reservation->schedule ? $reservation->schedule->schedule_date : 'No date available',
-                        'schedule_time' => $reservation->schedule && $reservation->schedule->schedule_time
-                            ? \Carbon\Carbon::parse($reservation->schedule->schedule_time)->format('h:i A')
+                        'schedule_date' => $latestSchedule ? $latestSchedule->schedule_date : 'No date available',
+                        'schedule_time' => $latestSchedule && $latestSchedule->schedule_time
+                            ? \Carbon\Carbon::parse($latestSchedule->schedule_time)->format('h:i A')
                             : 'No time available',
                     ];
                 });

@@ -658,3 +658,11 @@ a.sidebar-link.active {
 .bg-redefense {
     background-color: #fd7e14;
 }
+
+.fc .fc-bg-event {
+    opacity: 0.6 !important;
+}
+
+.isUnavailable-true {
+    display: none !important;
+}

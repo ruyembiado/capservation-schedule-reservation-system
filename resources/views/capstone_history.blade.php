@@ -57,20 +57,19 @@
                                     </h4>
                                     @if ($reservation->reservationHistory->isNotEmpty())
                                         <h4 class="badge bg-redefense position-relative">
-                                            @foreach ($reservation->reservationHistory as $history)
-                                                Re-defense
-                                                <span
-                                                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary text-light">
-                                                    {{ $loop->iteration }}
-                                                </span>
-                                            @endforeach
+                                            Re-defense
+                                            <span
+                                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary text-light">
+                                                {{ $reservation->reservationHistory->count() }}
+                                            </span>
                                         </h4>
                                     @endif
                                 </div>
                                 <div class="timeline-date">
-                                    <p>Date of Defense: {{ $reservation->schedule->schedule_date ?? 'N/A' }}
-                                        @if ($reservation->schedule->schedule_time ?? false)
-                                            at {{ $reservation->schedule->schedule_time }}
+                                    <p>Date of Defense: {{ $reservation->latestSchedule->schedule_date ?? 'N/A' }}
+                                        @if ($reservation->latestSchedule && $reservation->latestSchedule->schedule_time)
+                                            at
+                                            {{ \Carbon\Carbon::parse($reservation->latestSchedule->schedule_time)->format('h:i A') }}
                                         @endif
                                     </p>
                                 </div>

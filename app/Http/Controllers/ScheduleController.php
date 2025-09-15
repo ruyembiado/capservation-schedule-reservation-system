@@ -22,14 +22,38 @@ class ScheduleController extends Controller
 
     public function getSchedules()
     {
-        $schedules = Schedule::with('user')->get()->map(function ($schedule) {
+        $schedules = Schedule::with('user')->orderBy('schedule_date', 'ASC')->get()->map(function ($schedule) {
+            $isUnavailable = ($schedule->schedule_category === 'unavailable');
+
+            if ($isUnavailable) {
+                $start = $schedule->schedule_date;
+                $end   = date('Y-m-d', strtotime($schedule->schedule_date . ' +1 day'));
+
+                return [
+                    'id' => $schedule->id,
+                    'title' => '',
+                    'start' => $start,
+                    'end'   => $end,
+                    'allDay' => true,
+                    'display' => 'background',
+                    'backgroundColor' => '#DC3545',
+                    'borderColor' => '#DC3545',
+                    'textColor' => '#ffffff',
+                    'isUnavailable' => true,
+                ];
+            }
+
             return [
                 'id' => $schedule->id,
-                'title' => ucwords(optional($schedule->user)->username) ?? 'Unknown User',
+                'title' => ucwords(optional($schedule->user)->username ?? 'Unknown User'),
                 'start' => $schedule->schedule_date . 'T' . $schedule->schedule_time,
-                'end' => $schedule->schedule_date . 'T' . date('H:i:s', strtotime($schedule->schedule_time . ' +1 hour')),
-                'groupId' => $schedule->group_id,
-                'allDay' => false,
+                'end'   => $schedule->schedule_date . 'T' . date('H:i:s', strtotime($schedule->schedule_time . ' +1 hour')),
+                'allDay' => true,
+                'isUnavailable' => false,
+                'backgroundColor' => '#3788d8',
+                'borderColor' => '#3788d8',
+                'textColor' => '#ffffff',
+
             ];
         });
 
@@ -52,12 +76,16 @@ class ScheduleController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'group' => 'required|exists:users,id',
+            'group' => 'nullable|exists:users,id',
             'schedule_date' => 'required|date',
-            'schedule_time' => 'required|date_format:H:i',
+            'schedule_time' => 'nullable|date_format:H:i',
             'schedule_category' => 'nullable|in:available,occupied,unavailable',
             'schedule_remarks' => 'nullable|string|max:255',
         ]);
+
+        $validator->sometimes(['group', 'schedule_time'], 'required', function ($input) {
+            return empty($input->schedule_category);
+        });
 
         if ($validator->fails()) {
             return redirect()->back()
@@ -74,10 +102,10 @@ class ScheduleController extends Controller
             $reservation->save();
 
             Schedule::create([
-                'group_id' => $request->group,
+                'group_id' => $request->group ?: null,
                 'reservation_id' => $reservation->id,
                 'schedule_date' => $request->schedule_date,
-                'schedule_time' => $request->schedule_time,
+                'schedule_time' => $request->schedule_time ?: null,
                 'schedule_category' => $request->schedule_category ?: '',
                 'schedule_remarks' => $request->schedule_remarks ?: '',
             ]);
@@ -89,6 +117,30 @@ class ScheduleController extends Controller
                 'notification_title' => 'Schedule Created',
                 'notification_message' => ucfirst($reservation->user->username) . '\'s reservation has been scheduled for defense.',
             ]);
+        } else {
+            Schedule::create([
+                'group_id' => null,
+                'reservation_id' => null,
+                'schedule_date' => $request->schedule_date,
+                'schedule_time' => null,
+                'schedule_category' => $request->schedule_category ?: '',
+                'schedule_remarks' => $request->schedule_remarks ?: '',
+            ]);
+
+            $schedules = Schedule::where('schedule_date', $request->schedule_date)->get();
+
+            foreach ($schedules as $schedule) {
+                if ($schedule->reservation_id) {
+                    ReservationHistory::create([
+                        'reservation_id' => $schedule->reservation_id,
+                    ]);
+                }
+            }
+
+            Reservation::whereIn('id', $schedules->pluck('reservation_id'))
+                ->update(['status' => 'approved']);
+
+            return redirect()->back()->with('success', 'All schedules for ' . $request->schedule_date . ' have been set to re-defense.');
         }
 
         return redirect()->back()->with('success', 'Schedule created successfully.');

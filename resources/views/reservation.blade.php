@@ -60,7 +60,9 @@
                                     <span
                                         class="badge {{ $bg }}">{{ Str::ucfirst($reservation['status'] == 'reserved' ? 'Scheduled' : $reservation['status']) }}</span>
                                 </td>
-                                <td>{{ $reservation['schedule_date'] }} | {{ $reservation['schedule_time'] }}</td>
+                                <td>
+                                    {{ $reservation['status'] == 'reserved' ? $reservation['schedule_date'] . ' | ' . $reservation['schedule_time'] : '' }}
+                                </td>
                                 <td>{{ \Carbon\Carbon::parse($reservation['created_at'])->format('Y-m-d h:i A') }}</td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">

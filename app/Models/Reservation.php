@@ -36,7 +36,7 @@ class Reservation extends Model
 
     public function schedule()
     {
-        return $this->hasOne(Schedule::class, 'reservation_id');
+        return $this->hasMany(Schedule::class, 'reservation_id');
     }
 
     public function transaction()
@@ -81,5 +81,10 @@ class Reservation extends Model
         }
 
         return [$ids];
+    }
+
+    public function latestSchedule()
+    {
+        return $this->hasOne(Schedule::class, 'reservation_id')->latestOfMany('schedule_date');
     }
 }

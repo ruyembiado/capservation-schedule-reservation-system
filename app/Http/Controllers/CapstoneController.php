@@ -128,8 +128,9 @@ class CapstoneController extends Controller
                 ->first();
 
             if ($reservation) {
-                // Check if any title status is still pending
-                if (in_array('pending', $request->title_status) || in_array('redefense', $request->title_status)) {
+                if (in_array('redefense', $request->title_status)) {
+                    $reservation->status = 'approved';
+                } elseif (in_array('pending', $request->title_status)) {
                     $reservation->status = 'pending';
                 } else {
                     $reservation->status = 'done';
