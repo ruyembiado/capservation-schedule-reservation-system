@@ -45,7 +45,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Schedule
     Route::get('/calendar', [ScheduleController::class, 'index']);
-    Route::post('/add_schedule', [ScheduleController::class, 'store'])->name('schedule.store');
+    Route::post('/add-schedule', [ScheduleController::class, 'store'])->name('schedule.store');
     Route::get('/schedules', [ScheduleController::class, 'getSchedules']);
 
     // Reservation
@@ -55,46 +55,46 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/reserve/select-group', [ReservationController::class, 'storeGroup'])->name('reservation.storeGroup');
     Route::get('/get-all-groups', [ReservationController::class, 'getGroups']);
     Route::post('/reserve-group', [ReservationController::class, 'store'])->name('reservation.store');
-    Route::delete('/delete_reservation/{reservation_id}', [ReservationController::class, 'destroy'])->name('reservation.destroy');
+    Route::delete('/delete-reservation/{reservation_id}', [ReservationController::class, 'destroy'])->name('reservation.destroy');
     Route::post('/reservation/reschedule/{id}', [ScheduleController::class, 'update'])->name('schedule.reschedule');
 
     // Transaction
     Route::get('/transactions', [TransactionController::class, 'index']);
-    Route::post('/update_transaction/{id}', [TransactionController::class, 'update'])->name('transaction.update');
+    Route::post('/update-transaction/{id}', [TransactionController::class, 'update'])->name('transaction.update');
     Route::post('/transaction/upload-proof', [TransactionController::class, 'uploadProof'])->name('transaction.upload_proof');
 
     // Panelists
     Route::get('/panelists', [PanelistController::class, 'index']);
-    Route::get('/add_panelist', [PanelistController::class, 'create'])->name('panelist.create');
-    Route::post('/add_panelist', [PanelistController::class, 'store'])->name('panelist.store');
-    Route::get('/assign_panelist/{id}', [PanelistController::class, 'showForm'])->name('assign_panelist.form');
-    Route::post('/assign_panelists', [PanelistController::class, 'assignPanelists'])->name('assign_panelist.store');
-    Route::get('/update_panelist/{id}', [PanelistController::class, 'updateForm']);
-    Route::post('/update_panelist/{id}', [PanelistController::class, 'updatePanelist'])->name('panelist.update');
-    Route::delete('/delete_panelist/{id}', [PanelistController::class, 'destroy'])->name('panelist.destroy');
-    Route::get('/view_panelists/{id}', [PanelistController::class, 'viewPanelist'])->name('view_panelists');
-    Route::get('/view_panelist/{id}', [PanelistController::class, 'viewSinglePanelist'])->name('view_panelist');
+    Route::get('/add-panelist', [PanelistController::class, 'create'])->name('panelist.create');
+    Route::post('/add-panelist', [PanelistController::class, 'store'])->name('panelist.store');
+    Route::get('/assign-panelist/{id}', [PanelistController::class, 'showForm'])->name('assign_panelist.form');
+    Route::post('/assign-panelists', [PanelistController::class, 'assignPanelists'])->name('assign_panelist.store');
+    Route::get('/update-panelist/{id}', [PanelistController::class, 'updateForm']);
+    Route::post('/update-panelist/{id}', [PanelistController::class, 'updatePanelist'])->name('panelist.update');
+    Route::delete('/delete-panelist/{id}', [PanelistController::class, 'destroy'])->name('panelist.destroy');
+    Route::get('/view-panelists/{id}', [PanelistController::class, 'viewPanelist'])->name('view_panelists');
+    Route::get('/view-panelist/{id}', [PanelistController::class, 'viewSinglePanelist'])->name('view_panelist');
 
     // Group
-    Route::get('/add_group', [GroupController::class, 'create'])->name('group.create');
-    Route::get('/view_group/{id}', [GroupController::class, 'viewGroup']);
-    Route::get('/update_group/{id}', [GroupController::class, 'updateGroupForm']);
-    Route::post('/update_group/{id}', [GroupController::class, 'updateGroup'])->name('group.update');
-    Route::delete('/delete_group/{id}', [GroupController::class, 'deleteGroup'])->name('groups.delete');
+    Route::get('/add-group', [GroupController::class, 'create'])->name('group.create');
+    Route::get('/view-group/{id}', [GroupController::class, 'viewGroup']);
+    Route::get('/update-group/{id}', [GroupController::class, 'updateGroupForm']);
+    Route::post('/update-group/{id}', [GroupController::class, 'updateGroup'])->name('group.update');
+    Route::delete('/delete-group/{id}', [GroupController::class, 'deleteGroup'])->name('groups.delete');
 
     // Instructor
-    Route::get('/view_instructor/{id}', [InstructorController::class, 'viewInstructor']);
-    Route::get('/update_instructor/{id}', [InstructorController::class, 'updateInstructorForm']);
-    Route::post('/update_instructor/{id}', [InstructorController::class, 'updateInstructor'])->name('instructor.update');
-    Route::delete('/delete_instructor/{id}', [InstructorController::class, 'deleteInstructor'])->name('instructor.delete');
+    Route::get('/view-instructor/{id}', [InstructorController::class, 'viewInstructor']);
+    Route::get('/update-instructor/{id}', [InstructorController::class, 'updateInstructorForm']);
+    Route::post('/update-instructor/{id}', [InstructorController::class, 'updateInstructor'])->name('instructor.update');
+    Route::delete('/delete-instructor/{id}', [InstructorController::class, 'deleteInstructor'])->name('instructor.delete');
 
     // Capstones
     Route::get('/capstones-list', [CapstoneController::class, 'index'])->name('capstones.list');
-    Route::get('/update_capstone/{ids}', [CapstoneController::class, 'create'])->where('ids', '.*');
-    Route::post('/update_capstone/{ids}', [CapstoneController::class, 'update'])->name('capstone.update');
+    Route::get('/update-capstone/{ids}', [CapstoneController::class, 'create'])->where('ids', '.*');
+    Route::post('/update-capstone/{ids}', [CapstoneController::class, 'update'])->name('capstone.update');
 
     // Activity Log
-    Route::get('/activity_log', [ActivityLogController::class, 'index']);
+    Route::get('/activity-log', [ActivityLogController::class, 'index']);
 
     // Notifications
     Route::get('/notifications', [NotificationController::class, 'index']);
@@ -104,7 +104,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/create-custom-reminder', [NotificationController::class, 'storeCustomReminder'])->name('custom.reminder');
 
     // Capstone history
-    Route::get('/capstone_history/{id?}', [CapstoneController::class, 'history'])->name('capstone.history');
+    Route::get('/capstone-history/{id?}', [CapstoneController::class, 'history'])->name('capstone.history');
 
     // Instructor Code
     Route::get('/code', [AuthController::class, 'code']);
@@ -112,7 +112,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Profile
     Route::get('/profile', [AuthController::class, 'profile'])->name('profile.view');
-    Route::post('/update_profile/{id}', [AuthController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/update-profile/{id}', [AuthController::class, 'updateProfile'])->name('profile.update');
 
     Route::get('/test-scheduler', [AdminController::class, 'testScheduler']);
 });

@@ -28,7 +28,7 @@ class ReservationController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(function ($reservation) {
-                    $latestSchedule = $reservation->schedule->sortByDesc('schedule_date')->first();
+                    $latestSchedule = $reservation->schedule->sortByDesc('created_at')->first();
                     $titles = $this->getTitlesForReservation($reservation);
                     return [
                         'id' => $reservation->id,
@@ -51,7 +51,7 @@ class ReservationController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(function ($reservation) {
-                    $latestSchedule = $reservation->schedule->sortByDesc('schedule_date')->first();
+                    $latestSchedule = $reservation->schedule->sortByDesc('created_at')->first();
                     $titles = $this->getTitlesForReservation($reservation);
                     return [
                         'id' => $reservation->id,
@@ -72,7 +72,7 @@ class ReservationController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->get()
                 ->map(function ($reservation) {
-                    $latestSchedule = $reservation->schedule->sortByDesc('schedule_date')->first();
+                    $latestSchedule = $reservation->schedule->sortByDesc('created_at')->first();
                     $titles = $this->getTitlesForReservation($reservation);
                     return [
                         'id' => $reservation->id,

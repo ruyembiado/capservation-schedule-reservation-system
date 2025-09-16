@@ -53,7 +53,7 @@
                 @if (auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'instructor')
                     <li class="sidebar-item">
                         <a href="/groups"
-                            class="sidebar-link {{ request()->is('groups', 'view_group*', 'update_group*') ? 'active' : '' }}">
+                            class="sidebar-link {{ request()->is('groups', 'view-group*', 'update-group*') ? 'active' : '' }}">
                             <i class="fa fa-users"></i>
                             <span>Groups</span>
                         </a>
@@ -62,7 +62,7 @@
                 @if (auth()->user()->user_type == 'admin')
                     <li class="sidebar-item">
                         <a href="/instructors"
-                            class="sidebar-link {{ request()->is('instructors', 'update_instructor*') ? 'active' : '' }}">
+                            class="sidebar-link {{ request()->is('instructors', 'view-instructor*', 'update-instructor*') ? 'active' : '' }}">
                             <i class="fas fa-chalkboard-teacher"></i>
                             <span>Instructors</span>
                         </a>
@@ -88,14 +88,14 @@
                 @if (auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'instructor')
                     <li class="sidebar-item">
                         <a href="/reservations"
-                            class="sidebar-link {{ request()->is('reservations', 'reservation*', 'view_panelists*', 'assign_panelist*') ? 'active' : '' }}">
+                            class="sidebar-link {{ request()->is('reservations', 'reservation*', 'view-panelists/*', 'assign-panelist*') ? 'active' : '' }}">
                             <i class="fa fa-pen-to-square"></i>
                             <span>Reservations</span>
                         </a>
                     </li>
                     <li class="sidebar-item">
                         <a href="/capstones-list"
-                            class="sidebar-link {{ request()->is('capstones', 'capstone_history*', 'update_capstone*') ? 'active' : '' }}">
+                            class="sidebar-link {{ request()->is('capstones-list', 'capstone-history*', 'update-capstone*') ? 'active' : '' }}">
                             <i class="fa fa-book"></i>
                             <span>Capstones</span>
                         </a>
@@ -104,7 +104,7 @@
                 @if (auth()->user()->user_type == 'admin')
                     <li class="sidebar-item">
                         <a href="/panelists"
-                            class="sidebar-link {{ request()->is('panelists', 'add_panelist', 'update_panelist*') ? 'active' : '' }}">
+                            class="sidebar-link {{ request()->is('panelists', 'view-panelist/*','add-panelist', 'update-panelist*') ? 'active' : '' }}">
                             <i class="fas fa-user-friends"></i>
                             <span>Panelists</span>
                         </a>
@@ -134,7 +134,7 @@
                 </li> --}}
                 @if (auth()->user()->user_type == 'student')
                     <li class="sidebar-item">
-                        <a href="/capstone_history" class="sidebar-link">
+                        <a href="/capstone-history" class="sidebar-link">
                             <i class="fa-solid fa-timeline"></i>
                             <span>Capstone History</span>
                         </a>
@@ -196,7 +196,7 @@
                                     <i class="text-primary fas fa-cogs fa-sm fa-fw mr-2"></i>
                                     Settings
                                 </a> --}}
-                            <a class="dropdown-item" href="/activity_log">
+                            <a class="dropdown-item" href="/activity-log">
                                 <i class="text-primary fas fa-list fa-sm fa-fw mr-2"></i>
                                 Activity Log
                             </a>
@@ -262,7 +262,6 @@
 <script src="{{ asset('js/script.js') }}"></script>
 <script>
     function hideAlerts(delay = 3000) {
-        console.log('Hiding alerts');
         if ($('.alert-success, .alert-danger').length) {
             setTimeout(function() {
                 $('.alert-success, .alert-danger').fadeOut('slow');
@@ -290,7 +289,7 @@
 
     // Load notifications via AJAX
     function loadNotifications() {
-        fetch("/bell-notifications") // route to your controller@index
+        fetch("/bell-notifications")
             .then(res => res.json())
             .then(data => {
                 notifItems.innerHTML = "";

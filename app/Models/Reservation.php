@@ -85,6 +85,6 @@ class Reservation extends Model
 
     public function latestSchedule()
     {
-        return $this->hasOne(Schedule::class, 'reservation_id')->latestOfMany('schedule_date');
+        return $this->hasOne(Schedule::class, 'reservation_id')->latestOfMany('created_at');
     }
 }
