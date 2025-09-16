@@ -348,7 +348,7 @@ class ReservationController extends Controller
      */
     public function show($id, $action = null, $notif_id = null)
     {
-        $reservation = Reservation::with(['user', 'reserveBy', 'schedule'])->find($id);
+        $reservation = Reservation::with(['user', 'reserveBy', 'latestSchedule'])->find($id);
         if ($notif_id) {
             $notification = Notification::where('_link_id', $id)->first();
             if ($notification && $action == 'read') {
@@ -374,9 +374,9 @@ class ReservationController extends Controller
                 'titles' => $titles,
                 'status' => $reservation->status,
                 'created_at' => $reservation->created_at,
-                'schedule_date' => $reservation->schedule ? $reservation->schedule->schedule_date : 'No date available',
-                'schedule_time' => $reservation->schedule && $reservation->schedule->schedule_time
-                    ? \Carbon\Carbon::parse($reservation->schedule->schedule_time)->format('h:i A')
+                'schedule_date' => $reservation->schedule ? $reservation->latestSchedule->schedule_date : 'No date available',
+                'schedule_time' => $reservation->schedule && $reservation->latestSchedule->schedule_time
+                    ? \Carbon\Carbon::parse($reservation->latestSchedule->schedule_time)->format('h:i A')
                     : 'No time available',
             ]
         ];

@@ -23,8 +23,8 @@ $(document).ready(function () {
         $("#dataTable3").DataTable();
     }
 
-     // Initialize DataTable
-     if ($("#dataTable4").length) {
+    // Initialize DataTable
+    if ($("#dataTable4").length) {
         $("#dataTable4").DataTable();
     }
 

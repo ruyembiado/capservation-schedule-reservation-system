@@ -125,13 +125,13 @@
                         </a>
                     </li>
                 @endif
-                <li class="sidebar-item">
+                {{-- <li class="sidebar-item">
                     <a href="/notification"
                         class="sidebar-link {{ request()->is('notification') ? 'active' : '' }}">
                         <i class="fa fa-bell"></i>
                         <span>Notifications</span>
                     </a>
-                </li>
+                </li> --}}
                 @if (auth()->user()->user_type == 'student')
                     <li class="sidebar-item">
                         <a href="/capstone_history" class="sidebar-link">
@@ -144,19 +144,39 @@
     </aside>
     <div class="main bg-gradient">
         <nav class="navbar navbar-expand px-4 py-3">
-            {{-- <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-md-0 my-1 mw-100 navbar-search">
-                    <div class="input-group">
-                        <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
-                            aria-label="Search" aria-describedby="basic-addon2">
-                        <div class="input-group-append">
-                            <button class="btn btn-primary" type="button">
-                                <i class="fas fa-search fa-sm"></i>
-                            </button>
-                        </div>
-                    </div>
-                </form> --}}
             <div class="navbar-collapse collapse">
                 <ul class="navbar-nav ms-auto">
+                    <!-- Notification Bell + List Wrapper -->
+                    <li class="nav-item dropdown position-relative">
+                        <!-- Bell -->
+                        <span class="badge bg-transparent position-relative px-0 me-2" id="notifBell"
+                            style="cursor:pointer;">
+                            <i class="fa fa-bell text-primary fa-2x p-0"></i>
+                            <span id="notifCount"
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger text-light">
+                                0
+                            </span>
+                        </span>
+
+                        <!-- Notification List (dropdown style) -->
+                        <div class="notification-list d-none position-absolute end-0 mt-2" id="notifList"
+                            style="z-index:999; min-width:400px;">
+                            <div class="card shadow-sm">
+                                <div class="card-header bg-theme-primary text-white">
+                                    Notifications
+                                </div>
+                                <ul id="notifItems" class="list-group list-group-flush"
+                                    style="max-height: 400px; overflow-y: auto;">
+                                    <li class="list-group-item text-muted text-center">Loading...</li>
+                                </ul>
+                                <div class="card-footer text-center border-top">
+                                    <a href="/notifications" class="text-decoration-none">See all</a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <div class="vr mx-2" style="height: 20px; align-self: center;"></div>
                     @auth
                         <span class="m-auto me-1">{{ Str::ucfirst(auth()->user()->username) }}</span>
                     @endauth
@@ -250,8 +270,77 @@
         }
     }
     hideAlerts();
-</script>
 
+    const bell = document.getElementById("notifBell");
+    const notifList = document.getElementById("notifList");
+    const notifItems = document.getElementById("notifItems");
+    const notifCount = document.getElementById("notifCount");
+
+    // Toggle dropdown
+    bell.addEventListener("click", () => {
+        notifList.classList.toggle("d-none");
+    });
+
+    // Hide when clicking outside
+    document.addEventListener("click", (e) => {
+        if (!bell.contains(e.target) && !notifList.contains(e.target)) {
+            notifList.classList.add("d-none");
+        }
+    });
+
+    // Load notifications via AJAX
+    function loadNotifications() {
+        fetch("/bell-notifications") // route to your controller@index
+            .then(res => res.json())
+            .then(data => {
+                notifItems.innerHTML = "";
+                if (data.notifications.length === 0) {
+                    notifItems.innerHTML =
+                        `<li class="list-group-item text-muted text-center">No notifications</li>`;
+                } else {
+                    data.notifications.slice(0, 10).forEach(n => {
+                        // Check if this notification is read
+                        const isRead = data.readNotifications.includes(n.id);
+                        const highlightClass = isRead ? "text-dark fw-normal" :
+                        "bg-light text-dark fw-bold";
+
+                        notifItems.innerHTML += `
+                        <li class="list-group-item ${highlightClass}">
+                            <a href="/reservation/${n.link_id}/read/${n.id}" class="${highlightClass}">
+                                ${n.message}
+                            </a><br>
+                            <small class="text-muted">
+                                ${n.time_ago}
+                            </small>
+                        </li>
+                    `;
+                    });
+                }
+
+                // Count only unread notifications
+                const unreadCount = data.notifications.filter(
+                    n => !data.readNotifications.includes(n.id)
+                ).length;
+
+                if (unreadCount > 0) {
+                    notifCount.textContent = unreadCount;
+                    notifCount.classList.remove("d-none");
+                } else {
+                    notifCount.textContent = "";
+                    notifCount.classList.add("d-none");
+                }
+            })
+            .catch(err => {
+                notifItems.innerHTML = `<li class="list-group-item text-danger">Error loading notifications</li>`;
+                console.error(err);
+            });
+    }
+
+    // First load
+    loadNotifications();
+    // Refresh every 30s
+    setInterval(loadNotifications, 30000);
+</script>
 </body>
 
 </html>

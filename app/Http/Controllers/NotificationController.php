@@ -48,11 +48,11 @@ class NotificationController extends Controller
     public function createScheduleReminder()
     {
         $today = Carbon::today();
-        $reservations = Reservation::with('schedule', 'user')->get();
+        $reservations = Reservation::with('latestSchedule', 'user')->get();
 
         foreach ($reservations as $reservation) {
             if ($reservation->schedule) {
-                $scheduleDate = Carbon::parse($reservation->schedule->schedule_date);
+                $scheduleDate = Carbon::parse($reservation->latestSchedule->schedule_date);
                 $reminderDate = $scheduleDate->copy()->subDay();
 
                 if ($reminderDate->isSameDay($today)) {
@@ -88,5 +88,90 @@ class NotificationController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Custom reminder created successfully!');
+    }
+
+    public function bellNotifications()
+    {
+        $user = auth()->user();
+        $notifications = collect();
+
+        if ($user->user_type === 'admin') {
+            $notif = Notification::select('id', '_link_id', 'notification_message as message', 'created_at')
+                ->latest('created_at')
+                ->get();
+
+            $reminders = CustomReminder::select('id', 'message', 'schedule_datetime as created_at')
+                ->latest('created_at')
+                ->get();
+
+            $notifications = $this->formatNotifications($notif, $reminders);
+        } elseif ($user->user_type === 'student') {
+            $notif = Notification::where('user_id', $user->id)
+                ->select('id', '_link_id', 'notification_message as message', 'created_at')
+                ->latest('created_at')
+                ->get();
+
+            $reminders = CustomReminder::where('group_id', $user->id)
+                ->select('id', 'message', 'schedule_datetime as created_at')
+                ->latest('created_at')
+                ->get();
+
+            $notifications = $this->formatNotifications($notif, $reminders);
+        } elseif ($user->user_type === 'instructor') {
+            $studentIds = User::where('instructor_id', $user->id)->pluck('id');
+
+            $notif = Notification::whereIn('user_id', $studentIds)
+                ->select('id', '_link_id', 'notification_message as message', 'created_at')
+                ->latest('created_at')
+                ->get();
+
+            $notifications = $this->formatNotifications($notif);
+        }
+
+        $notifications = collect($notifications)->sortByDesc('created_at')->values();
+
+        $readNotifications = NotificationUser::where('status', 'read')
+            ->where('user_id', $user->id)
+            ->pluck('notification_id')
+            ->toArray();
+
+        return response()->json([
+            'notifications' => $notifications,
+            'readNotifications' => $readNotifications,
+        ]);
+    }
+
+    private function formatNotifications($notif, $reminders = null)
+    {
+        $formattedNotif = $notif->map(function ($n) {
+            return [
+                'id'          => $n->id,
+                'type'        => 'notification',
+                'message'     => $n->message,
+                'link_id'     => $n->_link_id,
+                'created_at'  => $n->created_at, 
+                'time_ago'    => $n->created_at->diffForHumans(), 
+            ];
+        });
+
+        if ($reminders) {
+            $formattedReminders = $reminders->map(function ($r) {
+                $created = \Carbon\Carbon::parse($r->created_at);
+                return [
+                    'id'          => $r->id,
+                    'type'        => 'reminder',
+                    'message'     => $r->message,
+                    'link_id'     => null,
+                    'created_at'  => $created, // keep raw Carbon
+                    'time_ago'    => $created->diffForHumans(),
+                ];
+            });
+
+            return $formattedNotif->merge($formattedReminders)
+                ->sortByDesc('created_at') 
+                ->values();
+        }
+
+        return $formattedNotif->sortByDesc('created_at')->values();
     }
 }

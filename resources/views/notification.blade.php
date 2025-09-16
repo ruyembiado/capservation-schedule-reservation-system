@@ -53,7 +53,7 @@
                                 @foreach ($notifications->where('notification_type', 'system_alert') as $notification)
                                     @php
                                         $isRead = in_array($notification->id, $readNotifications);
-                                        $highlightClass = $isRead ? '' : 'bg-theme-primary text-light';
+                                        $highlightClass = $isRead ? 'text-dark fw-normal' : 'bg-light text-dark fw-bold';
                                     @endphp
                                     <tr>
                                         <td class="{{ $highlightClass }}">{{ $loop->iteration }}</td>
@@ -90,7 +90,7 @@
                                 @foreach ($notifications->where('notification_type', 'update_status') as $notification)
                                     @php
                                         $isRead = in_array($notification->id, $readNotifications);
-                                        $highlightClass = $isRead ? '' : 'bg-theme-primary text-light';
+                                        $highlightClass = $isRead ? 'text-dark fw-normal' : 'bg-light text-dark fw-bold';
                                     @endphp
                                     <tr>
                                         <td class="{{ $highlightClass }}">{{ $loop->iteration }}</td>
@@ -127,7 +127,7 @@
                                 @foreach ($notifications->where('notification_type', 'reminder') as $notification)
                                     @php
                                         $isRead = in_array($notification->id, $readNotifications);
-                                        $highlightClass = $isRead ? '' : 'bg-theme-primary text-light';
+                                        $highlightClass = $isRead ? 'text-dark fw-normal' : 'bg-light text-dark fw-bold';
                                     @endphp
                                     <tr>
                                         <td class="{{ $highlightClass }}">{{ $loop->iteration }}</td>
