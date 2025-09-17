@@ -28,9 +28,12 @@
                                 <td>{{ $panelist->email }}</td>
                                 <td>{{ $panelist->created_at->format('Y-m-d h:i A') }}</td>
                                 <td>
-                                    <a href="/view-panelist/{{ $panelist->id }}" class="btn btn-secondary btn-sm">View</a>
-                                    <a href="/update-panelist/{{ $panelist->id }}" class="btn btn-warning btn-sm">Edit</a>
-                                    <form action="{{ route('panelist.destroy', $panelist->id) }}" method="POST" onsubmit="return confirmDelete(event)" style="display: inline;">
+                                    <a href="{{ url('/view-panelist/' . $panelist->id) }}"
+                                        class="btn btn-secondary btn-sm">View</a>
+                                    <a href="{{ url('/update-panelist/' . $panelist->id) }}"
+                                        class="btn btn-warning btn-sm">Edit</a>
+                                    <form action="{{ route('panelist.destroy', $panelist->id) }}" method="POST"
+                                        onsubmit="return confirmDelete(event)" style="display: inline;">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger btn-sm">Delete</button>

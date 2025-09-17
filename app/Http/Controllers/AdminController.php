@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Panelist;
 use DateTime;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -9,228 +10,138 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
-    public function testScheduler()
+    public function SmartScheduler()
     {
-        // --------------------------
-        // Static offset option (choose one)
-        // --------------------------
-        $offsetOption = ['weeks' => 1];   // schedule 1 week later
-        // $offsetOption = ['weeks' => 2];   // schedule 2 weeks later
-        // $offsetOption = ['days' => 10];   // schedule 10 days later
-        // $offsetOption = ['months' => 1];  // schedule 1 month later
+        return view('smartscheduler', ['formatted' => []]);
+    }
 
-        // --------------------------
-        // Static Instructor Data (10 instructors)
-        // --------------------------
-        $instructors = [
-            'Alice' => [
-                'capacity' => 3,
-                'expertise' => ['AI', 'Networks'],
-                'availability' => [
-                    'Monday 9:00 AM',
-                    'Wednesday 2:00 PM',
-                    'Friday 9:00 AM',
-                ],
-                'conflicts' => []
-            ],
-            'Bob' => [
-                'capacity' => 3,
-                'expertise' => ['Security', 'Networks'],
-                'availability' => [
-                    'Monday 9:00 AM',
-                    'Tuesday 2:00 PM',
-                    'Thursday 9:00 AM',
-                ],
-                'conflicts' => []
-            ],
-            'Charlie' => [
-                'capacity' => 3,
-                'expertise' => ['AI', 'Data Science'],
-                'availability' => [
-                    'Monday 9:00 AM',
-                    'Tuesday 2:00 PM',
-                    'Friday 9:00 AM',
-                ],
-                'conflicts' => []
-            ],
-            'Diana' => [
-                'capacity' => 3,
-                'expertise' => ['AI', 'Security'],
-                'availability' => [
-                    'Wednesday 9:00 AM',
-                    'Monday 9:00 AM',
-                    'Friday 2:00 PM',
-                ],
-                'conflicts' => []
-            ],
-            'Ethan' => [
-                'capacity' => 3,
-                'expertise' => ['Networks', 'Data Science'],
-                'availability' => [
-                    'Monday 9:00 AM',
-                    'Wednesday 2:00 PM',
-                    'Thursday 9:00 AM',
-                ],
-                'conflicts' => []
-            ],
-            'Faye' => [
-                'capacity' => 3,
-                'expertise' => ['AI', 'Security'],
-                'availability' => [
-                    'Monday 9:00 AM',
-                    'Wednesday 9:00 AM',
-                    'Friday 2:00 PM',
-                ],
-                'conflicts' => [1]
-            ],
-            'George' => [
-                'capacity' => 3,
-                'expertise' => ['Data Science', 'AI'],
-                'availability' => [
-                    'Tuesday 2:00 PM',
-                    'Monday 9:00 AM',
-                    'Friday 9:00 AM',
-                ],
-                'conflicts' => [4]
-            ],
-            'Hannah' => [
-                'capacity' => 3,
-                'expertise' => ['Security', 'Networks'],
-                'availability' => [
-                    'Monday 9:00 AM',
-                    'Thursday 2:00 PM',
-                    'Friday 9:00 AM',
-                ],
-                'conflicts' => [2]
-            ],
-            'Ian' => [
-                'capacity' => 3,
-                'expertise' => ['AI', 'Security'],
-                'availability' => [
-                    'Wednesday 9:00 AM',
-                    'Monday 9:00 AM',
-                    'Friday 2:00 PM',
-                ],
-                'conflicts' => [3]
-            ],
-            'Jane' => [
-                'capacity' => 3,
-                'expertise' => ['Networks', 'Data Science'],
-                'availability' => [
-                    'Monday 9:00 AM',
-                    'Wednesday 2:00 PM',
-                    'Thursday 9:00 AM',
-                ],
-                'conflicts' => [5]
-            ],
-        ];
+    public function runSmartScheduler(Request $request)
+    {
+        $offsetOptionInput = $request->input('offsetOption', 'weeks:1');
+        [$unit, $value] = explode(':', $offsetOptionInput);
+        $offsetOption = [$unit => (int)$value];
 
-        // --------------------------
-        // Static Group Data (5 groups, 3 panelists each)
-        // --------------------------
-        $groups = [
-            1 => [
-                'required_panelists' => 3,
-                'topic_tags' => ['AI', 'Networks'],
-                'time_slot' => '9:00 AM',
-            ],
-            2 => [
-                'required_panelists' => 3,
-                'topic_tags' => ['Networks', 'Security'],
-                'time_slot' => '9:00 AM',
-            ],
-            3 => [
-                'required_panelists' => 3,
-                'topic_tags' => ['Security', 'AI'],
-                'time_slot' => '2:00 PM',
-            ],
-            4 => [
-                'required_panelists' => 3,
-                'topic_tags' => ['Data Science', 'AI'],
-                'time_slot' => '2:00 PM',
-            ],
-            5 => [
-                'required_panelists' => 3,
-                'topic_tags' => ['AI', 'Data Science', 'Security'],
-                'time_slot' => '9:00 AM',
-            ],
-        ];
+        // --- Get Instructors from Users ---
+        $instructorRecords = User::where('user_type', 'instructor')->get();
 
-        // Run scheduler
+        // --- Get Panelists ---
+        $panelistRecords = Panelist::all();
+
+        $instructors = [];
+
+        // Process User instructors
+        foreach ($instructorRecords as $inst) {
+            $expertise = json_decode($inst->credentials, true) ?? [];
+            $availabilityRaw = json_decode($inst->vacant_time, true) ?? [];
+
+            $availability = [];
+            foreach ($availabilityRaw as $slot) {
+                $availability[] = $slot['day'] . ' ' . $slot['start_time'];
+            }
+
+            $instructors['i_' . $inst->id] = [
+                'id' => $inst->id,
+                'type' => 'instructor',
+                'name' => $inst->name,
+                'capacity' => $inst->capacity,
+                'expertise' => $expertise,
+                'availability' => $availability,
+            ];
+        }
+
+        // Process Panelists
+        foreach ($panelistRecords as $panel) {
+            $expertise = json_decode($panel->credentials, true) ?? [];
+            $availabilityRaw = json_decode($panel->vacant_time, true) ?? [];
+
+            $availability = [];
+            foreach ($availabilityRaw as $slot) {
+                $availability[] = $slot['day'] . ' ' . $slot['start_time'];
+            }
+
+            $instructors['p_' . $panel->id] = [
+                'id' => $panel->id,
+                'type' => 'panelist',
+                'name' => $panel->name,
+                'capacity' => $panel->capacity,
+                'expertise' => $expertise,
+                'availability' => $availability,
+            ];
+        }
+
+        // --- Get Students / Groups ---
+        $studentRecords = User::where('user_type', 'student')
+            ->whereHas('reservations', function ($query) {
+                $query->where('status', 'reserved');
+            })
+            ->with('instructor')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $groups = [];
+        foreach ($studentRecords as $student) {
+            $instructor = $student->instructor;
+            if (!$instructor) continue;
+
+            // Convert instructor's vacant_time to first available time only
+            $vacantTime = json_decode($instructor->vacant_time, true) ?? [];
+            $timeSlot = count($vacantTime) ? $vacantTime[0]['start_time'] : '09:00';
+
+            // Get prefixed instructor ID for conflict
+            $conflictId = null;
+            foreach ($instructors as $instId => $inst) {
+                if ($inst['type'] === 'instructor' && $inst['id'] === $instructor->id) {
+                    $conflictId = $instId;
+                    break;
+                }
+            }
+
+            $groups[$student->id] = [
+                'name' => $student->username,
+                'required_panelists' => $student->capacity,
+                'topic_tags' => json_decode($student->credentials, true) ?? [],
+                'time_slot' => $timeSlot, // Only time
+                'conflicts' => $conflictId !== null ? [$conflictId] : [],
+            ];
+        }
+
+        // --- Run Scheduler ---
         $result = $this->balancedExpertMatch($instructors, $groups, $offsetOption);
 
-        // Build structured output
+        // --- Format Output ---
         $formatted = [];
-
         foreach ($groups as $groupId => $group) {
-            $required = $group['required_panelists'];
-            $assigned = isset($result[$groupId]) ? count($result[$groupId]) : 0;
+            $assigned = $result[$groupId] ?? [];
 
-            // Find adviser conflicts for this group
-            $conflicts = [];
-            foreach ($instructors as $instName => $instData) {
-                if (in_array($groupId, $instData['conflicts'])) {
-                    $conflicts[] = $instName;
+            $conflictNames = [];
+            foreach ($group['conflicts'] as $conflictInstructorId) {
+                if (isset($instructors[$conflictInstructorId])) {
+                    $conflictNames[] = $instructors[$conflictInstructorId]['name'];
                 }
             }
 
             $formatted[] = [
-                "groupId" => $groupId,
-                "group" => [
-                    "required_panelists" => $required,
-                    "topic_tags" => $group['topic_tags'],
-                    "time_slot" => !empty($result[$groupId]) ? [$result[$groupId][0]['day'] . " " . $result[$groupId][0]['time']] : [],
-                    "conflicts" => $conflicts,
+                'groupId' => $groupId,
+                'group' => [
+                    'name' => $group['name'],
+                    'required_panelists' => $group['required_panelists'],
+                    'topic_tags' => $group['topic_tags'],
+                    'time_slot' => $group['time_slot'], // Only time
+                    'conflicts' => $conflictNames,
                 ],
-                "panelists" => $result[$groupId] ?? [],
-                "conflict_note" => $assigned < $required
-                    ? "Conflict: Needed {$required}, but only {$assigned} assigned"
+                'panelists' => $assigned,
+                'conflict_note' => count($assigned) < $group['required_panelists']
+                    ? "Conflict: Needed {$group['required_panelists']}, but only " . count($assigned) . " assigned"
                     : null,
             ];
         }
 
-        // Format schedule for display
-        foreach ($formatted as $entry) {
-            echo "<h3>Group {$entry['groupId']}</h3>";
-
-            if (!empty($entry['panelists'])) {
-                $scheduleDate = $entry['panelists'][0]['schedule_date'];
-                $dayTime = $entry['panelists'][0]['day'] . " " . $entry['panelists'][0]['time'];
-                echo "<b>Schedule:</b> {$scheduleDate} {$dayTime}<br>";
-            } else {
-                echo "<b>Schedule:</b> <span style='color:red'>No schedule</span><br>";
-            }
-
-            echo "<b>Tags:</b> " . implode(', ', $entry['group']['topic_tags']) . "<br>";
-
-            $conflicts = !empty($entry['group']['conflicts'])
-                ? implode(', ', $entry['group']['conflicts'])
-                : 'None';
-            echo "<b>Adviser (Conflict):</b> {$conflicts}<br>";
-
-            echo "<b>Panelists:</b><ul>";
-            foreach ($entry['panelists'] as $panel) {
-                echo "<li><b>{$panel['instructor']}</b> 
-                (Score: {$panel['score']}, 
-                Time: {$panel['day']} {$panel['time']}, 
-                Date: {$panel['schedule_date']})<br>
-                <u>Expertise:</u> " . implode(', ', $panel['expertise']) . "<br>
-                <u>Availability:</u> " . implode(', ', $panel['availability']) . "
-                </li>";
-            }
-            echo "</ul>";
-
-            if ($entry['conflict_note']) {
-                echo "<span style='color:red'>{$entry['conflict_note']}</span><br>";
-            }
-
-            echo "<hr>";
-        }
+        return view('smartscheduler', compact('formatted'));
     }
 
     private function balancedExpertMatch($instructors, $groups, $offsetOption)
     {
-        $daySchedule = []; // Track how many groups per session
+        $daySchedule = [];
         $assignments = [];
 
         foreach ($groups as $groupId => $group) {
@@ -238,79 +149,63 @@ class AdminController extends Controller
             $bestSlot = null;
             $bestCandidates = [];
 
-            // Step 1: collect possible slots from all instructors
+            // Collect possible slots (match only time)
             $possibleSlots = [];
             foreach ($instructors as $instId => $inst) {
                 foreach ($inst['availability'] as $slot) {
-                    $possibleSlots[$slot][] = $instId;
+                    $parts = explode(' ', $slot);
+                    $slotDay = $parts[0];
+                    $slotTime = $parts[1] ?? $parts[0]; // fallback
+
+                    $possibleSlots[$slotTime][] = [
+                        'instId' => $instId,
+                        'day' => $slotDay,
+                    ];
                 }
             }
 
-            // Step 2: evaluate each slot
-            foreach ($possibleSlots as $slot => $instList) {
-                [$day, $time, $ampm] = explode(' ', $slot, 3);
-                $timeSlot = $time . ' ' . $ampm;
-                $key = $day . ' ' . $timeSlot;
-
-                // max 2 groups per session
-                if (isset($daySchedule[$key]) && $daySchedule[$key] >= 2) {
-                    continue;
-                }
-
-                // Collect valid instructors for this slot
+            foreach ($possibleSlots as $slotTime => $instList) {
                 $candidates = [];
-                foreach ($instList as $instId) {
+                foreach ($instList as $info) {
+                    $instId = $info['instId'];
+                    $instDay = $info['day'];
                     $inst = $instructors[$instId];
 
                     if ($inst['capacity'] <= 0) continue;
-
-                    if (in_array($groupId, $instructors[$instId]['conflicts'])) continue;
-
-                    // Match time
-                    $slotParts = explode(' ', $slot, 3);
-                    $slotTime = $slotParts[1] . ' ' . $slotParts[2];
+                    if (in_array($instId, $group['conflicts'])) continue;
                     if ($slotTime !== $group['time_slot']) continue;
 
                     $score = count(array_intersect($group['topic_tags'], $inst['expertise']));
-
                     $candidates[] = [
-                        'instructor'   => $instId,
-                        'score'        => $score,
-                        'day'          => $day,
-                        'time'         => $timeSlot,
-                        'expertise'    => $inst['expertise'],
+                        'instructor_id' => $instId,
+                        'instructor' => $inst['name'],
+                        'score' => $score,
+                        'day' => $instDay,
+                        'time' => $slotTime,
+                        'expertise' => $inst['expertise'],
                         'availability' => $inst['availability'],
                     ];
                 }
 
-                // Keep slot if enough candidates exist
                 if (count($candidates) >= $required) {
                     $totalScore = array_sum(array_column($candidates, 'score'));
                     if ($bestSlot === null || $totalScore > array_sum(array_column($bestCandidates, 'score'))) {
-                        $bestSlot = $slot;
+                        $bestSlot = $slotTime;
                         $bestCandidates = $candidates;
                     }
                 }
             }
 
-            // Step 3: assign chosen slot
             $assignments[$groupId] = [];
             if ($bestSlot) {
-                [$dayName, $time, $ampm] = explode(' ', $bestSlot, 3);
-                $timeSlot = $time . ' ' . $ampm;
-
-                // Generate real date ONCE for this slot
-                $scheduleDate = $this->getScheduleDate($dayName, null, $offsetOption);
-
-                // Sort and assign
+                $scheduleDate = $this->getScheduleDate($bestCandidates[0]['day'], null, $offsetOption);
                 usort($bestCandidates, fn($a, $b) => $b['score'] <=> $a['score']);
                 $assigned = array_slice($bestCandidates, 0, $required);
 
                 foreach ($assigned as $cand) {
                     $cand['schedule_date'] = $scheduleDate;
                     $assignments[$groupId][] = $cand;
-
-                    $instructors[$cand['instructor']]['capacity']--;
+                    $instructors[$cand['instructor_id']]['capacity']--;
                     $key = $cand['day'] . ' ' . $cand['time'];
                     $daySchedule[$key] = ($daySchedule[$key] ?? 0) + 1;
                 }

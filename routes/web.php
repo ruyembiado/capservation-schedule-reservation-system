@@ -42,6 +42,8 @@ Route::middleware(['auth'])->group(function () {
     // Admin views
     Route::get('/groups', [AdminController::class, 'groups']);
     Route::get('/instructors', [AdminController::class, 'instructors']);
+    Route::get('/smart-scheduler', [AdminController::class, 'SmartScheduler'])->name('SmartScheduler');
+    Route::post('/smart-scheduler', [AdminController::class, 'runSmartScheduler'])->name('SmartScheduler.run');
 
     // Schedule
     Route::get('/calendar', [ScheduleController::class, 'index']);
@@ -114,5 +116,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [AuthController::class, 'profile'])->name('profile.view');
     Route::post('/update-profile/{id}', [AuthController::class, 'updateProfile'])->name('profile.update');
 
-    Route::get('/test-scheduler', [AdminController::class, 'testScheduler']);
+    // Test Scheduler for debugging
+    Route::get('/test-scheduler', [AdminController::class, 'runSmartScheduler']);
 });

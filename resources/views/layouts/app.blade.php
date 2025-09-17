@@ -32,19 +32,19 @@
                     <i class="fa-solid text-white fa fa-bars fs-5"></i>
                 </button>
                 <div class="sidebar-logo">
-                    <a href="/dashboard">Capservation</a>
+                    <a href="{{ url('/dashboard') }}">Capservation</a>
                 </div>
             </div>
             <ul class="sidebar-nav">
                 <li class="sidebar-item">
-                    <a href="/dashboard" class="sidebar-link {{ request()->is('dashboard') ? 'active' : '' }}">
+                    <a href="{{ url('/dashboard') }}" class="sidebar-link {{ request()->is('dashboard') ? 'active' : '' }}">
                         <i class="fa fa-home"></i>
                         <span>Dashboard</span>
                     </a>
                 </li>
                 @if (auth()->user()->user_type == 'instructor')
                     <li class="sidebar-item">
-                        <a href="/code" class="sidebar-link {{ request()->is('code') ? 'active' : '' }}"">
+                        <a href="{{ url('/code') }}" class="sidebar-link {{ request()->is('code') ? 'active' : '' }}"">
                             <i class="fa fa-tag"></i>
                             <span>Instructor Code</span>
                         </a>
@@ -52,7 +52,7 @@
                 @endauth
                 @if (auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'instructor')
                     <li class="sidebar-item">
-                        <a href="/groups"
+                        <a href="{{ url('/groups') }}"
                             class="sidebar-link {{ request()->is('groups', 'view-group*', 'update-group*') ? 'active' : '' }}">
                             <i class="fa fa-users"></i>
                             <span>Groups</span>
@@ -61,25 +61,25 @@
                 @endif
                 @if (auth()->user()->user_type == 'admin')
                     <li class="sidebar-item">
-                        <a href="/instructors"
+                        <a href="{{ url('/instructors') }}"
                             class="sidebar-link {{ request()->is('instructors', 'view-instructor*', 'update-instructor*') ? 'active' : '' }}">
                             <i class="fas fa-chalkboard-teacher"></i>
                             <span>Instructors</span>
                         </a>
                     </li>
                 @endif
-                {{-- @if (auth()->user()->user_type == 'admin')
+                @if (auth()->user()->user_type == 'admin')
                     <li class="sidebar-item">
-                        <a href="/"
+                        <a href="{{ url('/smart-scheduler') }}"
                             class="sidebar-link {{ request()->is('instructors', 'update_instructor*') ? 'active' : '' }}">
                             <i class="fas fa-calendar-alt"></i>
                             <span>Smart Scheduler</span>
                         </a>
                     </li>
-                @endif --}}
+                @endif
                 @if (auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'instructor')
                     <li class="sidebar-item">
-                        <a href="/reserve" class="sidebar-link {{ request()->is('reserve') ? 'active' : '' }}">
+                        <a href="{{ url('/reserve') }}" class="sidebar-link {{ request()->is('reserve') ? 'active' : '' }}">
                             <i class="fa fa-pen-to-square"></i>
                             <span>Reserve</span>
                         </a>
@@ -87,14 +87,14 @@
                 @endif
                 @if (auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'instructor')
                     <li class="sidebar-item">
-                        <a href="/reservations"
+                        <a href="{{ url('/reservations') }}"
                             class="sidebar-link {{ request()->is('reservations', 'reservation*', 'view-panelists/*', 'assign-panelist*') ? 'active' : '' }}">
                             <i class="fa fa-pen-to-square"></i>
                             <span>Reservations</span>
                         </a>
                     </li>
                     <li class="sidebar-item">
-                        <a href="/capstones-list"
+                        <a href="{{ url('/capstones-list') }}"
                             class="sidebar-link {{ request()->is('capstones-list', 'capstone-history*', 'update-capstone*') ? 'active' : '' }}">
                             <i class="fa fa-book"></i>
                             <span>Capstones</span>
@@ -103,15 +103,15 @@
                 @endif
                 @if (auth()->user()->user_type == 'admin')
                     <li class="sidebar-item">
-                        <a href="/panelists"
-                            class="sidebar-link {{ request()->is('panelists', 'view-panelist/*','add-panelist', 'update-panelist*') ? 'active' : '' }}">
+                        <a href="{{ url('/panelists') }}"
+                            class="sidebar-link {{ request()->is('panelists', 'view-panelist/*', 'add-panelist', 'update-panelist*') ? 'active' : '' }}">
                             <i class="fas fa-user-friends"></i>
                             <span>Panelists</span>
                         </a>
                     </li>
                 @endif
                 <li class="sidebar-item">
-                    <a href="/transactions"
+                    <a href="{{ url('/transactions') }}"
                         class="sidebar-link {{ request()->is('transactions') ? 'active' : '' }}">
                         <i class="fa fa-file-lines"></i>
                         <span>Transactions</span>
@@ -119,22 +119,24 @@
                 </li>
                 @if (auth()->user()->user_type == 'admin')
                     <li class="sidebar-item">
-                        <a href="/calendar" class="sidebar-link {{ request()->is('calendar') ? 'active' : '' }}">
+                        <a href="{{ url('/calendar') }}" class="sidebar-link {{ request()->is('calendar') ? 'active' : '' }}">
                             <i class="fa fa-calendar"></i>
                             <span>Calendar</span>
                         </a>
                     </li>
                 @endif
-                {{-- <li class="sidebar-item">
-                    <a href="/notification"
-                        class="sidebar-link {{ request()->is('notification') ? 'active' : '' }}">
-                        <i class="fa fa-bell"></i>
-                        <span>Notifications</span>
-                    </a>
-                </li> --}}
+                @if (auth()->user()->user_type == 'admin')
+                    <li class="sidebar-item">
+                        <a href="{{ url('/notifications') }}"
+                            class="sidebar-link {{ request()->is('notification') ? 'active' : '' }}">
+                            <i class="fa fa-bell"></i>
+                            <span>Notifications</span>
+                        </a>
+                    </li>
+                @endif
                 @if (auth()->user()->user_type == 'student')
                     <li class="sidebar-item">
-                        <a href="/capstone-history" class="sidebar-link">
+                        <a href="{{ url('/capstone-history') }}" class="sidebar-link">
                             <i class="fa-solid fa-timeline"></i>
                             <span>Capstone History</span>
                         </a>
@@ -165,12 +167,18 @@
                                 <div class="card-header bg-theme-primary text-white">
                                     Notifications
                                 </div>
+                                <div class=""></div>
                                 <ul id="notifItems" class="list-group list-group-flush"
                                     style="max-height: 400px; overflow-y: auto;">
                                     <li class="list-group-item text-muted text-center">Loading...</li>
                                 </ul>
-                                <div class="card-footer text-center border-top">
-                                    <a href="/notifications" class="text-decoration-none">See all</a>
+                                <div
+                                    class="card-footer d-flex justify-content-between align-items-center border-top">
+                                    <a href="{{ url('/notifications') }}" class="btn btn-sm bg-theme-primary text-light btn-link text-decoration-none">See all</a>
+                                    <button id="loadMoreBtn"
+                                        class="btn btn-sm btn-primary bg-theme-primary border-0 px-3 py-1 load-more-btn d-none">
+                                        See previous notifications
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -196,12 +204,12 @@
                                     <i class="text-primary fas fa-cogs fa-sm fa-fw mr-2"></i>
                                     Settings
                                 </a> --}}
-                            <a class="dropdown-item" href="/activity-log">
+                            <a class="dropdown-item" href="{{ url('/activity-log') }}">
                                 <i class="text-primary fas fa-list fa-sm fa-fw mr-2"></i>
                                 Activity Log
                             </a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="/logout" data-toggle="modal"
+                            <a class="dropdown-item" href="{{ url('/logout') }}" data-toggle="modal"
                                 data-target="#logoutModal">
                                 <i class="text-primary fas fa-sign-out-alt fa-sm fa-fw mr-2"></i>
                                 Logout
@@ -287,33 +295,47 @@
         }
     });
 
-    // Load notifications via AJAX
-    function loadNotifications() {
+    let displayedCount = 0; // how many notifications are currently shown
+    const perLoad = 10; // first load
+    const loadMoreStep = 5; // load more count
+
+    function loadNotifications(initial = false) {
         fetch("/bell-notifications")
             .then(res => res.json())
             .then(data => {
                 notifItems.innerHTML = "";
+
                 if (data.notifications.length === 0) {
                     notifItems.innerHTML =
                         `<li class="list-group-item text-muted text-center">No notifications</li>`;
-                } else {
-                    data.notifications.slice(0, 10).forEach(n => {
-                        // Check if this notification is read
-                        const isRead = data.readNotifications.includes(n.id);
-                        const highlightClass = isRead ? "text-dark fw-normal" :
+                    return;
+                }
+
+                if (initial) {
+                    displayedCount = perLoad; // first load 10
+                }
+
+                // Show up to displayedCount notifications
+                data.notifications.slice(0, displayedCount).forEach(n => {
+                    const isRead = data.readNotifications.includes(n.id);
+                    const highlightClass = isRead ? "text-dark fw-normal" :
                         "bg-light text-dark fw-bold";
 
-                        notifItems.innerHTML += `
-                        <li class="list-group-item ${highlightClass}">
-                            <a href="/reservation/${n.link_id}/read/${n.id}" class="${highlightClass}">
-                                ${n.message}
-                            </a><br>
-                            <small class="text-muted">
-                                ${n.time_ago}
-                            </small>
-                        </li>
-                    `;
-                    });
+                    notifItems.innerHTML += `
+                    <li class="list-group-item ${highlightClass}">
+                        <a href="/reservation/${n.link_id}/read/${n.id}" class="${highlightClass}">
+                            ${n.message}
+                        </a><br>
+                        <small class="text-muted">${n.time_ago}</small>
+                    </li>
+                `;
+                });
+
+                // Toggle "Load More" button
+                if (displayedCount < data.notifications.length) {
+                    loadMoreBtn.classList.remove("d-none");
+                } else {
+                    loadMoreBtn.classList.add("d-none");
                 }
 
                 // Count only unread notifications
@@ -335,10 +357,16 @@
             });
     }
 
+    // Load More Button Click
+    loadMoreBtn.addEventListener("click", () => {
+        displayedCount += loadMoreStep;
+        loadNotifications();
+    });
+
     // First load
-    loadNotifications();
+    loadNotifications(true);
     // Refresh every 30s
-    setInterval(loadNotifications, 30000);
+    setInterval(() => loadNotifications(), 30000);
 </script>
 </body>
 

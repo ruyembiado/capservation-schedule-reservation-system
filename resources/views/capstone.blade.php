@@ -88,18 +88,18 @@
                                                 });
                                             @endphp
 
-                                            <a href="/capstone-history/{{ $groupCapstones->first()->user->id }}"
+                                            <a href="{{ url('/capstone-history/' . $groupCapstones->first()->user->id) }}"
                                                 class="btn btn-secondary btn-sm">
                                                 View
                                             </a>
 
                                             @if ($filteredCapstones->isNotEmpty())
-                                                <a href="/update-capstone/{{ implode('/', $filteredCapstones->pluck('id')->toArray()) }}"
+                                                <a href="{{ url('/update-capstone/' . implode('/', $filteredCapstones->pluck('id')->toArray())) }}"
                                                     class="btn btn-warning btn-sm">
                                                     Edit
                                                 </a>
                                             @else
-                                                <a href="/update-capstone/{{ implode('/', $groupCapstones->pluck('id')->toArray()) }}"
+                                                <a href="{{ url('/update-capstone/' . implode('/', $groupCapstones->pluck('id')->toArray())) }}"
                                                     class="btn btn-warning btn-sm">
                                                     Edit
                                                 </a>
