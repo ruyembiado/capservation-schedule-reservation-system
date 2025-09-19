@@ -77,6 +77,7 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
+
         // Instructor code validation for students
         if ($request->code != null) {
             $user = User::where('code', $request->code)->first();
@@ -110,6 +111,9 @@ class AuthController extends Controller
             $rules += [
                 'name' => 'required|string',
                 'position' => 'required|string',
+                'capacity' => 'nullable|integer',
+                'credentials.*' => 'nullable|string',
+                'vacant_time' => 'nullable|array',
             ];
         }
 
@@ -149,6 +153,27 @@ class AuthController extends Controller
                 'members' => json_encode($request->members ?? []),
             ];
         } elseif ($request->user_type === 'instructor') {
+
+            if ($request->has('credentials')) {
+                $data['credentials'] = json_encode($request->credentials);
+            }
+
+            if ($request->has('vacant_time')) {
+                $vacantTimes = [];
+                foreach ($request->vacant_time['day'] as $index => $day) {
+                    $vacantTimes[] = [
+                        'day' => $day,
+                        'start_time' => $request->vacant_time['start_time'][$index],
+                        'end_time' => $request->vacant_time['end_time'][$index],
+                    ];
+                }
+                $data['vacant_time'] = json_encode($vacantTimes);
+            }
+
+            if ($request->capacity) {
+                $data['capacity'] = $request->capacity;
+            }
+
             $data += [
                 'name' => $request->name,
                 'position' => $request->position,

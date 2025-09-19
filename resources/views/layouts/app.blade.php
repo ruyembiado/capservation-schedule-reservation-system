@@ -64,7 +64,7 @@
                         <a href="{{ url('/instructors') }}"
                             class="sidebar-link {{ request()->is('instructors', 'view-instructor*', 'update-instructor*') ? 'active' : '' }}">
                             <i class="fas fa-chalkboard-teacher"></i>
-                            <span>Instructors</span>
+                            <span>Instructors / Panelists</span>
                         </a>
                     </li>
                 @endif
@@ -101,7 +101,7 @@
                         </a>
                     </li>
                 @endif
-                @if (auth()->user()->user_type == 'admin')
+                {{-- @if (auth()->user()->user_type == 'admin')
                     <li class="sidebar-item">
                         <a href="{{ url('/panelists') }}"
                             class="sidebar-link {{ request()->is('panelists', 'view-panelist/*', 'add-panelist', 'update-panelist*') ? 'active' : '' }}">
@@ -109,7 +109,7 @@
                             <span>Panelists</span>
                         </a>
                     </li>
-                @endif
+                @endif --}}
                 <li class="sidebar-item">
                     <a href="{{ url('/transactions') }}"
                         class="sidebar-link {{ request()->is('transactions') ? 'active' : '' }}">
@@ -236,7 +236,7 @@
         </main>
         <footer class="footer py-3 shadow text-center">
             <div class="d-flex justify-content-center px-3">
-                <div class="">© 2025 Capservation. All rights reserved.</div>
+                <div class="">© 2025 Capservation. All Rights Reserved.</div>
             </div>
         </footer>
     </div>

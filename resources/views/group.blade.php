@@ -6,7 +6,7 @@
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0">Groups</h1>
         @if (auth()->user()->user_type == 'instructor')
-            <a href="{{ url('/add_group') }}" class="d-sm-inline-block btn btn-primary shadow-sm">Add New Group</a>
+            <a href="{{ url('/add-group') }}" class="d-sm-inline-block btn btn-primary shadow-sm">Add New Group</a>
         @endif
     </div>
     <div class="card shadow mb-4">

@@ -36,20 +36,23 @@ class PanelistController extends Controller
         $group = User::where('id', $reservation->group_id)->first();
         $tags = json_decode($group->credentials, true);
 
-        $panelists = Panelist::where(function ($query) use ($tags) {
+        // $panelists = Panelist::where(function ($query) use ($tags) {
+        //     foreach ($tags as $tag) {
+        //         $query->orWhereJsonContains('credentials', $tag);
+        //     }
+        // })->get();
+
+        $panelists = User::where('user_type', 'instructor')->where(function ($query) use ($tags) {
             foreach ($tags as $tag) {
                 $query->orWhereJsonContains('credentials', $tag);
             }
         })->get();
-
-        // $panelists = Panelist::all();
 
         $capstoneIds = (array) json_decode($reservation->capstone_title_id, true);
         $capstones = Capstone::whereIn('id', $capstoneIds)->get();
 
         return view('assign_panelist_form', compact('reservation', 'panelists', 'capstones', 'group'));
     }
-
 
     public function updateForm($id)
     {
@@ -66,7 +69,8 @@ class PanelistController extends Controller
     public function viewPanelist($id)
     {
         $reservation = Reservation::findOrFail($id);
-        $panelists = Panelist::all();
+        // $panelists = Panelist::all();
+        $panelists = User::where('user_type', 'instructor')->get();
 
         $capstoneIds = (array) json_decode($reservation->capstone_title_id, true);
         $capstones = Capstone::whereIn('id', $capstoneIds)->get();
@@ -209,8 +213,11 @@ class PanelistController extends Controller
 
     public function assignPanelists(Request $request)
     {
+        $reservation = Reservation::findOrFail($request->reservation_id);
+        $user = User::where('id', $reservation->group_id)->first();
+
         $validator = Validator::make($request->all(), [
-            'panelists' => 'required|array|min:5|max:6',
+            'panelists' => 'required|array|min:' . $user->capacity . '|max:6',
         ]);
 
         if ($validator->fails()) {

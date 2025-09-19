@@ -44,6 +44,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/instructors', [AdminController::class, 'instructors']);
     Route::get('/smart-scheduler', [AdminController::class, 'SmartScheduler'])->name('SmartScheduler');
     Route::post('/smart-scheduler', [AdminController::class, 'runSmartScheduler'])->name('SmartScheduler.run');
+    Route::post('/create-panelist-schedule', [AdminController::class, 'CreatePanelistSchedule'])->name('assign.panelist.schedule');
 
     // Schedule
     Route::get('/calendar', [ScheduleController::class, 'index']);
@@ -51,7 +52,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/schedules', [ScheduleController::class, 'getSchedules']);
 
     // Reservation
-    Route::get('/reservations', [ReservationController::class, 'index'])->name('reservation.index');
+    Route::get('/reservations', [ReservationController::class, 'index'])->name('reservations.index');
     Route::get('/reservation/{id}/{action}/{notif_id}', [ReservationController::class, 'show'])->name('reservation.show');
     Route::get('/reserve', [ReservationController::class, 'create'])->name('reservation.create');
     Route::post('/reserve/select-group', [ReservationController::class, 'storeGroup'])->name('reservation.storeGroup');
@@ -85,6 +86,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/delete-group/{id}', [GroupController::class, 'deleteGroup'])->name('groups.delete');
 
     // Instructor
+    Route::get('/add-instructor', [InstructorController::class, 'create'])->name('instructor.create');
     Route::get('/view-instructor/{id}', [InstructorController::class, 'viewInstructor']);
     Route::get('/update-instructor/{id}', [InstructorController::class, 'updateInstructorForm']);
     Route::post('/update-instructor/{id}', [InstructorController::class, 'updateInstructor'])->name('instructor.update');

@@ -60,7 +60,7 @@
                                         <td class="{{ $highlightClass }}">{{ $notification->notification_title }}</td>
                                         <td class="{{ $highlightClass }}">{{ $notification->notification_message }}</td>
                                         <td class="{{ $highlightClass }} text-start">
-                                            {{ \Carbon\Carbon::parse($notification->created_at)->format('Y-m-d') }}
+                                            {{ \Carbon\Carbon::parse($notification->created_at)->format('Y-m-d h:i:s A') }}
                                         </td>
                                         <td class="{{ $highlightClass }}">
                                             <a href="/reservation/{{ $notification->_link_id }}/read/{{ $notification->id }}"
@@ -97,7 +97,7 @@
                                         <td class="{{ $highlightClass }}">{{ $notification->notification_title }}</td>
                                         <td class="{{ $highlightClass }}">{{ $notification->notification_message }}</td>
                                         <td class="{{ $highlightClass }}">
-                                            {{ \Carbon\Carbon::parse($notification->created_at)->format('Y-m-d') }}
+                                            {{ \Carbon\Carbon::parse($notification->created_at)->format('Y-m-d h:i:s A') }}
                                         </td>
                                         <td class="{{ $highlightClass }}">
                                             <a href="/reservation/{{ $notification->_link_id }}"
@@ -134,7 +134,7 @@
                                         <td class="{{ $highlightClass }}">{{ $notification->notification_title }}</td>
                                         <td class="{{ $highlightClass }}">{{ $notification->notification_message }}</td>
                                         <td class="{{ $highlightClass }}">
-                                            {{ \Carbon\Carbon::parse($notification->created_at)->format('Y-m-d') }}
+                                            {{ \Carbon\Carbon::parse($notification->created_at)->format('Y-m-d h:i:s A') }}
                                         </td>
                                         <td class="{{ $highlightClass }}">
                                             <a href="/reservation/{{ $notification->_link_id }}"
@@ -172,9 +172,9 @@
                                             {{ $customReminder->group->username ?? 'Unknown' }}
                                         </td>
                                         <td>{{ $customReminder->defense_stage ?? '—' }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($customReminder->schedule_datetime)->format('Y-m-d') }}
+                                        <td>{{ \Carbon\Carbon::parse($customReminder->schedule_datetime)->format('Y-m-d h:i:s A') }}
                                         </td>
-                                        <td>{{ \Carbon\Carbon::parse($customReminder->created_at)->format('Y-m-d') }}
+                                        <td>{{ \Carbon\Carbon::parse($customReminder->created_at)->format('Y-m-d h:i:s A') }}
                                         </td>
                                     </tr>
                                 @endforeach

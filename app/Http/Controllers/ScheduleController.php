@@ -48,12 +48,8 @@ class ScheduleController extends Controller
                 'title' => ucwords(optional($schedule->user)->username ?? 'Unknown User'),
                 'start' => $schedule->schedule_date . 'T' . $schedule->schedule_time,
                 'end'   => $schedule->schedule_date . 'T' . date('H:i:s', strtotime($schedule->schedule_time . ' +1 hour')),
-                'allDay' => true,
+                'allDay' => false,
                 'isUnavailable' => false,
-                'backgroundColor' => '#3788d8',
-                'borderColor' => '#3788d8',
-                'textColor' => '#ffffff',
-
             ];
         });
 
@@ -140,7 +136,19 @@ class ScheduleController extends Controller
             Reservation::whereIn('id', $schedules->pluck('reservation_id'))
                 ->update(['status' => 'approved']);
 
-            return redirect()->back()->with('success', 'All schedules for ' . $request->schedule_date . ' have been set to re-defense.');
+            $reservations = Reservation::whereIn('id', $schedules->pluck('reservation_id'))->get();
+
+            foreach ($reservations as $reservation) {
+                Notification::create([
+                    'user_id' => $reservation->group_id,
+                    '_link_id' => $reservation->id,
+                    'notification_type' => 'system_alert',
+                    'notification_title' => 'Re-defense Scheduled',
+                    'notification_message' => ucfirst($reservation->user->username) . '\'s defense scheduled on ' . $request->schedule_date . ' has been cancelled and marked for re-defense.',
+                ]);
+            }
+
+            return redirect()->back()->with('success',  'All defenses scheduled on ' . $request->schedule_date . ' have been cancelled and marked for re-defense.');
         }
 
         return redirect()->back()->with('success', 'Schedule created successfully.');
@@ -175,6 +183,14 @@ class ScheduleController extends Controller
 
         $reservation->status = 'approved';
         $reservation->save();
+
+        Notification::create([
+            'user_id' => $reservation->group_id,
+            '_link_id' => $reservation->id,
+            'notification_type' => 'system_alert',
+            'notification_title' => 'Reservation Re-scheduled',
+            'notification_message' => ucfirst($reservation->user->username) . '\'s reservation has been re-scheduled and set to approved.',
+        ]);
 
         return redirect()->back()->with('success', 'Reservation Re-scheduled.');
     }

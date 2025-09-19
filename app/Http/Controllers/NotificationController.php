@@ -16,19 +16,19 @@ class NotificationController extends Controller
     public function index()
     {
         if (auth()->user()->user_type == 'admin') {
-            $notifications = Notification::orderBy('created_at', 'desc')->get();
-            $customReminders = CustomReminder::orderBy('created_at', 'desc')->get();
+            $notifications = Notification::orderBy('id', 'desc')->get();
+            $customReminders = CustomReminder::orderBy('id', 'desc')->get();
         } else if (auth()->user()->user_type == 'student') {
             $notifications = Notification::where('user_id', auth()->user()->id)
-                ->orderBy('created_at', 'desc')
+                ->orderBy('id', 'desc')
                 ->get();
             $customReminders = CustomReminder::where('group_id', auth()->user()->id)
-                ->orderBy('created_at', 'desc')
+                ->orderBy('id', 'desc')
                 ->get();
         } else if (auth()->user()->user_type == 'instructor') {
             $studentIds = User::where('instructor_id', auth()->user()->id)->pluck('id');
             $notifications = Notification::whereIn('user_id', $studentIds)
-                ->orderBy('created_at', 'desc')
+                ->orderBy('id', 'desc')
                 ->get();
             $customReminders = [];
         } else {
@@ -149,8 +149,8 @@ class NotificationController extends Controller
                 'type'        => 'notification',
                 'message'     => $n->message,
                 'link_id'     => $n->_link_id,
-                'created_at'  => $n->created_at, 
-                'time_ago'    => $n->created_at->diffForHumans(), 
+                'created_at'  => $n->created_at,
+                'time_ago'    => $n->created_at->diffForHumans(),
             ];
         });
 
@@ -168,7 +168,7 @@ class NotificationController extends Controller
             });
 
             return $formattedNotif->merge($formattedReminders)
-                ->sortByDesc('created_at') 
+                ->sortByDesc('id')
                 ->values();
         }
 

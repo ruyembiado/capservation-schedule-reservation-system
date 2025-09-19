@@ -14,6 +14,11 @@ class InstructorController extends Controller
         return view('instructor.dashboard');
     }
 
+    public function create()
+    {
+        return view('add_instructor');
+    }
+
     public function get_instructors(Request $request)
     {
         try {

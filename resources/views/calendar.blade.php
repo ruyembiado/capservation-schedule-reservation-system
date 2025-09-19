@@ -12,8 +12,8 @@
         <div class="card shadow mb-4">
             <div class="card-body">
                 <div class="d-flex justify-content-between">
-                    <div id="FullCalendar" class="col-8"></div>
-                    <div class="add-events-container col-4 p-3">
+                    <div id="FullCalendar" class="col-9"></div>
+                    <div class="add-events-container col-3 p-3">
                         <h4 class="add-events-title">Add Schedule</h4>
                         <form action="{{ route('schedule.store') }}" method="POST">
                             @csrf
@@ -113,7 +113,7 @@
                             unavailableDates = data
                                 .filter(ev => ev.isUnavailable === true)
                                 .map(ev => ev.start.split("T")[0]);
-
+                            console.log(data);
                             successCallback(data);
                         })
                         .catch(error => {
@@ -122,13 +122,18 @@
                         });
                 },
                 eventContent: function(arg) {
+                    let bg = arg.event.backgroundColor || '#3788d8';
+                    let color = arg.event.textColor || '#ffffff';
+
                     return {
-                        html: `<div class="fc-event-time isUnavailable-${arg.event.extendedProps.isUnavailable}">
-                                ${arg.event.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
-                            </div>
-                            <div class="fc-event-title">
-                                ${arg.event.title}
-                            </div>`
+                        html: `<div style="background:${bg};color:${color};padding:2px 4px;border-radius:4px; width: 100%;">
+                        <div class="fc-event-time isUnavailable-${arg.event.extendedProps.isUnavailable}">
+                            ${arg.event.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
+                        </div>
+                        <div class="fc-event-title" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            ${arg.event.title}
+                        </div>
+                        </div>`
                     };
                 },
                 selectAllow: function(selectInfo) {
@@ -210,7 +215,7 @@
 
             setInterval(() => {
                 calendar.refetchEvents();
-            }, 2000);
+            }, 30000);
         }
     });
 </script>
