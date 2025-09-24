@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 
 class AuthController extends Controller
 {
@@ -309,5 +310,55 @@ class AuthController extends Controller
         $user->save();
 
         return redirect('/profile')->with('success', 'Profile updated successfully!');
+    }
+    
+    public function sendTestMail()
+    {
+        // Get reservation with group_id = 3 and approved status
+        $reservation = Reservation::where('group_id', 3)
+            ->where('status', 'approved')
+            ->first();
+    
+        if (!$reservation) {
+            return 'No approved reservation found.';
+        }
+    
+        // Decode panelist IDs
+        $assignedPanelists = json_decode($reservation->panelist_id);
+    
+        // Get panelist users
+        $panelists = User::whereIn('id', $assignedPanelists)->get();
+    
+        if ($panelists->isEmpty()) {
+            return 'No panelists found.';
+        }
+    
+        // Reservation info for email
+        $groupName = $reservation->user->username ?? 'Unknown Group';
+        $scheduleDate = isset($reservation->latestSchedule) 
+            ? Carbon::parse($reservation->latestSchedule->schedule_date)->format('F j, Y \a\t h:i A')
+            : 'No schedule date';
+    
+        // Send email to each panelist individually
+        foreach ($panelists as $panelist) {
+            // Get last name
+            $fullNameParts = explode(' ', $panelist->name);
+            $lastName = array_pop($fullNameParts); // last word in name
+    
+            // Personalized message
+            $messageBody = "Hi Mr/Mrs. {$lastName},\n\n"
+                         . "You are one of the panelists of the group '{$groupName}' and scheduled date on {$scheduleDate}.\n\n"
+                         . "Please be prepared.";
+    
+            $subject = 'Panelist schedule Reminder';
+    
+            Mail::raw($messageBody, function ($message) use ($panelist, $subject) {
+                $message->to($panelist->email)
+                        ->subject($subject)
+                        ->from('ruyembiadoofficial@gmail.com', 'Capservation');
+            });
+        }
+    
+        return 'Test email sent successfully to all panelists!';
     }
 }

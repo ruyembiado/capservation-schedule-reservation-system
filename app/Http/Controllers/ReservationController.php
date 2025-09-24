@@ -374,8 +374,8 @@ class ReservationController extends Controller
                 'titles' => $titles,
                 'status' => $reservation->status,
                 'created_at' => $reservation->created_at,
-                'schedule_date' => $reservation->schedule ? $reservation->latestSchedule->schedule_date : 'No date available',
-                'schedule_time' => $reservation->schedule && $reservation->latestSchedule->schedule_time
+                'schedule_date' => $reservation->latestSchedule ? $reservation->latestSchedule->schedule_date : 'No date available',
+                'schedule_time' => $reservation->latestSchedule && $reservation->latestSchedule->schedule_time
                     ? \Carbon\Carbon::parse($reservation->latestSchedule->schedule_time)->format('h:i A')
                     : 'No time available',
             ]

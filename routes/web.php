@@ -120,4 +120,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Test Scheduler for debugging
     Route::get('/test-scheduler', [AdminController::class, 'runSmartScheduler']);
+    
+    // Test mail
+    Route::get('mail-test', [AuthController::class, 'sendTestMail']);
 });

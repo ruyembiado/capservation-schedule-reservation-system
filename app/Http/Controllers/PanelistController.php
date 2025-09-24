@@ -42,7 +42,7 @@ class PanelistController extends Controller
         //     }
         // })->get();
 
-        $panelists = User::where('user_type', 'instructor')->where(function ($query) use ($tags) {
+        $panelists = User::whereNot('id', $group->instructor_id )->where('user_type', 'instructor')->where(function ($query) use ($tags) {
             foreach ($tags as $tag) {
                 $query->orWhereJsonContains('credentials', $tag);
             }
