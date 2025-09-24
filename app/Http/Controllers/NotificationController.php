@@ -49,19 +49,23 @@ class NotificationController extends Controller
     {
         $today = Carbon::today();
         $reservations = Reservation::with('latestSchedule', 'user')->get();
-
+    
         foreach ($reservations as $reservation) {
-            if ($reservation->schedule) {
+            // Check if latestSchedule exists
+            if ($reservation->latestSchedule) {
                 $scheduleDate = Carbon::parse($reservation->latestSchedule->schedule_date);
                 $reminderDate = $scheduleDate->copy()->subDay();
-
+    
                 if ($reminderDate->isSameDay($today)) {
                     Notification::create([
                         'user_id' => $reservation->group_id,
                         '_link_id' => $reservation->id,
                         'notification_type' => 'reminder',
                         'notification_title' => 'Upcoming Defense Schedule',
-                        'notification_message' => ucwords($reservation->user->username) . '\'s reservation is scheduled on ' . $scheduleDate->format('F j, Y \a\t h:i A') . '. Please be prepared.',
+                        'notification_message' => ucwords($reservation->user->username) 
+                            . '\'s reservation is scheduled on ' 
+                            . $scheduleDate->format('F j, Y \a\t h:i A') 
+                            . '. Please be prepared.',
                         'status' => 'unread',
                     ]);
                 }
