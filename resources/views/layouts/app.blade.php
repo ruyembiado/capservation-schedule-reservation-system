@@ -352,7 +352,7 @@
                 }
             })
             .catch(err => {
-                notifItems.innerHTML = `<li class="list-group-item text-danger">Error loading notifications</li>`;
+                notifItems.innerHTML = `<li class="list-group-item text-secondary">No notification</li>`;
                 console.error(err);
             });
     }
