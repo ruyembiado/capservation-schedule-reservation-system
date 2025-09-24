@@ -254,7 +254,7 @@ class ScheduleController extends Controller
 		}
 		// Reload reservation with latest schedule
 		$reservation = Reservation::with("latestSchedule")->find($reservation->id);
-		$groupName = $reservation->user->username ?? "Unknown Group";
+		$groupName = ucwords($reservation->user->username ?? "Unknown Group");
 
 		if ($reservation->latestSchedule) {
 			$scheduleDate = Carbon::parse(
@@ -274,7 +274,7 @@ class ScheduleController extends Controller
 
 			$messageBody =
 			"Hi Mr/Mrs. {$lastName},\n\n" .
-			"You are one of the panelists of the group '{$groupName}' " .
+			"You are one of the panelists of the group {$groupName} " .
 			"and scheduled date on {$scheduleDate} at {$scheduleTime}.\n\n" .
 			"Please be prepared.";
 
