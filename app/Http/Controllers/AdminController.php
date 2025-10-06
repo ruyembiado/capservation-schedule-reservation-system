@@ -223,131 +223,132 @@ class AdminController extends Controller
 		return view('smartscheduler', compact('formatted'));
 	}
 
-	private function balancedExpertMatch($instructors, $groups, $offsetOption) {
-		$daySchedule = []; // track slots per date
-		$assignments = [];
-
-		// Define fixed defense slots per day
-		$defenseSlots = [
-			'08:00',
-			'09:00',
-			'13:00',
-			'14:00',
-		];
-
-		foreach ($groups as $groupId => $group) {
-			$required = $group['required_panelists'];
-			$bestCandidates = [];
-
-			// Find candidate instructors for this group
-			foreach ($instructors as $instId => $inst) {
-				foreach ($inst['availability'] as $slot) {
-					[$slotDay,
-						$slotTime] = explode(' ', $slot);
-
-					if ($inst['capacity'] <= 0) continue;
-					if (in_array($instId, $group['conflicts'])) continue;
-
-					// Only consider valid defense slots
-					if (!in_array($slotTime, $defenseSlots)) continue;
-
-					$score = count(array_intersect($group['topic_tags'], $inst['expertise']));
-					$bestCandidates[] = [
-						'instructor_id' => $instId,
-						'instructor' => $inst['name'],
-						'score' => $score,
-						'day' => $slotDay,
-						'expertise' => $inst['expertise'],
-						'availability' => $inst['availability'],
-					];
-				}
-			}
-
-			$assignments[$groupId] = [];
-			if (!empty($bestCandidates)) {
-				// Sort candidates by score
-				usort($bestCandidates, fn($a, $b) => $b['score'] <=> $a['score']);
-				$assigned = array_slice($bestCandidates, 0, $required);
-
-				// Group’s defense time (from vacant_time)
-				$preferredTime = date('H:i', strtotime($group['time_slot']));
-				if (!in_array($preferredTime, $defenseSlots)) {
-					// fallback to first valid slot
-					$preferredTime = $defenseSlots[0];
-				}
-
-				// Start at base date for this group
-				$scheduleDate = $this->getScheduleDate($assigned[0]['day'], null, $offsetOption);
-
-				$slotAssigned = null;
-				while (!$slotAssigned) {
-					// Try all defense slots for this date (start from preferred)
-					$slotsToCheck = array_merge(
-					[$preferredTime],
-					array_diff($defenseSlots, [$preferredTime])
-					);
-
-					foreach ($slotsToCheck as $slotTime) {
-						// Skip if already booked in memory
-						if (isset($daySchedule[$scheduleDate][$slotTime])) {
-							continue;
-						}
-
-						// Skip if already booked in DB
-						$existsInDb = DB::table('schedules')
-						->whereDate('schedule_date', $scheduleDate)
-						->whereTime('schedule_time', $slotTime)
-						->exists();
-
-						if ($existsInDb) {
-							continue;
-						}
-
-						// Validate if all assigned panelists are available at this time
-						$allAvailable = true;
-						foreach ($assigned as $cand) {
-							$available = false;
-							foreach ($cand['availability'] as $avail) {
-								[$availDay,
-									$availTime] = explode(' ', $avail);
-								if (
-								strtolower($availDay) === strtolower(date('l', strtotime($scheduleDate))) &&
-								$availTime === $slotTime
-								) {
-									$available = true;
-									break;
-								}
-							}
-							if (!$available) {
-								$allAvailable = false;
-								break;
-							}
-						}
-
-						if ($allAvailable) {
-							$slotAssigned = $slotTime;
-							$daySchedule[$scheduleDate][$slotTime] = true;
-							break 2; // break out of foreach + while
-						}
-					}
-
-					// If no slot free this day, move to next week
-					$scheduleDate = date('Y-m-d', strtotime($scheduleDate . ' +7 days'));
-				}
-
-				// Save group assignment
-				foreach ($assigned as $cand) {
-					$cand['schedule_date'] = $scheduleDate;
-					$cand['time'] = $slotAssigned;
-					$assignments[$groupId][] = $cand;
-
-					$instructors[$cand['instructor_id']]['capacity']--;
-				}
-			}
-		}
-
-		return $assignments;
-	}
+	private function balancedExpertMatch($instructors, $groups, $offsetOption)
+	{
+	    ini_set('max_execution_time', 300); // Prevent timeout (5 minutes max)
+	    set_time_limit(300);
+	
+	    $daySchedule = []; // Track memory-booked slots
+	    $assignments = [];
+	
+	    // Preload all existing booked schedules (reduce DB queries)
+	    $bookedSchedules = DB::table('schedules')
+	        ->select('schedule_date', 'schedule_time')
+	        ->get()
+	        ->map(fn($s) => $s->schedule_date . ' ' . $s->schedule_time)
+	        ->toArray();
+	
+	    // Define fixed defense slots per day
+	    $defenseSlots = ['08:00', '09:00', '13:00', '14:00'];
+	
+	    foreach ($groups as $groupId => $group) {
+	        $required = $group['required_panelists'];
+	        $bestCandidates = [];
+	
+	        // Build candidate list
+	        foreach ($instructors as $instId => $inst) {
+	            if ($inst['capacity'] <= 0) continue; // skip if full
+	
+	            foreach ($inst['availability'] as $slot) {
+	                [$slotDay, $slotTime] = explode(' ', $slot);
+	
+	                if (in_array($instId, $group['conflicts'])) continue;
+	                if (!in_array($slotTime, $defenseSlots)) continue;
+	
+	                // Expertise matching score
+	                $score = count(array_intersect($group['topic_tags'], $inst['expertise']));
+	                $bestCandidates[] = [
+	                    'instructor_id' => $instId,
+	                    'instructor' => $inst['name'],
+	                    'score' => $score,
+	                    'day' => $slotDay,
+	                    'expertise' => $inst['expertise'],
+	                    'availability' => $inst['availability'],
+	                ];
+	            }
+	        }
+	
+	        $assignments[$groupId] = [];
+	
+	        if (!empty($bestCandidates)) {
+	            // Sort candidates by best expertise score
+	            usort($bestCandidates, fn($a, $b) => $b['score'] <=> $a['score']);
+	            $assigned = array_slice($bestCandidates, 0, $required);
+	
+	            // Determine preferred time
+	            $preferredTime = date('H:i', strtotime($group['time_slot']));
+	            if (!in_array($preferredTime, $defenseSlots)) {
+	                $preferredTime = $defenseSlots[0]; // fallback
+	            }
+	
+	            // Start at base date for this group
+	            $scheduleDate = $this->getScheduleDate($assigned[0]['day'], null, $offsetOption);
+	            $slotAssigned = null;
+	            $attempts = 0;
+	
+	            while (!$slotAssigned && $attempts < 10) { // limit to 10 weeks forward
+	                $attempts++;
+	
+	                // Try preferred first, then others
+	                $slotsToCheck = array_merge([$preferredTime], array_diff($defenseSlots, [$preferredTime]));
+	
+	                foreach ($slotsToCheck as $slotTime) {
+	                    $slotKey = $scheduleDate . ' ' . $slotTime;
+	
+	                    // Skip if already booked (either in memory or DB)
+	                    if (isset($daySchedule[$scheduleDate][$slotTime])) continue;
+	                    if (in_array($slotKey, $bookedSchedules)) continue;
+	
+	                    // Check if all assigned are available
+	                    $allAvailable = true;
+	                    foreach ($assigned as $cand) {
+	                        $available = false;
+	                        foreach ($cand['availability'] as $avail) {
+	                            [$availDay, $availTime] = explode(' ', $avail);
+	                            if (
+	                                strtolower($availDay) === strtolower(date('l', strtotime($scheduleDate))) &&
+	                                $availTime === $slotTime
+	                            ) {
+	                                $available = true;
+	                                break;
+	                            }
+	                        }
+	                        if (!$available) {
+	                            $allAvailable = false;
+	                            break;
+	                        }
+	                    }
+	
+	                    // If everyone is available, book it
+	                    if ($allAvailable) {
+	                        $slotAssigned = $slotTime;
+	                        $daySchedule[$scheduleDate][$slotTime] = true;
+	                        break 2; // exit both loops
+	                    }
+	                }
+	
+	                // Try next week if no slot found
+	                $scheduleDate = date('Y-m-d', strtotime($scheduleDate . ' +7 days'));
+	            }
+	
+	            // Save assignments if slot found
+	            if ($slotAssigned) {
+	                foreach ($assigned as $cand) {
+	                    $cand['schedule_date'] = $scheduleDate;
+	                    $cand['time'] = $slotAssigned;
+	                    $assignments[$groupId][] = $cand;
+	
+	                    // Decrease instructor capacity
+	                    if (isset($instructors[$cand['instructor_id']])) {
+	                        $instructors[$cand['instructor_id']]['capacity']--;
+	                    }
+	                }
+	            }
+	        }
+	    }
+	
+	    return $assignments;
+}
 
 	private function getScheduleDate($dayName, $baseDate = null, $offsetOption = []) {
 		$base = $baseDate ? new DateTime($baseDate) : new DateTime();
