@@ -71,7 +71,7 @@
                 @if (auth()->user()->user_type == 'admin')
                     <li class="sidebar-item">
                         <a href="{{ url('/smart-scheduler') }}"
-                            class="sidebar-link {{ request()->is('instructors', 'update_instructor*') ? 'active' : '' }}">
+                            class="sidebar-link {{ request()->is('smart-scheduler') ? 'active' : '' }}">
                             <i class="fas fa-calendar-alt"></i>
                             <span>Smart Scheduler</span>
                         </a>

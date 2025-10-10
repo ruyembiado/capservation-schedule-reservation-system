@@ -56,10 +56,20 @@
                                         </div>
 
                                         <p class="mb-1"><b>Defense Time:</b>
-                                            {{ $entry['group']['time_slot']
-                                                ? \Carbon\Carbon::createFromFormat('H:i', $entry['group']['time_slot'])->format('h:i A')
-                                                : 'No schedule' }}
-                                        </p>
+																			    @php
+																			        $timeSlot = $entry['group']['time_slot'];
+																			    @endphp
+																			
+																			    @if ($timeSlot)
+																			        @if (preg_match('/^\d{2}:\d{2}$/', $timeSlot))
+																			            {{ \Carbon\Carbon::createFromFormat('H:i', $timeSlot)->format('h:i A') }}
+																			        @else
+																			            {{ $timeSlot }}
+																			        @endif
+																			    @else
+																			        No schedule
+																			    @endif
+																				</p>
                                         <p class="mb-1"><b>Tags:</b> {{ implode(', ', $entry['group']['topic_tags']) }}
                                         </p>
                                         <p class="mb-1"><b>Adviser:</b>
@@ -87,37 +97,57 @@
                                                     class="text-danger fw-normal d-block mb-2">{{ $entry['conflict_note'] }}</span>
                                             @endif
 
-                                            @foreach ($entry['panelists'] as $panel)
-                                                {{-- Only panelist IDs are per-panelist --}}
-                                                <input type="hidden" name="panelist_id[{{ $entry['groupId'] }}][]"
-                                                    value="{{ $panel['instructor_id'] ?? '' }}">
-
-                                                <div class="col-12 col-md-4 mb-4">
-                                                    <div class="p-3 border rounded shadow-sm h-100">
-                                                        <b>{{ $panel['instructor'] }}</b>
-                                                        <span class="badge bg-theme-primary text-light ms-2">Score:
-                                                            {{ $panel['score'] }}</span>
-                                                        <br>
-                                                        <small class="text-dark"><u>Time:</u>
-                                                            {{ date('h:i A', strtotime($panel['time'])) }},
-                                                            Date: {{ $panel['schedule_date'] }}
-                                                        </small>
-                                                        <br>
-                                                        <small><u>Expertise:</u>
-                                                            {{ implode(', ', $panel['expertise']) }}</small>
-                                                        <br>
-                                                        <small><u>Availability:</u>
-                                                            {{ implode(
-                                                                ', ',
-                                                                array_map(function ($t) {
-                                                                    [$day, $time] = explode(' ', $t);
-                                                                    return $day . ' ' . date('h:i A', strtotime($time));
-                                                                }, $panel['availability']),
-                                                            ) }}
-                                                        </small>
-                                                    </div>
-                                                </div>
-                                            @endforeach
+                                            @foreach ((array) ($entry['panelists'] ?? []) as $panel)
+																					    {{-- Hidden Panelist ID --}}
+																					    <input type="hidden" 
+																					        name="panelist_id[{{ $entry['groupId'] ?? '' }}][]" 
+																					        value="{{ $panel['instructor_id'] ?? '' }}">
+																					
+																					    <div class="col-12 col-md-4 mb-4">
+																					        <div class="p-3 border rounded shadow-sm h-100">
+																					            {{-- Instructor --}}
+																					            <b>{{ $panel['name'] ?? 'N/A' }}</b>
+																					
+																					            {{-- Score --}}
+																					            <span class="badge bg-theme-primary text-light ms-2">
+																					                Score: {{ $panel['expertise_score'] ?? '0' }}
+																					            </span>
+																					
+																					            {{-- Time and Date --}}
+																					            <br>
+																					            <small class="text-dark">
+																					                <u>Schedule:</u>
+																					                @if(!empty($panel['schedule_date']) && !empty($panel['time']))
+																													    {{ date('Y-m-d h:i A, l', strtotime($panel['schedule_date'] . ' ' . $panel['time'])) }}
+																													@else
+																													    N/A
+																													@endif
+																					            </small>
+																					
+																					            {{-- Expertise --}}
+																					            <br>
+																					            <small>
+																					                <u>Expertise:</u>
+																					                @if(!empty($panel['expertise']) && is_array($panel['expertise']))
+																					                    {{ implode(', ', $panel['expertise']) }}
+																					                @else
+																					                    N/A
+																					                @endif
+																					            </small>
+																					
+																					            {{-- Availability --}}
+																					            <br>
+																					            <small>
+																					                <u>Availability:</u>
+																														@if(!empty($panel['availability']) && is_array($panel['availability']))
+																														    {{ implode(', ', $panel['availability']) }}
+																														@else
+																														    N/A
+																														@endif
+																					            </small>
+																					        </div>
+																					    </div>
+																					@endforeach
                                         </div>
                                     </div>
                                 @endforeach
