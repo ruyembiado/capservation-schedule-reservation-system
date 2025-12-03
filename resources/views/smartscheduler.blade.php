@@ -3,17 +3,82 @@
 @section('content')
     <!-- Start the content section -->
     <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <!-- <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0">Smart Scheduler</h1>
-    </div>
+    </div> -->
 
     <!-- Content Row -->
     <div class="row gap-4">
         <!-- Smart Scheduler Button -->
-        <div class="col-12 col-lg-4 col-xl-3">
+        <div class="col-12">
             <div class="card shadow mb-3 mb-lg-0">
                 <div class="card-body">
-                    <form action="{{ route('SmartScheduler') }}" method="POST">
+                	<div class="d-flex justify-content-between align-items-center my-4 position-relative">
+		        		@php
+				        	$steps = [
+				            '1' => 'Awaiting Reservations',
+				            '2'  => 'Payment',
+				            '3'  => 'Scheduling',
+				        ];
+				
+					        $currentStatus = 2;
+					        $currentIndex  = $currentStatus;
+					    @endphp
+			
+				    	@foreach ($steps as $key => $icon)
+					        <div class="text-center flex-fill position-relative">
+					
+					            <!-- Circle -->
+					            <div class="rounded-circle step-icon
+					                {{ $loop->index <= $currentIndex ? 'bg-theme-primary text-white' : 'bg-light text-dark border' }}
+					                d-flex align-items-center justify-content-center mx-auto">
+					                {{ $loop->index + 1 }}
+					            </div>
+					
+					            <!-- Label -->
+					            <!-- <small class="d-block mt-2 {{ $loop->index <= $currentIndex ? 'fw-bold text-primary' : 'text-muted' }}">
+					                @if ($key === 'status')
+					                    Status
+					                @else
+					                    Reserve
+					                @endif
+					            </small> -->
+					
+					            <!-- Connector -->
+					            @if (! $loop->last)
+					                <div class="step-connector 
+					                    {{ $loop->index < $currentIndex ? 'bg-theme-primary' : 'bg-light' }}">
+					                </div>
+					            @endif
+					        </div>
+				    	@endforeach
+					</div>
+					<style>
+					    .step-icon {
+					        width: 50px;
+					        height: 50px;
+					        font-size: 20px;
+					        z-index: 2 !important;
+					    }
+					
+					    .step-connector {
+					        position: absolute;
+					        top: 25px;
+					        left: 56.4%;
+					        width: 87.5%;
+					        height: 4px;
+					        z-index: 1 !important;
+					    }
+					</style>		
+					
+					<div class="d-sm-flex align-items-center justify-content-center mb-4">
+					    <h1 class="h3 mb-0">
+					    	Scheduling
+					    </h1>
+					</div>
+                	
+                    <form action="{{ route('SmartScheduler', $group_id) }}"
+                    method="POST" class="col-12 col-lg-4 col-xl-3">
                         @csrf
                         <input type="hidden" name="runScheduler" value="true">
 

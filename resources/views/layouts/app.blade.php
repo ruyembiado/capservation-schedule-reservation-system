@@ -69,15 +69,26 @@
                     </li>
                 @endif
                 @if (auth()->user()->user_type == 'admin')
-                    <li class="sidebar-item">
+                    <!-- <li class="sidebar-item">
                         <a href="{{ url('/smart-scheduler') }}"
                             class="sidebar-link {{ request()->is('smart-scheduler') ? 'active' : '' }}">
                             <i class="fas fa-calendar-alt"></i>
                             <span>Smart Scheduler</span>
                         </a>
+                    </li> -->
+                @endif
+                @if (auth()->user()->user_type == 'admin')
+                    <li class="sidebar-item">
+                        <a href="{{ url('/awaiting-reservations') }}"
+                        class="sidebar-link {{
+                        request()->is('awaiting-reservations') ? 'active' : ''
+                        }}">
+                            <i class="fa fa-pen-to-square"></i>
+                            <span>Reserve</span>
+                        </a>
                     </li>
                 @endif
-                @if (auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'instructor')
+                @if (auth()->user()->user_type == 'instructor')
                     <li class="sidebar-item">
                         <a href="{{ url('/reserve') }}" class="sidebar-link {{ request()->is('reserve') ? 'active' : '' }}">
                             <i class="fa fa-pen-to-square"></i>

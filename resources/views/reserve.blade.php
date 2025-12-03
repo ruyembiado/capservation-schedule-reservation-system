@@ -1,11 +1,76 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0">Reserve</h1>
-    </div>
+   <!--  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+       <h1 class="h3 mb-0">Reserve</h1>
+   </div> -->
     <div class="card shadow mb-4">
         <div class="card-body">
+        	<div class="d-flex justify-content-between align-items-center my-4 position-relative">
+	    		@php
+		        	$steps = [
+		            'reserve' => '1',
+		            'status'  => '2',
+		        ];
+		
+			        $currentStatus = $reservation ? $reservation->status : null;
+			        $currentIndex  = $currentStatus ? 1 : 0;
+			        
+			        $Label = $reservation ? 'Status' : 'Reserve'
+			    @endphp
+	
+		    	@foreach ($steps as $key => $icon)
+			        <div class="text-center flex-fill position-relative">
+			
+			            <!-- Circle -->
+			            <div class="rounded-circle step-icon
+			                {{ $loop->index <= $currentIndex ? 'bg-theme-primary text-white' : 'bg-light text-dark border' }}
+			                d-flex align-items-center justify-content-center mx-auto">
+			                {{ $loop->index + 1 }}
+			            </div>
+			
+			            <!-- Label -->
+			           <!--  <small class="d-block mt-2 {{ $loop->index <= $currentIndex ? 'fw-bold text-primary' : 'text-muted' }}">
+			               @if ($key === 'status')
+			                   Status
+			               @else
+			                   Reserve
+			               @endif
+			           </small> -->
+			
+			            <!-- Connector -->
+			            @if (! $loop->last)
+			                <div class="step-connector 
+			                    {{ $loop->index < $currentIndex ? 'bg-theme-primary' : 'bg-light' }}">
+			                </div>
+			            @endif
+			        </div>
+		    	@endforeach
+			</div>
+			<style>
+			    .step-icon {
+			        width: 50px;
+			        height: 50px;
+			        font-size: 20px;
+			        z-index: 2 !important;
+			    }
+			
+			    .step-connector {
+			        position: absolute;
+			        top: 25px;
+			        left: 54.4%;
+			        width: 90.5%;
+			        height: 4px;
+			        z-index: 1 !important;
+			    }
+			</style>
+			
+			<div class="d-sm-flex align-items-center justify-content-center mb-4">
+			    <h1 class="h3 mb-0">
+			    	{{ $Label }}
+			    </h1>
+			</div>
+        	
             @if (auth()->user()->user_type === 'admin' || auth()->user()->user_type === 'instructor')
                 <div class="col-4 m-auto mb-5">
                     <!-- Group Selection Form -->
@@ -32,11 +97,11 @@
 
                 @if ($reservation !== null && ($reservation->status === 'pending' || $reservation->status === 'approved'))
                     <div class="alert alert-warning col-6 mt-2 m-auto text-center">
-                        This group already have pending reservation
+                         Pending for admin approval.
                     </div>
                 @elseif ($reservation !== null && $reservation->status === 'reserved')
                     <div class="alert alert-warning col-6 mt-2 m-auto text-center">
-                        This group already have reservation for the defense
+                        Already have reservation for the defense and panelists.
                     </div>
                 @endif
             @endif

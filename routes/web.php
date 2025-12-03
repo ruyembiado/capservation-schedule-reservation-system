@@ -42,7 +42,7 @@ Route::middleware(['auth'])->group(function () {
     // Admin views
     Route::get('/groups', [AdminController::class, 'groups']);
     Route::get('/instructors', [AdminController::class, 'instructors']);
-    Route::get('/smart-scheduler', [AdminController::class, 'SmartScheduler'])->name('SmartScheduler');
+    Route::get('/smart-scheduler/{group_id}', [AdminController::class, 'SmartScheduler'])->name('SmartScheduler');
     Route::post('/smart-scheduler', [AdminController::class, 'runSmartScheduler'])->name('SmartScheduler.run');
     Route::post('/create-panelist-schedule', [AdminController::class, 'CreatePanelistSchedule'])->name('assign.panelist.schedule');
 
@@ -60,6 +60,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/reserve-group', [ReservationController::class, 'store'])->name('reservation.store');
     Route::delete('/delete-reservation/{reservation_id}', [ReservationController::class, 'destroy'])->name('reservation.destroy');
     Route::post('/reservation/reschedule/{id}', [ScheduleController::class, 'update'])->name('schedule.reschedule');
+    Route::get('/awaiting-reservations', [ReservationController::class, 'awaiting_reservations'])->name('awaiting_reservations.index');
+    Route::get('/payment-confirmation/{reservation_id}', [ReservationController::class,
+    'payment'])->name('payment_confirm');
 
     // Transaction
     Route::get('/transactions', [TransactionController::class, 'index']);

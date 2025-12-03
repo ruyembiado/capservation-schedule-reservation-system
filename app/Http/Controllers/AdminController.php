@@ -16,8 +16,9 @@ use App\Http\Controllers\ScheduleController;
 
 class AdminController extends Controller
 {
-	public function SmartScheduler() {
-		return view('smartscheduler', ['formatted' => []]);
+	public function SmartScheduler($group_id) {
+		$group_id = $group_id;
+		return view('smartscheduler', compact('group_id') ,['formatted' => []]);
 	}
 
 	public function runSmartScheduler(Request $request)

@@ -416,4 +416,40 @@ class ReservationController extends Controller
 
         return redirect()->back()->with('success', 'Reservation deleted successfully.');
     }
+    
+    public function awaiting_reservations() {
+    	$reservations = Reservation::with(['user', 'reserveBy', 'schedule',
+    	'capstone'])
+    			->where('status', 'pending')
+                ->orderBy('created_at', 'asc')
+                ->get()
+                ->map(function ($reservation) {
+                    $latestSchedule = $reservation->schedule->sortByDesc('created_at')->first();
+                    $titles = $this->getTitlesForReservation($reservation);
+                    return [
+                        'id' => $reservation->id,
+                        'group_id' => $reservation->group_id,
+                        'capstone_title_id' => $reservation->capstone_title_id,
+                        'user' => $reservation->user,
+                        'reserveBy' => $reservation->reserveBy,
+                        'capstone_status' => $reservation->capstones->pluck('capstone_status')->first(),
+                        'titles' => $titles,
+                        'status' => $reservation->status,
+                        'created_at' => $reservation->created_at,
+                        'schedule_date' => $latestSchedule ? $latestSchedule->schedule_date : 'No date available',
+                        'schedule_time' => $latestSchedule && $latestSchedule->schedule_time
+                            ? \Carbon\Carbon::parse($latestSchedule->schedule_time)->format('h:i A')
+                            : 'No time available',
+                    ];
+                });
+                
+        return view('awaiting_reservations', compact('reservations'));
+    }
+    
+    public function payment($id) {
+    	$transaction = Transaction::where('reservation_id', $id)->get()->first();
+    	$reservation_id = $transaction->reservation_id;
+
+    	return view('payment', compact('transaction', 'reservation_id'));
+    }
 }

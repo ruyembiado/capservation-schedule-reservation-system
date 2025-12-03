@@ -77,6 +77,11 @@ class TransactionController extends Controller
         $transaction = Transaction::findOrFail($id);
         $transaction->status = 'paid';
         $transaction->save();
+        
+        if ($request->payment_confirm && $request->payment_confirm == 1) {
+        	return redirect()->route('SmartScheduler', $transaction->group_id)->with('success', 'Transaction marked as paid successfully.');
+        }
+        
         return redirect()->back()->with('success', 'Transaction marked as paid successfully.');
     }
 
@@ -104,7 +109,6 @@ class TransactionController extends Controller
         // Save path to DB (relative to /public)
         $transaction->proof_file = 'proofs/' . $filename;
         $transaction->save();
-
 
         return redirect()->back()->with('success', 'Proof of payment uploaded successfully.');
     }
