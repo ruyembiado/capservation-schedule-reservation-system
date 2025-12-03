@@ -82,7 +82,7 @@
                         @csrf
                         <input type="hidden" name="runScheduler" value="true">
 
-                        <div class="mb-3 text-center text-md-start">
+                        <!-- <div class="mb-3 text-center text-md-start">
                             <label for="offsetOption" class="form-label">Schedule Offset</label>
                             <select name="offsetOption" id="offsetOption" class="form-select">
                                 <option value="weeks:1" selected>1 Week Later</option>
@@ -91,7 +91,7 @@
                                 <option value="months:1">1 Month Later</option>
                                 <option value="months:2">2 Month Later</option>
                             </select>
-                        </div>
+                        </div> -->
 
                         <div class="col-12 d-grid gap-2">
                             <button type="submit" class="btn btn-primary w-100">
@@ -115,45 +115,28 @@
                                 @csrf
                                 @foreach ($formatted as $entry)
                                     <div class="group-result mb-3 shadow-sm rounded border px-3 pt-3 bg-white">
-                                        <div class="d-flex justify-content-between align-items-start">
-                                            <h5 class="fw-semibold mb-1">{{ $entry['group']['name'] }}</h5>
-                                            <button type="button" class="btn btn-sm btn-danger btn-delete-group">×</button>
+                                        <div class="d-flex justify-content-start
+                                        gap-2 align-items-start">
+                                        	<b>Name of Group:</b>
+                                            <h5 class="fw-semibold mb-1">{{
+                                            ucfirst($entry['group']['name']) }}</h5>
+                                            <!-- <button type="button" class="btn btn-sm btn-danger btn-delete-group">×</button> -->
                                         </div>
 
-                                        <p class="mb-1"><b>Defense Time:</b>
-																			    @php
-																			        $timeSlot = $entry['group']['time_slot'];
-																			    @endphp
-																			
-																			    @if ($timeSlot)
-																			        @if (preg_match('/^\d{2}:\d{2}$/', $timeSlot))
-																			            {{ \Carbon\Carbon::createFromFormat('H:i', $timeSlot)->format('h:i A') }}
-																			        @else
-																			            {{ $timeSlot }}
-																			        @endif
-																			    @else
-																			        No schedule
-																			    @endif
-																				</p>
                                         <p class="mb-1"><b>Tags:</b> {{ implode(', ', $entry['group']['topic_tags']) }}
                                         </p>
                                         <p class="mb-1"><b>Adviser:</b>
                                             {{ !empty($entry['group']['conflicts']) ? implode(', ', $entry['group']['conflicts']) : 'None' }}
-                                        </p>
-                                        <p class="mb-1"><b>Schedule:</b>
-                                            {{ !empty($entry['panelists'])
-                                                ? date('Y-m-d h:i A, l', strtotime($entry['panelists'][0]['schedule_date'] . ' ' . $entry['panelists'][0]['time']))
-                                                : 'No schedule' }}
                                         </p>
 
                                         {{-- Group-level hidden inputs --}}
                                         <input type="hidden" name="group_id[]" value="{{ $entry['groupId'] ?? '' }}">
                                         <input type="hidden" name="reservation_id[]"
                                             value="{{ $entry['group']['reservation_id'] ?? '' }}">
-                                        <input type="hidden" name="defense_date[]"
+                                        <!-- <input type="hidden" name="defense_date[]"
                                             value="{{ $entry['panelists'][0]['schedule_date'] ?? '' }}">
                                         <input type="hidden" name="defense_time[]"
-                                            value="{{ $entry['panelists'][0]['time'] ?? '' }}">
+                                            value="{{ $entry['panelists'][0]['time'] ?? '' }}"> -->
 
                                         <p class="mb-1 p-0"><b>Panelists:</b></p>
                                         <div class="row">
@@ -161,7 +144,6 @@
                                                 <span
                                                     class="text-danger fw-normal d-block mb-2">{{ $entry['conflict_note'] }}</span>
                                             @endif
-
                                             @foreach ((array) ($entry['panelists'] ?? []) as $panel)
 																					    {{-- Hidden Panelist ID --}}
 																					    <input type="hidden" 
@@ -177,18 +159,6 @@
 																					            <span class="badge bg-theme-primary text-light ms-2">
 																					                Score: {{ $panel['expertise_score'] ?? '0' }}
 																					            </span>
-																					
-																					            {{-- Time and Date --}}
-																					            <br>
-																					            <small class="text-dark">
-																					                <u>Schedule:</u>
-																					                @if(!empty($panel['schedule_date']) && !empty($panel['time']))
-																													    {{ date('Y-m-d h:i A, l', strtotime($panel['schedule_date'] . ' ' . $panel['time'])) }}
-																													@else
-																													    N/A
-																													@endif
-																					            </small>
-																					
 																					            {{-- Expertise --}}
 																					            <br>
 																					            <small>
@@ -202,14 +172,6 @@
 																					
 																					            {{-- Availability --}}
 																					            <br>
-																					            <small>
-																					                <u>Availability:</u>
-																														@if(!empty($panel['availability']) && is_array($panel['availability']))
-																														    {{ implode(', ', $panel['availability']) }}
-																														@else
-																														    N/A
-																														@endif
-																					            </small>
 																					        </div>
 																					    </div>
 																					@endforeach
@@ -226,7 +188,7 @@
                         </div>
                     @else
                         <div class="alert alert-warning mt-3 text-center fw-normal">
-                            No scheduling results available. Please run the Smart Scheduler.
+                            No scheduling result available. Please run the Smart Scheduler.
                         </div>
                     @endif
                 </div>

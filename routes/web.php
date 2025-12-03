@@ -43,7 +43,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/groups', [AdminController::class, 'groups']);
     Route::get('/instructors', [AdminController::class, 'instructors']);
     Route::get('/smart-scheduler/{group_id}', [AdminController::class, 'SmartScheduler'])->name('SmartScheduler');
-    Route::post('/smart-scheduler', [AdminController::class, 'runSmartScheduler'])->name('SmartScheduler.run');
+    Route::post('/smart-scheduler/{group_id}', [AdminController::class, 'runSmartScheduler'])->name('SmartScheduler.run');
     Route::post('/create-panelist-schedule', [AdminController::class, 'CreatePanelistSchedule'])->name('assign.panelist.schedule');
 
     // Schedule

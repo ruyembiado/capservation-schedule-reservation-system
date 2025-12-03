@@ -99,7 +99,7 @@ class PanelistController extends Controller
 
         $panelist->name = $request->name;
         $panelist->email = $request->email;
-        $panelist->capacity = $request->capacity;
+        //$panelist->capacity = $request->capacity;
         if ($request->has('credentials')) {
             $panelist->credentials = json_encode($request->credentials);
         }

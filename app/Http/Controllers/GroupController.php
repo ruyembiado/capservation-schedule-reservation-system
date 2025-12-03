@@ -43,9 +43,9 @@ class GroupController extends Controller
             'yearsection' => 'required|string|max:255',
             'capstone_adviser' => 'required|string|max:255',
             'instructor' => 'required|exists:users,id',
-            'capacity' => 'required|integer|min:1',
+            //'capacity' => 'required|integer|min:1',
             'credentials.*' => 'nullable|string',
-            'vacant_time' => 'nullable|date_format:H:i',
+            //'vacant_time' => 'nullable|date_format:H:i',
         ];
 
         $messages = [];
@@ -54,7 +54,7 @@ class GroupController extends Controller
                 $messages["members.$index.required"] = "Member " . ($index + 1) . " is required.";
             }
         }
-
+        
         $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
@@ -62,7 +62,7 @@ class GroupController extends Controller
                 ->withErrors($validator)
                 ->withInput();
         }
-
+        
         $group = User::findOrFail($id);
 
         $group->email = $request->email;
@@ -71,8 +71,8 @@ class GroupController extends Controller
         $group->year_section = $request->yearsection;
         $group->capstone_adviser = $request->capstone_adviser;
         $group->instructor_id = $request->instructor;
-        $group->vacant_time = $request->vacant_time;
-        $group->capacity = $request->capacity;
+        //$group->vacant_time = $request->vacant_time;
+        //$group->capacity = $request->capacity;
 
         if ($request->password) {
             $group->password = Hash::make($request->password);

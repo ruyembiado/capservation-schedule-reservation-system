@@ -94,13 +94,13 @@
                                 <td>
                                     @if (auth()->user()->user_type == 'admin')
                                         @if ($transaction->status === 'pending' && $transaction->proof_file)
-                                            <form action="{{ route('transaction.update', $transaction->id) }}"
+                                            <!-- <form action="{{ route('transaction.update', $transaction->id) }}"
                                                 method="POST" style="display: inline;">
                                                 @csrf
                                                 <button type="submit" class="btn btn-success btn-sm">
                                                     <i class="fas fa-check"></i> Mark as Paid
                                                 </button>
-                                            </form>
+                                            </form> -->
                                         @endif
                                     @endif
                                     @if (auth()->user()->user_type == 'student')

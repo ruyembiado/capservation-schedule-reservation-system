@@ -71,9 +71,9 @@
                                             <a href="{{ route('view_panelists', $reservation['id']) }}"
                                                 class="btn-sm btn btn-secondary">View Panelists</a>
                                             @if ($reservation['status'] != 'done' && $reservation['status'] != 'reserved')
-                                                <a href="{{ route('assign_panelist.form', ['id' => $reservation['id']]) }}"
+                                                <!-- <a href="{{ route('assign_panelist.form', ['id' => $reservation['id']]) }}"
                                                     class="btn {{ $reservation['status'] == 'pending' ? 'btn-primary' : 'btn-warning' }} btn-sm">{{ $reservation['status'] == 'pending' ? 'Assign' : 'Update' }}
-                                                    Panelists</a>
+                                                    Panelists</a> -->
                                             @endif
                                             {{-- @endif --}}
                                             @if ($reservation['status'] === 'reserved')

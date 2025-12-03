@@ -47,7 +47,7 @@
                         </div>
 
                         <!-- Capacity -->
-                        <div class="col-12 mb-2">
+                        <!-- <div class="col-12 mb-2">
                             <label for="capacity" class="form-label">Capacity</label>
                             <div class="col-2">
                                 <input type="number" name="capacity"
@@ -57,7 +57,7 @@
                             @error('capacity')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
-                        </div>
+                        </div> -->
 
                         <!-- Expertise Tags -->
                         <div class="col-12 mb-2">
@@ -85,7 +85,7 @@
 
                     <div class="col-5">
                         <!-- Vacant Time -->
-                        <div class="col-12 mb-2">
+                        <!-- <div class="col-12 mb-2">
                             <label for="vacant_time" class="form-label">Vacant Time</label>
                             <div id="vacantTimeRepeater">
                                 @php
@@ -93,7 +93,7 @@
                                     $oldStarts = old('vacant_time.start_time', ['']);
                                     $oldEnds = old('vacant_time.end_time', ['']);
                                 @endphp
-
+                        
                                 @foreach ($oldDays as $index => $day)
                                     <div class="input-group mt-1 mb-2 vacant-time-item">
                                         <select name="vacant_time[day][]" class="form-select">
@@ -112,7 +112,7 @@
                                         <button type="button" class="btn btn-danger remove-vacant-time">x</button>
                                     </div>
                                 @endforeach
-
+                        
                                 @error('vacant_time.day.*')
                                     <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
@@ -126,7 +126,7 @@
                             <button type="button" class="btn btn-sm btn-primary" id="addVacantTimeBtn">
                                 Add Vacant Time
                             </button>
-                        </div>
+                        </div> -->
 
                         <!-- Position -->
                         <div class="col-12 mb-2">

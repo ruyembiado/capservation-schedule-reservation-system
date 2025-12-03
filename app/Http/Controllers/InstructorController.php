@@ -52,9 +52,9 @@ class InstructorController extends Controller
             'password' => 'nullable|string|min:8|confirmed',
             'name' => 'required|string|max:255',
             'position' => 'required|string|max:255',
-            'capacity' => 'required|integer|min:1',
+            //'capacity' => 'required|integer|min:1',
             'credentials.*' => 'nullable|string',
-            'vacant_time' => 'nullable|array',
+            //'vacant_time' => 'nullable|array',
         ];
         $validator = Validator::make($request->all(), $rules);
 
@@ -70,7 +70,7 @@ class InstructorController extends Controller
         $instructor->username = $request->username;
         $instructor->name = $request->name;
         $instructor->position = $request->position;
-        $instructor->capacity = $request->capacity;
+        //$instructor->capacity = $request->capacity;
         $instructor->credentials = json_encode($request->credentials);
 
         if ($request->has('credentials')) {

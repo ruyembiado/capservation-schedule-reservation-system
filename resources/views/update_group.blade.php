@@ -71,17 +71,17 @@
                             <!-- Add Member Button Outside the Repeater -->
                             <button type="button" class="btn btn-sm btn-primary" id="addMemberBtn">Add Member</button>
                         </div>
-                        <div class="col-12 mb-2">
+                        <!-- <div class="col-12 mb-2">
                             <label for="capacity" class="form-label">Required Panelists</label>
                             <div class="col-2">
                                 <input type="number" name="capacity"
                                     class="form-control @error('capacity') is-invalid @enderror" id="capacity"
-                                    value="{{ $group->capacity }}">
+                                    value="">
                             </div>
                             @error('capacity')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
-                        </div>
+                        </div> -->
                     </div>
                     <div class="col-5">
                         <div class="col-12 mb-2">
@@ -158,14 +158,14 @@
                                 Topic Tag</button>
                         </div>
 
-                        <div class="col-12 mb-2">
+                        <!-- <div class="col-12 mb-2">
                             <label for="vacant_time" class="form-label">Defense Time</label>
-                            <input type="time" name="vacant_time" placeholder="Enter passsword" value="{{ $group->vacant_time }}"
+                            <input type="time" name="vacant_time" placeholder="Enter passsword" value=""
                                 class="form-control @error('vacant_time') is-invalid @enderror" id="vacant_time">
                             @error('vacant_time')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
-                        </div>
+                        </div> -->
 
                         <div class="login-logo-container m-auto text-center pt-3">
                             <div class="mt-3">
@@ -181,3 +181,28 @@
     </div>
     <!-- Content Row -->
 @endsection <!-- End the content section -->
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const repeater = document.getElementById("membersRepeater");
+        const addMemberBtn = document.getElementById("addMemberBtn");
+
+        if (!repeater || !addMemberBtn) return; // avoid null error
+
+        addMemberBtn.addEventListener("click", function() {
+            let newItem = document.createElement("div");
+            newItem.classList.add("input-group", "mb-2");
+            newItem.innerHTML = `
+            <input type="text" name="members[]" class="form-control" placeholder="Member Name">
+            <button type="button" class="btn btn-danger remove-member">&times;</button>
+        `;
+            repeater.appendChild(newItem);
+        });
+
+        repeater.addEventListener("click", function(e) {
+            if (e.target.classList.contains("remove-member")) {
+                e.target.closest(".input-group").remove();
+            }
+        });
+    });
+</script>

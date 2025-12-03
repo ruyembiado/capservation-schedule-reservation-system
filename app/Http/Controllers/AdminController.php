@@ -20,8 +20,115 @@ class AdminController extends Controller
 		$group_id = $group_id;
 		return view('smartscheduler', compact('group_id') ,['formatted' => []]);
 	}
+	
+	public function runSmartScheduler(Request $request, $group_id)
+	{
+	    // --- Get Instructors ---
+	    $instructorRecords = User::where('user_type', 'instructor')->get();
+	    $instructors = [];
+	
+	    foreach ($instructorRecords as $inst) {
+	        $expertise = json_decode($inst->credentials, true) ?? [];
+	
+	        $instructors[$inst->id] = [
+	            'id' => $inst->id,
+	            'name' => $inst->name,
+	            'expertise' => $expertise, // tags
+	        ];
+	    }
+	
+	    // --- Get Students / Groups (Pending Only) ---
+	    $studentRecords = User::where('user_type', 'student')
+	        ->whereHas('reservations', fn($q) => $q->where('status', 'pending'))
+	        ->with('instructor', 'reservations')
+	        ->orderBy('created_at', 'desc')
+	        ->get();
+	        
+	    $groups = [];
+	    foreach ($studentRecords as $student) {
+	        $conflictId = $student->instructor->id ?? null;
+	
+	        $groups[$student->id] = [
+	            'name' => $student->username,
+	            'required_panelists' => (int) $student->capacity,
+	            'topic_tags' => json_decode($student->credentials, true) ?? [],
+	            'conflicts' => $conflictId ? [$conflictId] : [],
+	            'reservation_id' => $student->reservations->first()->id ?? null,
+	        ];
+	    }
+	
+	    // --- Match by Expertise Only ---
+	    $result = $this->balancedExpertMatch($instructors, $groups);
+	
+	    // --- Format Output ---
+	    $formatted = [];
+	    foreach ($groups as $groupId => $group) {
+	        $assigned = $result[$groupId] ?? [];
+	
+	        $conflictNames = [];
+	        foreach ($group['conflicts'] as $conflictInstructorId) {
+	            if (isset($instructors[$conflictInstructorId])) {
+	                $conflictNames[] = $instructors[$conflictInstructorId]['name'];
+	            }
+	        }
+	
+	        $formatted[] = [
+	            'groupId' => $groupId,
+	            'group' => [
+	                'name' => $group['name'],
+	                'required_panelists' => $group['required_panelists'],
+	                'topic_tags' => $group['topic_tags'],
+	                'conflicts' => $conflictNames,
+	                'reservation_id' => $group['reservation_id'],
+	            ],
+	            'panelists' => $assigned,
+	            'conflict_note' =>
+	                count($assigned) < $group['required_panelists']
+	                    ? "The group requires at least {$group['required_panelists']} panelists, but only " .
+	                      count($assigned) .
+	                      " were suggested."
+	                    : null,
+	        ];
+	    }
+	    
+	    return view('smartscheduler', compact('formatted', 'group_id'));
+	}
+	
+	private function balancedExpertMatch($instructors, $groups)
+	{
+	    $assignments = [];
+	
+	    foreach ($groups as $groupId => $group) {
+	        $required = max(1, (int)$group['required_panelists']);
+	        $topicTags = $group['topic_tags'];
+	
+	        $candidates = [];
+	
+	        foreach ($instructors as $instId => $inst) {
+	            // Skip conflict instructors
+	            if (in_array($instId, $group['conflicts'])) continue;
+	
+	            $score = count(array_intersect($topicTags, $inst['expertise']));
+	
+	            $candidates[] = [
+	                'instructor_id' => $instId,
+	                'name' => $inst['name'],
+	                'expertise' => $inst['expertise'],
+	                'score' => $score,
+	            ];
+	        }
+	
+	        // Sort best match first
+	        usort($candidates, fn($a, $b) => $b['score'] <=> $a['score']);
+	
+	        // Select top N
+	        $assignments[$groupId] = array_slice($candidates, 0, $required);
+	    }
+	
+	    return $assignments;
+	}
 
-	public function runSmartScheduler(Request $request)
+	public function runSmartSchedulerTest(Request $request, $group_id)
 	{
 	    $offsetOptionInput = $request->input('offsetOption', 'weeks:1');
 	    [$unit, $value] = explode(':', $offsetOptionInput);
@@ -134,10 +241,10 @@ class AdminController extends Controller
 	        ];
 	    }
 	
-	    return view('smartscheduler', compact('formatted'));
+	    return view('smartscheduler', compact('formatted', 'group_id'));
 	}
 	
-	private function balancedExpertMatch($instructors, $groups, $offsetOption)
+	private function balancedExpertMatchTest($instructors, $groups, $offsetOption)
 	{
 	    ini_set('max_execution_time', 300);
 	    set_time_limit(300);
@@ -378,7 +485,7 @@ class AdminController extends Controller
 			}
 		}
 
-		return redirect()->back()->with('success', 'Panelists assigned and defense schedules created successfully.');
+		return redirect()->back()->with('success', 'Panelists assigned and defense schedule created successfully.');
 	}
 
 	public function groups() {

@@ -52,7 +52,7 @@
                             @endif
                         </div>
                     </div>
-                    <div class="col-12 mb-2">
+                    <!-- <div class="col-12 mb-2">
                         <label for="capacity" class="form-label">Required Panelists</label>
                         <div class="col-2">
                             <input readonly type="number" name="capacity"
@@ -62,8 +62,8 @@
                         @error('capacity')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
-                    </div>
-                    <div class="col-12 mb-2">
+                    </div> -->
+                    <!-- <div class="col-12 mb-2">
                         <label for="vacant_time" class="form-label">Defense Time</label>
                         <input readonly type="time" name="vacant_time" placeholder="Enter passsword"
                             value="{{ $group->vacant_time }}"
@@ -71,7 +71,7 @@
                         @error('vacant_time')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
-                    </div>
+                    </div> -->
                 </div>
                 <div class="col-5">
                     <div class="col-12 mb-2">
@@ -120,7 +120,7 @@
                             @foreach ($credentials as $index => $credential)
                                 <div class="input-group mb-2 credential-item">
                                     <input readonly type="text" name="credentials[]" class="form-control"
-                                        value="{{ $credential }}" placeholder="Enter Topic Tag">
+                                        value="{{ $credential }}" placeholder="">
                                     @error("credentials.$index")
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
