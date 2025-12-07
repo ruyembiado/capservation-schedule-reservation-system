@@ -47,10 +47,9 @@ class AdminController extends Controller
 	    $groups = [];
 	    foreach ($studentRecords as $student) {
 	        $conflictId = $student->instructor->id ?? null;
-	
 	        $groups[$student->id] = [
 	            'name' => $student->username,
-	            'required_panelists' => (int) $student->capacity,
+	            'required_panelists' => 3,
 	            'topic_tags' => json_decode($student->credentials, true) ?? [],
 	            'conflicts' => $conflictId ? [$conflictId] : [],
 	            'reservation_id' => $student->reservations->first()->id ?? null,
@@ -76,7 +75,7 @@ class AdminController extends Controller
 	            'groupId' => $groupId,
 	            'group' => [
 	                'name' => $group['name'],
-	                'required_panelists' => $group['required_panelists'],
+	                'required_panelists' => 3,
 	                'topic_tags' => $group['topic_tags'],
 	                'conflicts' => $conflictNames,
 	                'reservation_id' => $group['reservation_id'],
@@ -91,7 +90,16 @@ class AdminController extends Controller
 	        ];
 	    }
 	    
-	    return view('smartscheduler', compact('formatted', 'group_id'));
+	    $group = User::where('id', $group_id)->first();
+        $tags = json_decode($group->credentials, true);
+	    
+	    $panelists = User::whereNot('id', $group_id )->where('user_type', 'instructor')->where(function ($query) use ($tags) {
+            foreach ($tags as $tag) {
+                $query->orWhereJsonContains('credentials', $tag);
+            }
+        })->get();
+	    
+	    return view('smartscheduler', compact('formatted', 'group_id', 'panelists'));
 	}
 	
 	private function balancedExpertMatch($instructors, $groups)
@@ -99,7 +107,7 @@ class AdminController extends Controller
 	    $assignments = [];
 	
 	    foreach ($groups as $groupId => $group) {
-	        $required = max(1, (int)$group['required_panelists']);
+	        $required = max(1, 3);
 	        $topicTags = $group['topic_tags'];
 	
 	        $candidates = [];
@@ -124,7 +132,7 @@ class AdminController extends Controller
 	        // Select top N
 	        $assignments[$groupId] = array_slice($candidates, 0, $required);
 	    }
-	
+	    
 	    return $assignments;
 	}
 
@@ -486,6 +494,17 @@ class AdminController extends Controller
 		}
 
 		return redirect()->back()->with('success', 'Panelists assigned and defense schedule created successfully.');
+	}
+	
+	public function assignedPanelistsScheduler(Request $request) {
+		$group_id = $request->group_id;
+		$reservation_id = $request->reservation_id;
+		$panelist_id = $request->panelist_id;
+		
+		dd($panelist_id);
+		
+		return view('schedule_calendar', compact('group_id', 'reservation_id',
+		'panelist_id'));
 	}
 
 	public function groups() {
