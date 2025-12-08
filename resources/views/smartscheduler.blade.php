@@ -99,6 +99,34 @@
 
                                     <p class="mb-1 p-0"><b>Panelists:</b></p>
 
+									<div class="row">
+										<div class="col-12 col-md-4 mb-4">
+                                            <div class="panel-box group-result shadow-sm rounded border px-3 pt-3 bg-white">
+                                                <div class="panelist-select-box">
+                                                    <label
+                                                        class="fw-semibold
+                                                        mb-1">Dean</label>
+                                                    <div class="mt-2 small
+                                                        text-dark panel-info">
+                                                        <h6>{{ $dean_name }}</h6> <br>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-4 mb-4">
+                                            <div class="panel-box group-result shadow-sm rounded border px-3 pt-3 bg-white">
+                                                <div class="panelist-select-box">
+                                                    <label
+                                                        class="fw-semibold
+                                                        mb-1">Program Head</label>
+                                                    <div class="mt-2 small
+                                                        text-dark panel-info">
+                                                        <h6>{{ $program_head_name }}</h6> <br>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+									</div>
                                     {{-- Panelists container (we'll place panelist cards inside) --}}
                                     <div class="row panelist-container" data-group="{{ $entry['groupId'] }}">
 
@@ -134,7 +162,8 @@
                                                             <button type="button" class="btn btn-outline-danger delete-panelist" title="Remove panelist field">✕</button>
                                                         </div>
 
-                                                        <div class="mt-2 small text-muted panel-info">
+                                                        <div class="mt-2 small
+                                                        text-dark panel-info">
                                                             <b>Score:</b> <span class="panel-score">{{ $panel['score'] ?? 0 }}</span><br>
                                                             <b>Expertise:</b>
                                                             <span class="panel-expertise">

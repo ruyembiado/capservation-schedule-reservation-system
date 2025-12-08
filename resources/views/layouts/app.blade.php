@@ -81,7 +81,8 @@
                     <li class="sidebar-item">
                         <a href="{{ url('/awaiting-reservations') }}"
                         class="sidebar-link {{
-                        request()->is('awaiting-reservations') ? 'active' : ''
+                        request()->is('awaiting-reservations',
+                        'payment-confirmation*', 'smart-scheduler*', 'assign-panelists-scheduler') ? 'active' : ''
                         }}">
                             <i class="fa fa-pen-to-square"></i>
                             <span>Reserve</span>
@@ -99,7 +100,7 @@
                 @if (auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'instructor')
                     <li class="sidebar-item">
                         <a href="{{ url('/reservations') }}"
-                            class="sidebar-link {{ request()->is('reservations', 'reservation*', 'view-panelists/*', 'assign-panelist*') ? 'active' : '' }}">
+                            class="sidebar-link {{ request()->is('reservations', 'reservation*', 'view-panelists/*', 'assign-panelist') ? 'active' : '' }}">
                             <i class="fa fa-pen-to-square"></i>
                             <span>Reservations</span>
                         </a>
@@ -150,6 +151,14 @@
                         <a href="{{ url('/capstone-history') }}" class="sidebar-link">
                             <i class="fa-solid fa-timeline"></i>
                             <span>Capstone History</span>
+                        </a>
+                    </li>
+                @endif
+                @if (auth()->user()->user_type == 'admin')
+                    <li class="sidebar-item">
+                        <a href="{{ url('/settings') }}" class="sidebar-link">
+                            <i class="fa-solid fa-cog"></i>
+                            <span>Settings</span>
                         </a>
                     </li>
                 @endif

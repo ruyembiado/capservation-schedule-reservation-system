@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use DateTime;
 use App\Models\User;
+use App\Models\Setting;
 use App\Models\Panelist;
 use App\Models\Schedule;
 use App\Models\Reservation;
@@ -98,8 +99,28 @@ class AdminController extends Controller
                 $query->orWhereJsonContains('credentials', $tag);
             }
         })->get();
+        
+	    $settings = Setting::first();
+	    $dean_name = $settings->dean_name ?? "Dean";
+	    $program_head_name = null;
+	    $program = strtoupper($group->program ?? '');
+	
+	    switch ($program) {
+	        case 'BSIT':
+	            $program_head_name = $settings->it_head_name ?? "IT Head";
+	            break;
+	        case 'BSCS':
+	            $program_head_name = $settings->cs_head_name ?? "CS Head";
+	            break;
+	        case 'BSIS':
+	            $program_head_name = $settings->is_head_name ?? "IS Head";
+	            break;
+	        default:
+	            $program_head_name = "Program Head";
+	    }
 	    
-	    return view('smartscheduler', compact('formatted', 'group_id', 'panelists'));
+	    return view('smartscheduler', compact('formatted', 'group_id', 'panelists',
+	    'dean_name', 'program_head_name'));
 	}
 	
 	private function balancedExpertMatch($instructors, $groups)
@@ -431,69 +452,77 @@ class AdminController extends Controller
 	}
 
 	public function CreatePanelistSchedule(Request $request) {
-		foreach ($request->reservation_id as $i => $reservationId) {
-			$reservation = Reservation::findOrFail($reservationId);
-
-			$groupId = $request->group_id[$i] ?? null;
-			$defenseDate = $request->defense_date[$i] ?? null;
-			$defenseTime = $request->defense_time[$i] ?? null;
-
-			// Get panelists for this group
-			$panelists = $request->panelist_id[$groupId] ?? [];
-			$panelists = array_map('intval', $panelists);
-
-			$formattedDateTime = Carbon::parse("{$defenseDate} {$defenseTime}")
-			->format('l, F j, Y \\a\\t h:i A');
-			// Example: Monday, September 29, 2025 at 01:00 PM
-
-			// --- Step 1: Assign panelists ---
-			$reservation->update([
-			'panelist_id' => json_encode($panelists),
-			'status'      => 'approved',
-			]);
-
-			Notification::create([
-			'user_id'              => $reservation->group_id,
-			'_link_id'             => $reservation->id,
-			'notification_type'    => 'system_alert',
-			'notification_title'   => 'Panelist Assigned',
-			'notification_message' => ucwords($reservation->user->username) .
-			"'s reservation has assigned panelists.",
-			]);
-
-			// --- Step 2: Create defense schedule ---
-			$schedule = Schedule::create([
-			'group_id'          => $reservation->group_id,
-			'reservation_id'    => $reservation->id,
-			'schedule_date'     => $defenseDate,
-			'schedule_time'     => $defenseTime,
-			'schedule_category' => '',
-			'schedule_remarks'  => '',
-			]);
-
-			// --- Step 3: Update reservation status if schedule was created ---
-			if ($schedule) {
-				$reservation->update([
-				'status' => 'reserved',
-				]);
-
-				Notification::create([
-				'user_id'              => $reservation->group_id,
-				'_link_id'             => $reservation->id,
-				'notification_type'    => 'system_alert',
-				'notification_title'   => 'Schedule Created',
-				'notification_message' => ucfirst($reservation->user->username) .
-				"'s reservation has been scheduled for defense on {$formattedDateTime}.",
-				]);
-
-				$assignedPanelists = json_decode($reservation->panelist_id);
-
-				// Send mail to panelists
-				$mail = $this->sendPanelistEmail($reservation, $assignedPanelists);
-			}
-		}
-
-		return redirect()->back()->with('success', 'Panelists assigned and defense schedule created successfully.');
+	    // --- Step 0: Decode JSON inputs if needed ---
+	    $group_ids = is_array($request->group_id) ? $request->group_id : json_decode($request->group_id, true);
+	    $reservation_ids = is_array($request->reservation_id) ? $request->reservation_id : json_decode($request->reservation_id, true);
+	    $panelist_ids_nested = is_array($request->panelist_id) ? $request->panelist_id : json_decode($request->panelist_id, true);
+	
+	    // Flatten panelists: convert nested arrays to a single flat array
+	    $panelist_ids = [];
+	    foreach ($panelist_ids_nested as $arr) {
+	        $panelist_ids = array_merge($panelist_ids, $arr);
+	    }
+	    $panelist_ids = array_map('intval', $panelist_ids); // make sure all are integers
+	
+	    // Loop through each reservation
+	    foreach ($reservation_ids as $i => $reservationId) {
+	        $reservation = Reservation::findOrFail($reservationId);
+	
+	        $groupId = $group_ids[$i] ?? $reservation->group_id;
+	        $defenseDate = $request->schedule_date;
+	        $defenseTime = $request->schedule_time;
+	
+	        $formattedDateTime = Carbon::parse("{$defenseDate} {$defenseTime}")
+	            ->format('l, F j, Y \\a\\t h:i A');
+	
+	        // --- Step 1: Assign panelists ---
+	        $reservation->update([
+	            'panelist_id' => json_encode($panelist_ids),
+	            'status' => 'approved',
+	        ]);
+	
+	        Notification::create([
+	            'user_id' => $reservation->group_id,
+	            '_link_id' => $reservation->id,
+	            'notification_type' => 'system_alert',
+	            'notification_title' => 'Panelist Assigned',
+	            'notification_message' => ucwords($reservation->user->username) .
+	                "'s reservation has assigned panelists.",
+	        ]);
+	
+	        // --- Step 2: Create defense schedule ---
+	        $schedule = Schedule::create([
+	            'group_id' => $reservation->group_id,
+	            'reservation_id' => $reservation->id,
+	            'schedule_date' => $defenseDate,
+	            'schedule_time' => $defenseTime,
+	            'schedule_category' => '',
+	            'schedule_remarks' => '',
+	        ]);
+	
+	        // --- Step 3: Update reservation status if schedule was created ---
+	        if ($schedule) {
+	            $reservation->update(['status' => 'reserved']);
+	
+	            Notification::create([
+	                'user_id' => $reservation->group_id,
+	                '_link_id' => $reservation->id,
+	                'notification_type' => 'system_alert',
+	                'notification_title' => 'Schedule Created',
+	                'notification_message' => ucfirst($reservation->user->username) .
+	                    "'s reservation has been scheduled for defense on {$formattedDateTime}.",
+	            ]);
+	
+	            // Send emails to panelists
+	            $scheduleController = new ScheduleController;
+	            $scheduleController->sendPanelistEmail($reservation, $panelist_ids);
+	            $scheduleController->sendDeanHeadEmail($reservation);
+	        }
+	    }
+	
+	    return redirect()
+	        ->route('awaiting_reservations.index')
+	        ->with('success', 'Panelists assigned and defense schedule created successfully.');
 	}
 	
 	public function assignedPanelistsScheduler(Request $request) {
@@ -501,10 +530,11 @@ class AdminController extends Controller
 		$reservation_id = $request->reservation_id;
 		$panelist_id = $request->panelist_id;
 		
-		dd($panelist_id);
-		
-		return view('schedule_calendar', compact('group_id', 'reservation_id',
-		'panelist_id'));
+		return view('schedule_calendar', [
+		    'group_id' => json_encode($group_id),
+		    'reservation_id' => json_encode($reservation_id),
+		    'panelist_id' => json_encode($panelist_id)
+		]);
 	}
 
 	public function groups() {
@@ -524,4 +554,44 @@ class AdminController extends Controller
 	public function transactions() {
 		return view('transaction');
 	}
+	
+	public function settings() {
+		$settings = Setting::first();
+		return view('settings', compact('settings'));
+	}
+	
+	public function updateSettings(Request $request) {
+	    $request->validate([
+	        'dean_name' => 'nullable|string|max:255',
+	        'dean_email' => 'nullable|email|max:255',
+	        'program_head.it.name' => 'nullable|string|max:255',
+	        'program_head.it.email' => 'nullable|email|max:255',
+	        'program_head.cs.name' => 'nullable|string|max:255',
+	        'program_head.cs.email' => 'nullable|email|max:255',
+	        'program_head.is.name' => 'nullable|string|max:255',
+	        'program_head.is.email' => 'nullable|email|max:255',
+	    ]);
+	
+	    $settings = Setting::first();
+	    if (!$settings) {
+	        $settings = new Setting();
+	    }
+	
+	    $settings->dean_name = $request->dean_name;
+	    $settings->dean_email = $request->dean_email;
+	
+	    $settings->it_head_name = $request->program_head['it']['name'] ?? '';
+	    $settings->it_head_email = $request->program_head['it']['email'] ?? '';
+	
+	    $settings->cs_head_name = $request->program_head['cs']['name'] ?? '';
+	    $settings->cs_head_email = $request->program_head['cs']['email'] ?? '';
+	
+	    $settings->is_head_name = $request->program_head['is']['name'] ?? '';
+	    $settings->is_head_email = $request->program_head['is']['email'] ?? '';
+	
+	    $settings->save();
+	
+	    return redirect()->back()->with('success', 'Settings updated successfully!');
+	}									
+
 }

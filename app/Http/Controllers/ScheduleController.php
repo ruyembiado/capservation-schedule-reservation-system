@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Schedule;
 use App\Models\User;
+use App\Models\Setting;
 use App\Models\Reservation;
 use App\Models\Notification;
 use Illuminate\Http\Request;
@@ -290,4 +291,72 @@ class ScheduleController extends Controller
 
 		return true;
 	}
+	
+	public function sendDeanHeadEmail($reservation) {
+	    $reservation = Reservation::with('latestSchedule', 'user')->find($reservation->id);
+	    if (!$reservation) {
+	        return false; // reservation not found
+	    }
+	
+	    $groupName = ucwords($reservation->user->username ?? "Unknown Group");
+	
+	    if ($reservation->latestSchedule) {
+	        $scheduleDate = Carbon::parse($reservation->latestSchedule->schedule_date)->format('F j, Y');
+	        $scheduleTime = Carbon::parse($reservation->latestSchedule->schedule_time)->format('h:i A');
+	    } else {
+	        $scheduleDate = "No schedule date";
+	        $scheduleTime = "";
+	    }
+	
+	    $settings = Setting::first();
+	    if (!$settings) {
+	        return false; 
+	    }
+	
+	    $program = strtoupper($reservation->user->program ?? '');
+	    switch ($program) {
+	        case 'BSIT':
+	            $programHeadName = $settings->it_head_name ?? null;
+	            $programHeadEmail = $settings->it_head_email ?? null;
+	            break;
+	        case 'BSCS':
+	            $programHeadName = $settings->cs_head_name ?? null;
+	            $programHeadEmail = $settings->cs_head_email ?? null;
+	            break;
+	        case 'BSIS':
+	            $programHeadName = $settings->is_head_name ?? null;
+	            $programHeadEmail = $settings->is_head_email ?? null;
+	            break;
+	        default:
+	            $programHeadName = null;
+	            $programHeadEmail = null;
+	    }
+	
+	    $sendEmail = function($recipientName, $recipientEmail) use ($groupName, $scheduleDate, $scheduleTime) {
+	        $messageBody = "Hi Mr/Mrs. {$recipientName},\n\n" .
+	                       "You are one of the panelists of the group {$groupName} " .
+	                       "and scheduled date on {$scheduleDate} at {$scheduleTime}.\n\n" .
+	                       "Please be prepared.";
+	
+	        $subject = "Panelist Schedule Reminder";
+	
+	        Mail::raw($messageBody, function ($message) use ($recipientEmail, $subject) {
+	            $message->to($recipientEmail)
+	                    ->subject($subject)
+	                    ->from(config('mail.from.address'), config('mail.from.name'));
+	        });
+	    };
+	
+	    // Send to Dean
+	    if ($settings->dean_email) {
+	        $sendEmail($settings->dean_name ?? "Dean", $settings->dean_email);
+	    }
+	
+	    // Send to Program Head
+	    if ($programHeadEmail) {
+	        $sendEmail($programHeadName ?? "Program Head", $programHeadEmail);
+	    }
+	
+	    return true;
+	}							
 }

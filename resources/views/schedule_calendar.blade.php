@@ -2,83 +2,111 @@
 
 @section('content')
     <!-- Start the content section -->
-    <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0">Calendar</h1>
-    </div>
     <!-- Content Row -->
     <div class="row">
-        <!-- Calendar Container -->
-        <div class="card shadow mb-4">
-            <div class="card-body">
-                <div class="d-flex justify-content-between">
-                    <div id="FullCalendar" class="col-9"></div>
-                    <div class="add-events-container col-3 p-3">
-                        <h4 class="add-events-title">Add Schedule</h4>
-                        <form action="{{ route('schedule.store') }}" method="POST">
-                            @csrf
-                            <!-- <div class="mb-3">
-                                <label for="group" class="form-label">Select group</label>
-                                <select name="group" class="form-control select2" id="group_schedule">
-                                    <option value="">-- Select Group --</option>
-                                    @foreach ($reservations as $reservation)
-                                        <option value="{{ $reservation->user->id }}"
-                                            {{ old('group') == $reservation->user->id ? 'selected' : '' }}>
-                                            {{ Str::ucfirst($reservation->user->username) }}</option>
-                                    @endforeach
-                                </select>
-                                @error('group')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
-                            </div> -->
-                            <div class="mb-3">
-                                <label for="schedule_date" class="form-label">Schedule Date</label>
-                                <input type="date" name="schedule_date" class="form-control"
-                                    min="{{ now()->format('Y-m-d') }}" id="schedule_date"
-                                    value="{{ old('schedule_date') }}">
-                                @error('schedule_date')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <!-- <div class="mb-3">
-                                <label for="schedule_time" class="form-label">Schedule Time</label>
-                                <input type="time" class="form-control" id="schedule_time" name="schedule_time"
-                                    value="{{ old('schedule_time') }}">
-                                @error('schedule_time')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
-                            </div> -->
-                            <div class="mb-3">
-                                <label for="schedule_category" class="form-label">Select Category</label>
-                                <select name="schedule_category" class="form-control" id="schedule_category">
-                                    <option value="">-- Select Category --</option>
-                                    {{-- <option value="available"
-                                        {{ old('schedule_category') == 'available' ? 'selected' : '' }}>
-                                        Available</option>
-                                    <option value="occupied"
-                                        {{ old('schedule_category') == 'occupied' ? 'selected' : '' }}>
-                                        Occupied</option> --}}
-                                    <option value="unavailable"
-                                        {{ old('schedule_category') == 'unavailable' ? 'selected' : '' }}>Unavailable
-                                    </option>
-                                </select>
-                                @error('schedule_category')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="mb-3">
-                                <label for="schedule_remarks" class="form-label">Remarks</label>
-                                <textarea name="schedule_remarks" class="form-control" id="schedule_remarks" cols="10" rows="5"></textarea>
-                                @error('schedule_remarks')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <button type="submit" class="btn btn-primary">Add Event</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+    	<div class="col-12">
+	        <div class="card shadow mb-3 mb-lg-0">
+	            <div class="card-body">
+	                <div class="d-flex justify-content-between align-items-center my-4 position-relative">
+	                    @php
+	                        $steps = [
+	                            '1' => 'Awaiting Reservations',
+	                            '2' => 'Payment',
+	                            '3' => 'Scheduling',
+	                        ];
+	                        $currentStatus = 2;
+	                        $currentIndex  = $currentStatus;
+	                    @endphp
+	
+	                    @foreach ($steps as $key => $icon)
+	                        <div class="text-center flex-fill position-relative">
+	                            <div class="rounded-circle step-icon
+	                                {{ $loop->index <= $currentIndex ? 'bg-theme-primary text-white' : 'bg-light text-dark border' }}
+	                                d-flex align-items-center justify-content-center mx-auto">
+	                                {{ $loop->index + 1 }}
+	                            </div>
+	
+	                            @if (! $loop->last)
+	                                <div class="step-connector
+	                                    {{ $loop->index < $currentIndex ? 'bg-theme-primary' : 'bg-light' }}">
+	                                </div>
+	                            @endif
+	                        </div>
+	                    @endforeach
+	                </div>
+	
+	                <style>
+	                    .step-icon {
+	                        width: 50px;
+	                        height: 50px;
+	                        font-size: 20px;
+	                        z-index: 2 !important;
+	                    }
+	                    .step-connector {
+	                        position: absolute;
+	                        top: 25px;
+	                        left: 56.4%;
+	                        width: 87.5%;
+	                        height: 4px;
+	                        z-index: 1 !important;
+	                    }
+	                    /* Small helper: ensure panel-box fills height */
+	                    .panel-box { min-height: 170px; }
+	                </style>
+	
+	                <div class="d-sm-flex align-items-center justify-content-center mb-4">
+	                    <h1 class="h3 mb-0">Scheduling</h1>
+	                </div>
+	            </div>
+	        <!-- Calendar Container -->
+	                <div class="d-flex justify-content-between px-3 pb-4">
+	                    <div id="FullCalendar" class="col-9"></div>
+	                    <div class="add-events-container col-3 p-3">
+	                        <h4 class="add-events-title">Select Schedule</h4>
+	                        <form action="{{ route('assign.panelist.schedule') }}" method="POST">
+	                            @csrf
+	                            <input type="hidden" name="group_id" value='{{ $group_id }}'>
+							    <input type="hidden" name="reservation_id" value='{{ $reservation_id }}'>
+							    <input type="hidden" name="panelist_id" value='{{ $panelist_id }}'>
+	                            <div class="mb-3">
+	                                <label for="schedule_date" class="form-label">Schedule Date</label>
+	                                <input type="date" name="schedule_date" class="form-control"
+	                                    min="{{ now()->format('Y-m-d') }}" id="schedule_date"
+	                                    value="{{ old('schedule_date') }}">
+	                                @error('schedule_date')
+	                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+	                                @enderror
+	                            </div>
+	                            <div class="mb-3">
+								    <label for="schedule_time" class="form-label">Available Time:</label>
+								
+								    <select class="form-select" id="schedule_time" name="schedule_time">
+								        <option value="" selected disabled>-- Select Time --</option>
+								
+								        <optgroup label="Morning" class="bg-light">
+								            <option value="08:00:00">8:00 AM - 9:00 AM</option>
+								            <option value="09:00:00">9:00 AM - 10:00 AM</option>
+								            <option value="10:00:00">10:00 AM - 11:00 AM</option>
+								        </optgroup>
+								
+								        <optgroup label="Afternoon" class="bg-light">
+								            <option value="14:00:00">2:00 PM - 3:00 PM</option>
+								            <option value="15:00:00">3:00 PM - 4:00 PM</option>
+								        </optgroup>
+								    </select>
+								
+								    @error('schedule_time')
+								        <div class="invalid-feedback d-block">{{ $message }}</div>
+								    @enderror
+								</div>
+								<div class="text-end">
+	                            	<button type="submit" class="btn btn-primary w-100">Assign Schedule</button>
+	                            </div>
+	                        </form>
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
     </div>
 
     <!-- Content Row -->

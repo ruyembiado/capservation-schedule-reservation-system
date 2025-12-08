@@ -95,7 +95,7 @@
 					        </tr>
 					    @empty
 					        <tr>
-					            <td colspan="4" class="text-center">No reservations found.</td>
+					            <td colspan="4" class="text-center">No awaiting reservations found.</td>
 					        </tr>
 					    @endforelse
 					</tbody>

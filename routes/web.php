@@ -47,6 +47,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/create-panelist-schedule', [AdminController::class, 'CreatePanelistSchedule'])->name('assign.panelist.schedule');
     Route::post('/assign-panelists-scheduler', [AdminController::class,
     'assignedPanelistsScheduler'])->name('assignedPanelistsScheduler');
+    Route::get('/settings', [AdminController::class, 'settings']);
+    Route::post('/settings', [AdminController::class, 'updateSettings'])->name('settings.update');
 
     // Schedule
     Route::get('/calendar', [ScheduleController::class, 'index']);

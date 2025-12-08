@@ -33,7 +33,7 @@
                                 <td>{{ $instructor->email }}</td>
                                 <td>{{ $instructor->position }}</td>
                                 <td>{{ $instructor->created_at->format('Y-m-d h:i A') }}</td>
-                                <td>
+                                <td class="d-flex gap-1">
                                     <a href="{{ url('/view-instructor/' . $instructor->id) }}"
                                         class="btn btn-secondary btn-sm">View</a>
                                     <a href="{{ url('/update-instructor/' . $instructor->id) }}"
