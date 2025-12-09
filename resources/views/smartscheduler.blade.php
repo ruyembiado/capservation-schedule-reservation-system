@@ -76,7 +76,7 @@
             <div class="card-body">
                 <h4 class="card-title mb-4 fw-normal text-dark text-center text-md-start">Smart Scheduler Result</h4>
 
-                @if ($formatted)
+                @if ($formatted || session('show_scheduler_result'))
                     <div id="schedulerResult">
                         <form action="{{ route('assignedPanelistsScheduler') }}" method="POST">
                             @csrf
@@ -98,6 +98,10 @@
                                     <input type="hidden" name="reservation_id[]" value="{{ $entry['group']['reservation_id'] ?? '' }}">
 
                                     <p class="mb-1 p-0"><b>Panelists:</b></p>
+                                    
+									<div id="panelistError" class="alert alert-warning d-none text-center">
+									    The group must have at least <b>5 panelists</b> before assigning.
+									</div>
 
 									<div class="row">
 										<div class="col-12 col-md-4 mb-4">
@@ -207,6 +211,49 @@
 {{-- Scripts --}}
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+
+	const assignBtn = document.getElementById("assignButton");
+    const errorBox = document.getElementById("panelistError");
+
+    function validatePanelists() {
+        const selects = document.querySelectorAll(".panelist-select");
+        const count = selects.length;
+
+        let allFilled = true;
+
+        selects.forEach(sel => {
+            if (!sel.value || sel.value.trim() === "") {
+                allFilled = false;
+            }
+        });
+
+        if (count < 3 || !allFilled) {
+            assignBtn.disabled = true;
+            errorBox.classList.remove("d-none");
+        } else {
+            assignBtn.disabled = false;
+            errorBox.classList.add("d-none");
+        }
+    }
+
+    // Initial check
+    validatePanelists();
+
+    // Re-check when adding or removing a panelist
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('add-panelist') ||
+            e.target.classList.contains('delete-panelist')) {
+
+            setTimeout(validatePanelists, 50);
+        }
+    });
+
+    // Re-check when dropdown value changes
+    document.addEventListener('change', function (e) {
+        if (e.target.classList.contains('panelist-select')) {
+            validatePanelists();
+        }
+    });
 
     // Panelist data from PHP (array of objects). If empty, array.
     const panelData = @json($panelists ?? []);

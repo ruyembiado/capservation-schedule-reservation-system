@@ -43,6 +43,17 @@
                                     <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
                             </div>
+                            
+                            <div class="col-12 mb-2">
+	                            <label for="position" class="form-label">Position</label>
+	                            <input readonly type="position" name="position" placeholder="Enter your position"
+	                                class="form-control @error('position')
+	                                is-invalid @enderror" readonly id="position"
+	                                value="{{ $profile->position }}">
+	                            @error('position')
+	                                <div class="invalid-feedback d-block">{{ $message }}</div>
+	                            @enderror
+	                        </div>
                         @endif
                         <div class="col-12 mb-2">
                             <label for="password" class="form-label">Password</label>

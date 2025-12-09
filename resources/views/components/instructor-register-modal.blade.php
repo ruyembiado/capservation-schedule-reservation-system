@@ -56,13 +56,19 @@
                             </div>
                             <div class="col-5">
                                 <div class="col-12 mb-2">
-                                    <label for="position" class="form-label">Position</label>
-                                    <input type="position" name="position" placeholder="Enter your position"
-                                        class="form-control @error('position') is-invalid @enderror" id="position" value="{{ old('position') }}">
-                                    @error('position')
-                                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                                    @enderror
-                                </div>
+								    <label for="position" class="form-label">Position</label>
+								    <select name="position" id="position" 
+								        class="form-control @error('position') is-invalid @enderror">
+								        <option value="">-- Select Position --</option>
+								        <option value="BSIT Course Instructor" {{ old('position') == 'BSIT Course Instructor' ? 'selected' : '' }}>BSIT Course Instructor</option>
+								        <option value="BSCS Course Instructor" {{ old('position') == 'BSCS Course Instructor' ? 'selected' : '' }}>BSCS Course Instructor</option>
+								        <option value="BSIS Course Instructor" {{ old('position') == 'BSIS Course Instructor' ? 'selected' : '' }}>BSIS Course Instructor</option>
+								        <option value="Panelist" {{ old('position') == 'Panelist' ? 'selected' : '' }}>Panelist</option>
+								    </select>
+								    @error('position')
+								        <div class="invalid-feedback d-block">{{ $message }}</div>
+								    @enderror
+								</div>
                                 <div class="login-logo-container m-auto text-center mt-5">
                                     <img class="m-auto" src="{{ asset('img/capservation-logo-hd.png') }}"
                                         alt="capservation-logo" width="100" height="100">

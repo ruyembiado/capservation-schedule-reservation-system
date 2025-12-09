@@ -14,6 +14,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ScheduleController;
+use Illuminate\Support\Facades\Validator;
 
 class AdminController extends Controller
 {
@@ -526,15 +527,12 @@ class AdminController extends Controller
 	}
 	
 	public function assignedPanelistsScheduler(Request $request) {
-		$group_id = $request->group_id;
-		$reservation_id = $request->reservation_id;
-		$panelist_id = $request->panelist_id;
-		
-		return view('schedule_calendar', [
-		    'group_id' => json_encode($group_id),
-		    'reservation_id' => json_encode($reservation_id),
-		    'panelist_id' => json_encode($panelist_id)
-		]);
+	
+	    return view('schedule_calendar', [
+	        'group_id' => json_encode($request->group_id),
+	        'reservation_id' => json_encode($request->reservation_id),
+	        'panelist_id' => json_encode($request->panelist_id)
+	    ]);
 	}
 
 	public function groups() {

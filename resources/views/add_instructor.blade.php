@@ -130,14 +130,19 @@
 
                         <!-- Position -->
                         <div class="col-12 mb-2">
-                            <label for="position" class="form-label">Position</label>
-                            <input type="text" name="position" placeholder="Enter your position"
-                                class="form-control @error('position') is-invalid @enderror" id="position"
-                                value="{{ old('position') }}">
-                            @error('position')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
-                        </div>
+						    <label for="position" class="form-label">Position</label>
+						    <select name="position" id="position" 
+						        class="form-control @error('position') is-invalid @enderror">
+						        <option value="">-- Select Position --</option>
+						        <option value="BSIT Course Instructor" {{ old('position') == 'BSIT Course Instructor' ? 'selected' : '' }}>BSIT Course Instructor</option>
+						        <option value="BSCS Course Instructor" {{ old('position') == 'BSCS Course Instructor' ? 'selected' : '' }}>BSCS Course Instructor</option>
+						        <option value="BSIS Course Instructor" {{ old('position') == 'BSIS Course Instructor' ? 'selected' : '' }}>BSIS Course Instructor</option>
+						        <option value="Panelists" {{ old('position') == 'Panelists' ? 'selected' : '' }}>Panelists</option>
+						    </select>
+						    @error('position')
+						        <div class="invalid-feedback d-block">{{ $message }}</div>
+						    @enderror
+						</div>
 
                         <!-- Password -->
                         <div class="col-12 mb-2">
