@@ -76,7 +76,7 @@
             <div class="card-body">
                 <h4 class="card-title mb-4 fw-normal text-dark text-center text-md-start">Smart Scheduler Result</h4>
 
-                @if ($formatted || session('show_scheduler_result'))
+                @if ($formatted)
                     <div id="schedulerResult">
                         <form action="{{ route('assignedPanelistsScheduler') }}" method="POST">
                             @csrf
