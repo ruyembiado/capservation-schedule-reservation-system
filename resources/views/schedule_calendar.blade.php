@@ -113,137 +113,187 @@
 @endsection <!-- End the content section -->
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('FullCalendar');
+document.addEventListener('DOMContentLoaded', function() {
 
-        function formatDateLocal(date) {
-            let y = date.getFullYear();
-            let m = String(date.getMonth() + 1).padStart(2, "0");
-            let d = String(date.getDate()).padStart(2, "0");
-            return `${y}-${m}-${d}`;
-        }
+    const scheduleTimeSelect = document.getElementById("schedule_time");
+    const scheduleDateEl = document.getElementById("schedule_date");
 
-        if (calendarEl) {
-            var unavailableDates = [];
+    // Store original options so we can reset anytime
+    const originalOptionsHTML = scheduleTimeSelect.innerHTML;
 
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                selectable: true,
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay,list'
-                },
-                events: function(fetchInfo, successCallback, failureCallback) {
-                    fetch('/schedules')
-                        .then(response => response.json())
-                        .then(data => {
-                            unavailableDates = data
-                                .filter(ev => ev.isUnavailable === true)
-                                .map(ev => ev.start.split("T")[0]);
-                            console.log(data);
-                            successCallback(data);
-                        })
-                        .catch(error => {
-                            console.error("Error loading events:", error);
-                            failureCallback(error);
-                        });
-                },
-                eventContent: function(arg) {
-                    let bg = arg.event.backgroundColor || '#3788d8';
-                    let color = arg.event.textColor || '#ffffff';
+    // Extract only HH:MM:SS from ISO datetime string
+    function extractTime(datetime) {
+        return datetime.split("T")[1].substring(0, 8);
+    }
 
-                    return {
-                        html: `<div style="background:${bg};color:${color};padding:2px 4px;border-radius:4px; width: 100%;">
-                        <div class="fc-event-time isUnavailable-${arg.event.extendedProps.isUnavailable}">
+    // ---------------------------------------------
+    // MAIN FUNCTION: FILTER TIME SLOTS
+    // ---------------------------------------------
+    function filterTimeSlots(selectedDate) {
+
+        // Reset options to original
+        scheduleTimeSelect.innerHTML = originalOptionsHTML;
+
+        if (!selectedDate) return;
+
+        fetch('/schedules')
+            .then(res => res.json())
+            .then(events => {
+
+                // Identify already-used time slots on this date
+                let takenTimes = events
+                    .filter(ev => ev.start.startsWith(selectedDate))
+                    .map(ev => extractTime(ev.start));
+
+                console.log("Taken Times:", takenTimes);
+
+                // Hide & disable taken time slots
+                [...scheduleTimeSelect.options].forEach(opt => {
+                    if (takenTimes.includes(opt.value)) {
+                        opt.disabled = true;
+                        opt.hidden = true;
+                        opt.style.display = "none";
+                    }
+                });
+
+            })
+            .catch(err => console.log("Fetch error:", err));
+    }
+
+    // ---------------------------------------------
+    // TRIGGER FILTER WHEN TYPING/CHOOSING DATE
+    // ---------------------------------------------
+    scheduleDateEl.addEventListener("change", function () {
+        filterTimeSlots(this.value);
+    });
+
+
+    // ---------------------------------------------
+    // FULLCALENDAR SETUP
+    // ---------------------------------------------
+    var calendarEl = document.getElementById('FullCalendar');
+
+    function formatDateLocal(date) {
+        let y = date.getFullYear();
+        let m = String(date.getMonth() + 1).padStart(2, "0");
+        let d = String(date.getDate()).padStart(2, "0");
+        return `${y}-${m}-${d}`;
+    }
+
+    if (calendarEl) {
+        var unavailableDates = [];
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            selectable: true,
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay,list'
+            },
+
+            // LOAD EVENTS
+            events: function(fetchInfo, successCallback, failureCallback) {
+                fetch('/schedules')
+                    .then(response => response.json())
+                    .then(data => {
+                        unavailableDates = data
+                            .filter(ev => ev.isUnavailable === true)
+                            .map(ev => ev.start.split("T")[0]);
+
+                        successCallback(data);
+                    })
+                    .catch(error => {
+                        console.error("Error loading events:", error);
+                        failureCallback(error);
+                    });
+            },
+
+            // FORMAT EVENT BOX
+            eventContent: function(arg) {
+                let bg = arg.event.backgroundColor || '#3788d8';
+                let color = arg.event.textColor || '#ffffff';
+
+                return {
+                    html: `
+                    <div style="background:${bg};color:${color};padding:2px 4px;border-radius:4px; width: 100%;">
+                        <div class="fc-event-time">
                             ${arg.event.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
                         </div>
-                        <div class="fc-event-title" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        <div class="fc-event-title" style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
                             ${arg.event.title}
                         </div>
-                        </div>`
-                    };
-                },
-                selectAllow: function(selectInfo) {
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
+                    </div>`
+                };
+            },
 
-                    const startDate = new Date(selectInfo.start);
-                    startDate.setHours(0, 0, 0, 0);
+            // BLOCK PAST & UNAVAILABLE DATES
+            selectAllow: function(selectInfo) {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
 
-                    const startDateStr = formatDateLocal(startDate);
+                const startDate = new Date(selectInfo.start);
+                startDate.setHours(0, 0, 0, 0);
 
-                    if (startDate <= today) return false;
-                    if (unavailableDates.includes(startDateStr)) return false;
+                const startDateStr = formatDateLocal(startDate);
 
-                    return true;
-                },
-                dateClick: function(info) {
-                    let clickedDate = new Date(info.date);
-                    let today = new Date();
-                    today.setHours(0, 0, 0, 0);
-                    clickedDate.setHours(0, 0, 0, 0);
+                if (startDate <= today) return false;
+                if (unavailableDates.includes(startDateStr)) return false;
 
-                    const dateStr = formatDateLocal(clickedDate);
+                return true;
+            },
 
-                    // only allow clicking if future & not unavailable
-                    if (clickedDate > today && !unavailableDates.includes(dateStr)) {
-                        let scheduleDateEl = document.getElementById('schedule_date');
-                        if (scheduleDateEl) {
-                            scheduleDateEl.value = dateStr;
-                        }
-                    }
-                },
-                dayCellDidMount: function(info) {
-                    let today = new Date();
-                    today.setHours(0, 0, 0, 0);
+            // ---------------------------------------------
+            // WHEN USER CLICKS A DATE ON THE CALENDAR
+            // ---------------------------------------------
+            dateClick: function(info) {
+                let clickedDate = new Date(info.date);
+                let today = new Date();
+                today.setHours(0, 0, 0, 0);
+                clickedDate.setHours(0, 0, 0, 0);
 
-                    let cellDate = new Date(info.date);
-                    cellDate.setHours(0, 0, 0, 0);
+                const dateStr = formatDateLocal(clickedDate);
 
-                    let dateStr = formatDateLocal(info.date);
+                if (clickedDate > today && !unavailableDates.includes(dateStr)) {
+                    scheduleDateEl.value = dateStr;
 
-                    // style past dates
-                    if (cellDate <= today) {
-                        info.el.style.backgroundColor = "#f8d7da";
-                        info.el.style.color = "#6c757d";
-                        info.el.style.pointerEvents = "none";
-                        info.el.style.opacity = "0.6";
-                    }
+                    // 🔥 FILTER AVAILABLE TIME SLOTS
+                    filterTimeSlots(dateStr);
+                }
+            },
 
-                    // style unavailable dates
-                    if (unavailableDates.includes(dateStr)) {
-                        info.el.style.backgroundColor = "#ffcccc";
-                        info.el.style.pointerEvents = "none";
-                        info.el.style.opacity = "0.6";
-                    }
-                },
-                select: function(info) {
-                    let dateTimeParts = info.startStr.split('T');
-                    let selectedDate = dateTimeParts[0];
-                    let selectedTime = dateTimeParts[1]?.slice(0, 5) || '';
+            // STYLING CELLS
+            dayCellDidMount: function(info) {
+                let today = new Date();
+                today.setHours(0, 0, 0, 0);
 
-                    let scheduleDateEl = document.getElementById('schedule_date');
-                    let scheduleTimeEl = document.getElementById('schedule_time');
+                let cellDate = new Date(info.date);
+                cellDate.setHours(0, 0, 0, 0);
 
-                    if (scheduleDateEl) {
-                        scheduleDateEl.value = selectedDate;
-                    }
-                    if (scheduleTimeEl) {
-                        scheduleTimeEl.value = selectedTime;
-                    }
-                },
-                selectMirror: true,
-                slotDuration: '00:30:00',
-                slotMinTime: '08:00:00',
-                slotMaxTime: '18:00:00',
-            });
+                let dateStr = formatDateLocal(info.date);
 
-            calendar.render();
+                if (cellDate <= today) {
+                    info.el.style.backgroundColor = "#f8d7da";
+                    info.el.style.color = "#6c757d";
+                    info.el.style.pointerEvents = "none";
+                    info.el.style.opacity = "0.6";
+                }
 
-            setInterval(() => {
-                calendar.refetchEvents();
-            }, 30000);
-        }
-    });
+                if (unavailableDates.includes(dateStr)) {
+                    info.el.style.backgroundColor = "#ffcccc";
+                    info.el.style.pointerEvents = "none";
+                    info.el.style.opacity = "0.6";
+                }
+            }
+        });
+
+        calendar.render();
+
+        // REFRESH EVERY 30 SECONDS
+        setInterval(() => {
+            calendar.refetchEvents();
+        }, 30000);
+    }
+});
 </script>
+

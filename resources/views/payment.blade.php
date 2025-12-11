@@ -74,7 +74,7 @@
 			</div>
 			
             <div class="table-responsive d-flex align-items-center
-            justify-content-center">
+            justify-content-center mb-3">
 			    @if (auth()->user()->user_type == 'admin')
 						
 			        {{-- If status is pending AND proof exists → show button --}}
@@ -83,14 +83,24 @@
 			        		<h4>Payment in Progress</h4>
 			        		<span>Waiting for payment confirmation</span>
 				        	<img class="img-fluid rounded mx-auto my-2" style="width: 40%;" src="{{ asset($transaction->proof_file) }}" alt="Proof of Payment" />
-				            <form action="{{ route('transaction.update', $transaction->id) }}"
-				                method="POST" style="display: inline;">
-				                @csrf
-				                <input type="hidden" name="payment_confirm" value="1" />
-				                <button type="submit" class="btn btn-success">
-				                    Confirm
-				                </button>
-				            </form>
+				        	<div class="d-flex justify-content-center align-items-center gap-2">
+					            <form action="{{ route('transaction.update', $transaction->id) }}"
+					                method="POST" style="display: inline;">
+					                @csrf
+					                <input type="hidden" name="payment_confirm" value="1" />
+					                <button type="submit" class="btn btn-success">
+					                    Confirm
+					                </button>
+					            </form>
+					            <form action="{{ route('transaction.reject', $transaction->id) }}"
+					                method="POST" style="display: inline;">
+					                @csrf
+					                <input type="hidden" name="payment_reject" value="1" />
+					                <button type="submit" class="btn btn-danger">
+					                    Reject
+					                </button>
+					            </form>
+				            </div>
 			            </div>
 			
 			        {{-- If status is pending BUT no proof → show alert --}}

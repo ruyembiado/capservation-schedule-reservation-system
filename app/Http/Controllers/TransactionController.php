@@ -84,7 +84,25 @@ class TransactionController extends Controller
         
         return redirect()->back()->with('success', 'Transaction marked as paid successfully.');
     }
-
+    
+    public function reject(Request $request, $id)
+	{
+	    $transaction = Transaction::findOrFail($id);
+	
+	    if ($transaction->proof_file  && $request->payment_reject == 1) {
+	        $filePath = public_path($transaction->proof_file);
+	
+	        if (file_exists($filePath)) {
+	            unlink($filePath);
+	        }
+	    }
+	
+	    $transaction->proof_file = null;
+	    $transaction->save();
+	
+	    return redirect()->route('awaiting_reservations.index')
+	                     ->with('success', 'Payment proof rejected and removed successfully.');
+	}
 
     /**
      * Remove the specified resource from storage.

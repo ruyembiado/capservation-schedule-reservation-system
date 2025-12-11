@@ -72,6 +72,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/transactions', [TransactionController::class, 'index']);
     Route::post('/update-transaction/{id}', [TransactionController::class, 'update'])->name('transaction.update');
     Route::post('/transaction/upload-proof', [TransactionController::class, 'uploadProof'])->name('transaction.upload_proof');
+    Route::post('/transaction/reject/{id}', [TransactionController::class,
+    'reject'])->name('transaction.reject');
 
     // Panelists
     Route::get('/panelists', [PanelistController::class, 'index']);

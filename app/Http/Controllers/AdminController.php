@@ -41,6 +41,7 @@ class AdminController extends Controller
 	
 	    // --- Get Students / Groups (Pending Only) ---
 	    $studentRecords = User::where('user_type', 'student')
+	    	->where('id', $group_id)
 	        ->whereHas('reservations', fn($q) => $q->where('status', 'pending'))
 	        ->with('instructor', 'reservations')
 	        ->orderBy('created_at', 'desc')
