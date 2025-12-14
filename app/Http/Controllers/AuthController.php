@@ -123,7 +123,6 @@ class AuthController extends Controller
 				'capacity' => 'nullable|integer',
 				'credentials.*' => 'nullable|string',
 				'vacant_time' => 'nullable|array',
-				'status' => '0',
 			];
 		}
 
@@ -187,6 +186,7 @@ class AuthController extends Controller
 			$data += [
 				'name' => $request->name,
 				'position' => $request->position,
+				'status' => '0',
 			];
 		}
 
