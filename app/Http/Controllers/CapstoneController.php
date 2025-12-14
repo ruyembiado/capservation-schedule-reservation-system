@@ -129,14 +129,14 @@ class CapstoneController extends Controller
 
             if ($reservation) {
                 if (in_array('redefense', $request->title_status)) {
-                    $reservation->status = 'approved';
+                    $reservation->status = 'pending';
                 } elseif (in_array('pending', $request->title_status)) {
                     $reservation->status = 'pending';
                 } else {
                     $reservation->status = 'done';
                 }
 
-                if ($request->title_status) {
+                if ($request->title_status == 'redefense') {
                     ReservationHistory::create([
                         'reservation_id' => $reservation->id,
                     ]);
@@ -170,7 +170,7 @@ class CapstoneController extends Controller
                 ->orderBy('created_at', 'asc')
                 ->get();
         }
-
+        
         return view('capstone_history', compact('reservations'));
     }
 }

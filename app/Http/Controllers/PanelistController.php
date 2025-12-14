@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Capstone;
 use App\Models\Panelist;
 use App\Models\Reservation;
+use App\Models\Setting;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -74,8 +75,28 @@ class PanelistController extends Controller
 
         $capstoneIds = (array) json_decode($reservation->capstone_title_id, true);
         $capstones = Capstone::whereIn('id', $capstoneIds)->get();
+        
+        $settings = Setting::first();
+	    $dean_name = $settings->dean_name ?? "Dean";
+	    $program_head_name = null;
+	    $program = strtoupper($group->program ?? '');
+	
+	    switch ($program) {
+	        case 'BSIT':
+	            $program_head_name = $settings->it_head_name ?? "IT Head";
+	            break;
+	        case 'BSCS':
+	            $program_head_name = $settings->cs_head_name ?? "CS Head";
+	            break;
+	        case 'BSIS':
+	            $program_head_name = $settings->is_head_name ?? "IS Head";
+	            break;
+	        default:
+	            $program_head_name = "Program Head";
+	    }
 
-        return view('view_panelist', compact('reservation', 'panelists', 'capstones'));
+        return view('view_panelist', compact('reservation', 'panelists',
+        'capstones', 'dean_name', 'program_head_name'));
     }
 
     public function updatePanelist(Request $request, $id)

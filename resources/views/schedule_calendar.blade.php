@@ -71,7 +71,7 @@
 	                            <div class="mb-3">
 	                                <label for="schedule_date" class="form-label">Schedule Date</label>
 	                                <input type="date" name="schedule_date" class="form-control"
-	                                    min="{{ now()->format('Y-m-d') }}" id="schedule_date"
+	                                    min="{{ now()->format('Y-m-d') }}" required id="schedule_date"
 	                                    value="{{ old('schedule_date') }}">
 	                                @error('schedule_date')
 	                                    <div class="invalid-feedback d-block">{{ $message }}</div>

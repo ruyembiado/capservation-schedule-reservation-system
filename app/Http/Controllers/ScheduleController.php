@@ -217,7 +217,7 @@ class ScheduleController extends Controller
 		"reservation_id" => $reservation->id,
 		]);
 
-		$reservation->status = "approved";
+		$reservation->status = "pending";
 		$reservation->save();
 
 		Notification::create([

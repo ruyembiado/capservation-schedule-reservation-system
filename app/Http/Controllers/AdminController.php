@@ -18,9 +18,37 @@ use Illuminate\Support\Facades\Validator;
 
 class AdminController extends Controller
 {
-	public function SmartScheduler($group_id) {
-		$group_id = $group_id;
-		return view('smartscheduler', compact('group_id') ,['formatted' => []]);
+	public function SmartScheduler($group_id)
+	{
+	    $group = User::with('reservations')->findOrFail($group_id);
+	    $reservationWithPanelists = $group->reservations->first(function ($reservation) {
+	        return !empty($reservation->panelist_id);
+	    });
+	    
+	    if ($reservationWithPanelists) {
+		    $panelistIds = is_string($reservationWithPanelists->panelist_id)
+		        ? json_decode($reservationWithPanelists->panelist_id, true)
+		        : $reservationWithPanelists->panelist_id;
+		
+		    $panelistMap = [
+		        (string) $group->id => array_map('strval', $panelistIds)
+		    ];
+		    
+		    $pendingReservation = $group->reservations
+		        ->where('status', 'pending')
+		        ->first();
+		        
+		    return view('schedule_calendar', [
+		        'group_id'       => json_encode($group->id),
+		        'reservation_id' => json_encode([(string) $pendingReservation->id]),
+		        'panelist_id'    => json_encode($panelistMap),
+		    ]);
+		}
+		
+	    return view('smartscheduler', [
+	        'group_id'  => $group->id,
+	        'formatted' => [],
+	    ]);
 	}
 	
 	public function runSmartScheduler(Request $request, $group_id)
@@ -482,7 +510,7 @@ class AdminController extends Controller
 	            'panelist_id' => json_encode($panelist_ids),
 	            'status' => 'approved',
 	        ]);
-	
+	        
 	        Notification::create([
 	            'user_id' => $reservation->group_id,
 	            '_link_id' => $reservation->id,
@@ -528,7 +556,6 @@ class AdminController extends Controller
 	}
 	
 	public function assignedPanelistsScheduler(Request $request) {
-	
 	    return view('schedule_calendar', [
 	        'group_id' => json_encode($request->group_id),
 	        'reservation_id' => json_encode($request->reservation_id),

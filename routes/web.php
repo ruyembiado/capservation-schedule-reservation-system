@@ -100,6 +100,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/update-instructor/{id}', [InstructorController::class, 'updateInstructorForm']);
     Route::post('/update-instructor/{id}', [InstructorController::class, 'updateInstructor'])->name('instructor.update');
     Route::delete('/delete-instructor/{id}', [InstructorController::class, 'deleteInstructor'])->name('instructor.delete');
+    Route::post('/instructor/status', [AuthController::class, 'active_deactivate'])
+    ->name('instructor.status');
+
 
     // Capstones
     Route::get('/capstones-list', [CapstoneController::class, 'index'])->name('capstones.list');

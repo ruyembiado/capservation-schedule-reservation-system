@@ -61,17 +61,29 @@ class AuthController extends Controller
 		}
 
 		// Attempt to authenticate user
-		if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-			$request->session()->regenerate();
-			return $this->check_user_auth(Auth::user());
-		}
+	    if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+	        $user = Auth::user();
+	
+	        if ($user->status == 0) {
+	            Auth::logout();
+	
+	            return redirect()->back()
+	                ->withErrors([
+	                    'email' => 'Your account is not yet verified. Please wait for admin approval.'
+	                ])
+	                ->with('showLoginModal', true)
+	                ->withInput($request->only('email'));
+	        }
+	
+	        $request->session()->regenerate();
+	        return $this->check_user_auth($user);
+	    }
 
 		return redirect()->back()
 		->withErrors(['email' => 'Invalid email or password.'])
 		->with('showLoginModal', true)
 		->withInput($request->only('email'));
 	}
-
 
 	public function register(Request $request) {
 
@@ -111,6 +123,7 @@ class AuthController extends Controller
 				'capacity' => 'nullable|integer',
 				'credentials.*' => 'nullable|string',
 				'vacant_time' => 'nullable|array',
+				'status' => 0,
 			];
 		}
 
@@ -349,5 +362,15 @@ class AuthController extends Controller
 		}
 
 		return 'Test email sent successfully to all panelists!';
+	}
+	
+	public function active_deactivate(Request $request)
+	{
+	    $instructor = User::findOrFail($request->id);
+	
+	    $instructor->status = $request->status;
+	    $instructor->save();
+	
+	    return redirect()->back()->with('success', 'Instructor status updated successfully.');
 	}
 }

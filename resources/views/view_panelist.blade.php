@@ -28,6 +28,20 @@
                     </div>
 
                     <div class="d-flex flex-wrap justify-content-start gap-4">
+                    	<div style="width: 31%;" class="border rounded p-3 panelist-card bg-selected-panelist">
+                            <h5 style="font-weight: 600;"
+                                    class="text-dark">{{ $dean_name }}</h5>
+                                <div class="mb-2">
+                                <strong>Dean</strong>
+                            </div>
+                        </div>
+                        <div style="width: 31%;" class="border rounded p-3 panelist-card bg-selected-panelist">
+                            <h5 style="font-weight: 600;"
+                                    class="text-dark">{{ $program_head_name }}</h5>
+                                <div class="mb-2">
+                                <strong>Program Head</strong>
+                            </div>
+                        </div>
                         @foreach ($panelists as $panelist)
                             @if (in_array($panelist->id, $selectedPanelists))
                                 <div style="width: 31%;"
@@ -36,12 +50,12 @@
                                     <h5 style="font-weight: 600;" class="text-dark">{{ $panelist->name }}</h5>
 
                                     <!-- Vacant Time -->
-                                    <div class="mb-2">
+                                    <!-- <div class="mb-2">
                                         <strong>Vacant Time:</strong>
                                         @php
                                             $vacantTimes = json_decode($panelist->vacant_time, true);
                                         @endphp
-
+                                    
                                         @if ($vacantTimes && count($vacantTimes) > 0)
                                             <ul class="list-unstyled mb-0">
                                                 @foreach ($vacantTimes as $vacantTime)
@@ -55,7 +69,7 @@
                                         @else
                                             <span class="text-muted">No vacant time available</span>
                                         @endif
-                                    </div>
+                                    </div> -->
 
                                     <!-- Credentials -->
                                     <div class="mb-2">

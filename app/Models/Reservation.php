@@ -18,6 +18,10 @@ class Reservation extends Model
         'status',
         'panelist_id',
     ];
+    
+    protected $casts = [
+    	'panelist_id' => 'array',
+	];
 
     public function user()
     {
