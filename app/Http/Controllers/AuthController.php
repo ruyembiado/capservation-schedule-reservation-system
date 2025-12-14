@@ -123,7 +123,7 @@ class AuthController extends Controller
 				'capacity' => 'nullable|integer',
 				'credentials.*' => 'nullable|string',
 				'vacant_time' => 'nullable|array',
-				'status' => 0,
+				'status' => '0',
 			];
 		}
 
