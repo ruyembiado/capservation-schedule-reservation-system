@@ -549,9 +549,9 @@ class AdminController extends Controller
 	            $scheduleController->sendDeanHeadEmail($reservation);
 	        }
 	    }
-	
+	    
 	    return redirect()
-	        ->route('awaiting_reservations.index')
+	        ->route('downloadable.index', $reservation->id)
 	        ->with('success', 'Panelists assigned and defense schedule created successfully.');
 	}
 	
@@ -618,6 +618,11 @@ class AdminController extends Controller
 	    $settings->save();
 	
 	    return redirect()->back()->with('success', 'Settings updated successfully!');
-	}									
+	}				
+	
+	public function downloadable($reservation_id) {
+		$reservation_id = $reservation_id;
+		return view('downloadables', compact('reservation_id'));
+	}
 
 }

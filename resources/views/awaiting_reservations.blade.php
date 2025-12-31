@@ -15,6 +15,7 @@
 		            '1' => 'Awaiting Reservations',
 		            '2'  => 'Payment',
 		            '3'  => 'Scheduling',
+		            '4'  => 'Downloadables',
 		        ];
 		
 			        $currentStatus = 0;

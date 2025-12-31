@@ -4,7 +4,7 @@
     <!-- Start the content section -->
     <!-- Page Heading -->
     <!-- <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0">Awaiting Reservations</h1>
+        <h1 class="h3 mb-0">Downloadables</h1>
     </div> -->
 
     <div class="card shadow mb-4">
@@ -18,7 +18,7 @@
 		            '4'  => 'Downloadables',
 		        ];
 		
-			        $currentStatus = 1;
+			        $currentStatus = 3;
 			        $currentIndex  = $currentStatus;
 			    @endphp
 	
@@ -70,59 +70,56 @@
 			
 			<div class="d-sm-flex align-items-center justify-content-center mb-4">
 			    <h1 class="h3 mb-0">
-			    	Payment
+			    	Downloadables
 			    </h1>
 			</div>
 			
-            <div class="table-responsive d-flex align-items-center
-            justify-content-center mb-3">
-			    @if (auth()->user()->user_type == 'admin')
-						
-			        {{-- If status is pending AND proof exists → show button --}}
-			        @if ($transaction->status === 'pending' && $transaction->proof_file)
-			        	<div class="text-center d-flex flex-column">
-			        		<h4>Payment in Progress</h4>
-			        		<span>Waiting for payment confirmation</span>
-				        	<img class="img-fluid rounded mx-auto my-2" style="width: 40%;" src="{{ asset($transaction->proof_file) }}" alt="Proof of Payment" />
-				        	<div class="d-flex justify-content-center align-items-center gap-2">
-					            <form action="{{ route('transaction.update', $transaction->id) }}"
-					                method="POST" style="display: inline;">
-					                @csrf
-					                <input type="hidden" name="payment_confirm" value="1" />
-					                <button type="submit" class="btn btn-success">
-					                    Confirm
-					                </button>
-					            </form>
-					            <form action="{{ route('transaction.reject', $transaction->id) }}"
-					                method="POST" style="display: inline;">
-					                @csrf
-					                <input type="hidden" name="payment_reject" value="1" />
-					                <button type="submit" class="btn btn-danger">
-					                    Reject
-					                </button>
-					            </form>
-				            </div>
+            <div class="row justify-content-center g-4 mt-3">
+			    <!-- Payroll -->
+			    <div class="col-md-4 col-sm-6">
+			        <div class="card shadow h-100 text-center">
+			            <div class="card-body d-flex flex-column justify-content-center">
+		                <i class="fas fa-file-invoice-dollar fa-3x mb-3 text-theme-primary"></i>
+		                <h5 class="card-title fw-bold">Payroll</h5>
+		                <p class="text-muted small mb-3">
+		                    Download the official payroll document.
+		                </p>
+		                <a href="{{ route('download.payroll', $reservation_id) }}" class="btn bg-theme-primary text-light">
+		                    <i class="fas fa-download me-1"></i> Download
+		                </a>
+		            </div>
+		        </div>
+		    </div>
+			    <!-- Defense Form -->
+			    <div class="col-md-4 col-sm-6">
+			        <div class="card shadow h-100 text-center">
+			            <div class="card-body d-flex flex-column justify-content-center">
+			                <i class="fas fa-file-signature fa-3x mb-3 text-theme-primary"></i>
+			                <h5 class="card-title fw-bold">Defense Form</h5>
+			                <p class="text-muted small mb-3">
+			                    Official defense evaluation form.
+			                </p>
+			                <a href="#" class="btn bg-theme-primary text-light">
+			                    <i class="fas fa-download me-1"></i> Coming Soon!
+			                </a>
 			            </div>
-			
-			        {{-- If status is pending BUT no proof → show alert --}}
-			        @elseif($transaction->status === 'pending' && !$transaction->proof_file)
-			            <div class="alert alert-warning mt-2 col-6 text-center">
-			                Please upload your proof of payment.
+			        </div>
+			    </div>
+			    <!-- Application for Title Defense -->
+			    <div class="col-md-4 col-sm-6">
+			        <div class="card shadow h-100 text-center">
+			            <div class="card-body d-flex flex-column justify-content-center">
+			                <i class="fas fa-file-alt fa-3x mb-3 text-theme-primary"></i>
+			                <h5 class="card-title fw-bold">Application for Title Defense</h5>
+			                <p class="text-muted small mb-3">
+			                    Application form for title defense.
+			                </p>
+			                <a href="#" class="btn bg-theme-primary text-light">
+			                    <i class="fas fa-download me-1"></i> Coming Soon!
+			                </a>
 			            </div>
-			        @endif
-			
-			    @endif
-			    
-			    @if ($transaction->status === 'paid')
-			    	<div class="d-flex align-items-center justify-content-center flex-column">
-				    	<div class="alert alert-info mt-2 text-center">
-				        	Already paid. Please proceed to the next step.
-				        </div>
-				    	<a href="{{ url('/smart-scheduler/'. $transaction->group_id) }}" class="btn btn-primary">
-					    	Next
-					    </a>
-				    </a>
-			    @endif
+			        </div>
+			    </div>
 			</div>
         </div>
     </div>

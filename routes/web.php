@@ -13,6 +13,7 @@ use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PDFController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,6 +50,9 @@ Route::middleware(['auth'])->group(function () {
     'assignedPanelistsScheduler'])->name('assignedPanelistsScheduler');
     Route::get('/settings', [AdminController::class, 'settings']);
     Route::post('/settings', [AdminController::class, 'updateSettings'])->name('settings.update');
+    Route::get('/downloadable/{reservation_id}', [AdminController::class,
+    'downloadable'])->name('downloadable.index');
+    
 
     // Schedule
     Route::get('/calendar', [ScheduleController::class, 'index']);
@@ -135,4 +139,8 @@ Route::middleware(['auth'])->group(function () {
     
     // Test mail
     Route::get('mail-test', [AuthController::class, 'sendTestMail']);
+    
+    // PDF 
+    Route::get('/pdf/payroll/download/{reservation_id}', [PDFController::class,
+    'downloadPayroll'])->name('download.payroll');
 });
