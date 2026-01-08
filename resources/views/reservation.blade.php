@@ -81,6 +81,9 @@
                                                     method="POST" style="display: inline;"
                                                     onsubmit="return confirmReschedule(event)">
                                                     @csrf
+                                                    <input type="hidden"
+                                                    value="reschedule"
+                                                    name="action_type" />
                                                     <button type="submit" class="btn btn-sm btn-danger text-light">
                                                         Re-schedule
                                                     </button>

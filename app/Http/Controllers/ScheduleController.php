@@ -213,9 +213,11 @@ class ScheduleController extends Controller
 	public function update(Request $request) {
 		$reservation = Reservation::findOrFail($request->id);
 
-		ReservationHistory::create([
-		"reservation_id" => $reservation->id,
-		]);
+		//ReservationHistory::create([
+		//"reservation_id" => $reservation->id,
+		//]);
+		$schedule = Schedule::where('reservation_id', $request->id)->first();
+		$schedule->delete();
 
 		$reservation->status = "pending";
 		$reservation->save();
