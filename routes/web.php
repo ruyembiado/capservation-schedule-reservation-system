@@ -43,6 +43,7 @@ Route::middleware(['auth'])->group(function () {
     // Admin views
     Route::get('/groups', [AdminController::class, 'groups']);
     Route::get('/instructors', [AdminController::class, 'instructors']);
+    Route::get('/panelists', [AdminController::class, 'panelists']);
     Route::get('/smart-scheduler/{group_id}', [AdminController::class, 'SmartScheduler'])->name('SmartScheduler');
     Route::post('/smart-scheduler/{group_id}', [AdminController::class, 'runSmartScheduler'])->name('SmartScheduler.run');
     Route::post('/create-panelist-schedule', [AdminController::class, 'CreatePanelistSchedule'])->name('assign.panelist.schedule');
@@ -80,16 +81,17 @@ Route::middleware(['auth'])->group(function () {
     'reject'])->name('transaction.reject');
 
     // Panelists
-    Route::get('/panelists', [PanelistController::class, 'index']);
-    Route::get('/add-panelist', [PanelistController::class, 'create'])->name('panelist.create');
-    Route::post('/add-panelist', [PanelistController::class, 'store'])->name('panelist.store');
+
+    // Route::get('/panelists', [PanelistController::class, 'index']);
+    // Route::get('/add-panelist', [PanelistController::class, 'create'])->name('panelist.create');
+    // Route::post('/add-panelist', [PanelistController::class, 'store'])->name('panelist.store');
     Route::get('/assign-panelist/{id}', [PanelistController::class, 'showForm'])->name('assign_panelist.form');
     Route::post('/assign-panelists', [PanelistController::class, 'assignPanelists'])->name('assign_panelist.store');
-    Route::get('/update-panelist/{id}', [PanelistController::class, 'updateForm']);
-    Route::post('/update-panelist/{id}', [PanelistController::class, 'updatePanelist'])->name('panelist.update');
-    Route::delete('/delete-panelist/{id}', [PanelistController::class, 'destroy'])->name('panelist.destroy');
-    Route::get('/view-panelists/{id}', [PanelistController::class, 'viewPanelist'])->name('view_panelists');
-    Route::get('/view-panelist/{id}', [PanelistController::class, 'viewSinglePanelist'])->name('view_panelist');
+    // Route::get('/update-panelist/{id}', [PanelistController::class, 'updateForm']);
+    // Route::post('/update-panelist/{id}', [PanelistController::class, 'updatePanelist'])->name('panelist.update');
+    // Route::delete('/delete-panelist/{id}', [PanelistController::class, 'destroy'])->name('panelist.destroy');
+    Route::get('/view-assigned-panelists/{id}', [PanelistController::class, 'viewPanelist'])->name('view_panelists');
+    // Route::get('/view-panelist/{id}', [PanelistController::class, 'viewSinglePanelist'])->name('view_panelist');
 
     // Group
     Route::get('/add-group', [GroupController::class, 'create'])->name('group.create');
@@ -98,10 +100,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/update-group/{id}', [GroupController::class, 'updateGroup'])->name('group.update');
     Route::delete('/delete-group/{id}', [GroupController::class, 'deleteGroup'])->name('groups.delete');
 
-    // Instructor
+    // Instructor/Panelist
     Route::get('/add-instructor', [InstructorController::class, 'create'])->name('instructor.create');
+    Route::get('/add-panelist', [PanelistController::class, 'create'])->name('panelist.create');
     Route::get('/view-instructor/{id}', [InstructorController::class, 'viewInstructor']);
+    Route::get('/view-panelist/{id}', [InstructorController::class, 'viewPanelist']);
     Route::get('/update-instructor/{id}', [InstructorController::class, 'updateInstructorForm']);
+    Route::get('/update-panelist/{id}', [InstructorController::class, 'updatePanelistForm']);
     Route::post('/update-instructor/{id}', [InstructorController::class, 'updateInstructor'])->name('instructor.update');
     Route::delete('/delete-instructor/{id}', [InstructorController::class, 'deleteInstructor'])->name('instructor.delete');
     Route::post('/instructor/status', [AuthController::class, 'active_deactivate'])

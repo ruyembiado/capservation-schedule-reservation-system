@@ -3,16 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\ActivityLog;
 use App\Models\Panelist;
+use App\Models\ActivityLog;
 use App\Models\Reservation;
 use App\Models\Transaction;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
@@ -101,7 +102,7 @@ class AuthController extends Controller
 			'username' => 'required|string|unique:users,username',
 			'password' => 'required|min:6',
 			'password_confirmation' => 'required|same:password',
-			'user_type' => 'required|in:student,instructor',
+			'user_type' => 'required|in:student,instructor,panelist',
 		];
 
 		// Additional validation for students
@@ -116,7 +117,7 @@ class AuthController extends Controller
 		}
 
 		// Additional validation for instructors
-		if ($request->user_type === 'instructor') {
+		if ($request->user_type === 'instructor' || $request->user_type === 'panelist') {
 			$rules += [
 				'name' => 'required|string',
 				'position' => 'required|string',
@@ -161,7 +162,7 @@ class AuthController extends Controller
 				'instructor_id' => $instructor_id,
 				'members' => json_encode($request->members ?? []),
 			];
-		} elseif ($request->user_type === 'instructor') {
+		} elseif ($request->user_type === 'instructor' || $request->user_type === 'panelist') {
 
 			if ($request->has('credentials')) {
 				$data['credentials'] = json_encode($request->credentials);
@@ -370,7 +371,13 @@ class AuthController extends Controller
 	
 	    $instructor->status = $request->status;
 	    $instructor->save();
-	
-	    return redirect()->back()->with('success', 'Instructor status updated successfully.');
+
+		if ($instructor->user_type == 'panelist') {
+			$type = 'Panelist';
+		} else {
+			$type = 'Instructor';
+		}
+
+	    return redirect()->back()->with('success', $type . ' status updated successfully.');
 	}
 }

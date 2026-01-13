@@ -3,7 +3,7 @@
 @section('content')
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0">Add Instructor/Panelist</h1>
+        <h1 class="h3 mb-0">Add Instructor</h1>
     </div>
 
     <div class="card shadow col-12 mb-4">
@@ -137,7 +137,7 @@
 						        <option value="BSIT Course Instructor" {{ old('position') == 'BSIT Course Instructor' ? 'selected' : '' }}>BSIT Course Instructor</option>
 						        <option value="BSCS Course Instructor" {{ old('position') == 'BSCS Course Instructor' ? 'selected' : '' }}>BSCS Course Instructor</option>
 						        <option value="BSIS Course Instructor" {{ old('position') == 'BSIS Course Instructor' ? 'selected' : '' }}>BSIS Course Instructor</option>
-						        <option value="Panelists" {{ old('position') == 'Panelists' ? 'selected' : '' }}>Panelists</option>
+						        {{-- <option value="Panelists" {{ old('position') == 'Panelists' ? 'selected' : '' }}>Panelists</option> --}}
 						    </select>
 						    @error('position')
 						        <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -163,7 +163,7 @@
 
                         <div class="m-auto text-center">
                             <button class="btn w-100 btn-primary" type="submit">
-                                Add Instructor / Panelist
+                                Add Instructor
                             </button>
                         </div>
                     </div>

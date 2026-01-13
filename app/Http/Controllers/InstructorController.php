@@ -43,6 +43,13 @@ class InstructorController extends Controller
         return view('update_instructor', compact('instructor'));
     }
 
+    public function updatePanelistForm($id)
+    {
+        $panelist = User::where('id', $id)->get()->first();
+
+        return view('update_panelist', compact('panelist'));
+    }
+
     public function updateInstructor(Request $request, $id)
     {
         // Define validation rules
@@ -95,7 +102,15 @@ class InstructorController extends Controller
 
         $instructor->save();
 
-        return redirect('/instructors')->with('success', 'Instructor updated successfully!');
+        if ($instructor->user_type == 'panelist') {
+            $type = 'Panelist';
+            $url = '/panelists';
+        } else {
+            $type = 'Instructor';
+            $url = '/instructors';
+        }
+
+        return redirect($url)->with('success', $type . ' updated successfully!');
     }
 
     public function deleteInstructor($id)
@@ -103,7 +118,13 @@ class InstructorController extends Controller
         $instructor = User::findOrFail($id);
         $instructor->delete();
 
-        return redirect('/instructors')->with('success', 'Instructor deleted successfully!');
+        if ($instructor->user_type == 'panelist') {
+			$type = 'Panelist';
+		} else {
+			$type = 'Instructor';
+		}
+
+        return redirect()->back()->with('success', $type . ' deleted successfully!');
     }
 
     public function viewInstructor($id)
@@ -111,5 +132,12 @@ class InstructorController extends Controller
         $instructor = User::where('id', $id)->get()->first();
 
         return view('view_instructor', compact('instructor'));
+    }
+
+    public function viewPanelist($id)
+    {
+        $panelist = User::where('id', $id)->get()->first();
+
+        return view('view_single_panelist', compact('panelist'));
     }
 }

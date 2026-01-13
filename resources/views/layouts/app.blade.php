@@ -62,9 +62,16 @@
                 @if (auth()->user()->user_type == 'admin')
                     <li class="sidebar-item">
                         <a href="{{ url('/instructors') }}"
-                            class="sidebar-link {{ request()->is('instructors', 'view-instructor*', 'update-instructor*') ? 'active' : '' }}">
+                            class="sidebar-link {{ request()->is('instructors', 'add-instructor', 'view-instructor*', 'update-instructor*') ? 'active' : '' }}">
                             <i class="fas fa-chalkboard-teacher"></i>
-                            <span>Instructors / Panelists</span>
+                            <span>Instructors</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="{{ url('/panelists') }}"
+                            class="sidebar-link {{ request()->is('panelists', 'add-panelist', 'view-panelist*', 'update-panelist*') ? 'active' : '' }}">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                            <span>Panelists</span>
                         </a>
                     </li>
                 @endif
@@ -100,7 +107,7 @@
                 @if (auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'instructor')
                     <li class="sidebar-item">
                         <a href="{{ url('/reservations') }}"
-                            class="sidebar-link {{ request()->is('reservations', 'reservation*', 'view-panelists/*', 'assign-panelist') ? 'active' : '' }}">
+                            class="sidebar-link {{ request()->is('reservations', 'reservation*', 'view-assigned-panelists/*', 'assign-panelist') ? 'active' : '' }}">
                             <i class="fa fa-pen-to-square"></i>
                             <span>Reservations</span>
                         </a>
