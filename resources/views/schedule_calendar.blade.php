@@ -81,7 +81,7 @@
 	                            <div class="mb-3">
 								    <label for="schedule_time" class="form-label">Available Time:</label>
 								
-								    <select class="form-select" id="schedule_time" name="schedule_time">
+								    <select class="form-select" id="schedule_time" name="schedule_time" required>
 								        <option value="" selected disabled>-- Select Time --</option>
 								
 								        <optgroup label="Morning" class="bg-light">

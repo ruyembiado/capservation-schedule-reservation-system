@@ -36,12 +36,15 @@
                 </div>
             </div>
             <ul class="sidebar-nav">
-                <li class="sidebar-item">
-                    <a href="{{ url('/dashboard') }}" class="sidebar-link {{ request()->is('dashboard') ? 'active' : '' }}">
-                        <i class="fa fa-home"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
+                @if (auth()->user()->user_type != 'panelist')
+                    <li class="sidebar-item">
+                        <a href="{{ url('/dashboard') }}"
+                            class="sidebar-link {{ request()->is('dashboard') ? 'active' : '' }}">
+                            <i class="fa fa-home"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                @endif
                 @if (auth()->user()->user_type == 'instructor')
                     <li class="sidebar-item">
                         <a href="{{ url('/code') }}" class="sidebar-link {{ request()->is('code') ? 'active' : '' }}"">
@@ -77,20 +80,24 @@
                 @endif
                 @if (auth()->user()->user_type == 'admin')
                     <!-- <li class="sidebar-item">
-                        <a href="{{ url('/smart-scheduler') }}"
-                            class="sidebar-link {{ request()->is('smart-scheduler') ? 'active' : '' }}">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span>Smart Scheduler</span>
-                        </a>
-                    </li> -->
+            <a href="{{ url('/smart-scheduler') }}"
+                class="sidebar-link {{ request()->is('smart-scheduler') ? 'active' : '' }}">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Smart Scheduler</span>
+            </a>
+        </li> -->
                 @endif
                 @if (auth()->user()->user_type == 'admin')
                     <li class="sidebar-item">
                         <a href="{{ url('/awaiting-reservations') }}"
-                        class="sidebar-link {{
-                        request()->is('awaiting-reservations',
-                        'payment-confirmation*', 'smart-scheduler*', 'assign-panelists-scheduler') ? 'active' : ''
-                        }}">
+                            class="sidebar-link {{ request()->is(
+                                'awaiting-reservations',
+                                'payment-confirmation*',
+                                'smart-scheduler*',
+                                'assign-panelists-scheduler',
+                            )
+                                ? 'active'
+                                : '' }}">
                             <i class="fa fa-pen-to-square"></i>
                             <span>Reserve</span>
                         </a>
@@ -98,7 +105,8 @@
                 @endif
                 @if (auth()->user()->user_type == 'instructor')
                     <li class="sidebar-item">
-                        <a href="{{ url('/reserve') }}" class="sidebar-link {{ request()->is('reserve') ? 'active' : '' }}">
+                        <a href="{{ url('/reserve') }}"
+                            class="sidebar-link {{ request()->is('reserve') ? 'active' : '' }}">
                             <i class="fa fa-pen-to-square"></i>
                             <span>Reserve</span>
                         </a>
@@ -129,16 +137,19 @@
                         </a>
                     </li>
                 @endif --}}
-                <li class="sidebar-item">
-                    <a href="{{ url('/transactions') }}"
-                        class="sidebar-link {{ request()->is('transactions') ? 'active' : '' }}">
-                        <i class="fa fa-file-lines"></i>
-                        <span>Transactions</span>
-                    </a>
-                </li>
-                @if (auth()->user()->user_type == 'admin')
+                @if (auth()->user()->user_type != 'panelist')
                     <li class="sidebar-item">
-                        <a href="{{ url('/calendar') }}" class="sidebar-link {{ request()->is('calendar') ? 'active' : '' }}">
+                        <a href="{{ url('/transactions') }}"
+                            class="sidebar-link {{ request()->is('transactions') ? 'active' : '' }}">
+                            <i class="fa fa-file-lines"></i>
+                            <span>Transactions</span>
+                        </a>
+                    </li>
+                @endif
+                @if (auth()->user()->user_type == 'admin' || auth()->user()->user_type == 'panelist')
+                    <li class="sidebar-item">
+                        <a href="{{ url('/calendar') }}"
+                            class="sidebar-link {{ request()->is('calendar') ? 'active' : '' }}">
                             <i class="fa fa-calendar"></i>
                             <span>Calendar</span>
                         </a>
@@ -201,7 +212,9 @@
                                 </ul>
                                 <div
                                     class="card-footer d-flex justify-content-between align-items-center border-top">
-                                    <a href="{{ url('/notifications') }}" class="btn btn-sm bg-theme-primary text-light btn-link text-decoration-none">See all</a>
+                                    <a href="{{ url('/notifications') }}"
+                                        class="btn btn-sm bg-theme-primary text-light btn-link text-decoration-none">See
+                                        all</a>
                                     <button id="loadMoreBtn"
                                         class="btn btn-sm btn-primary bg-theme-primary border-0 px-3 py-1 load-more-btn d-none">
                                         See previous notifications

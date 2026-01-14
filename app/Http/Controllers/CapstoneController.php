@@ -8,6 +8,7 @@ use App\Models\Reservation;
 use App\Models\Transaction;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\CapstoneHistory;
 use App\Models\ReservationHistory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -19,7 +20,7 @@ class CapstoneController extends Controller
      */
     public function index()
     {
-        $capstones = Capstone::with('user')
+        $capstones = Capstone::with('user', 'histories')
             ->orderBy('created_at', 'desc')
             ->get()
             ->groupBy('group_id');
@@ -104,13 +105,25 @@ class CapstoneController extends Controller
 
         foreach ($idsArray as $index => $id) {
             $capstone = Capstone::find($id);
+
             if ($capstone) {
                 $groupId = $capstone->group_id;
-                $capstone->title = $request->title[$index];
-                $capstone->title_status = $request->title_status[$index];
+                $newTitle = $request->title[$index];
+                $newTitleStatus = $request->title_status[$index];
 
-                // Handle attachments
-                $attachmentKey = 'attachment_' . ($index + 1); // attachment_1, attachment_2, ...
+                if ($capstone->title !== $newTitle) {
+                    CapstoneHistory::create([
+                        'capstone_id' => $capstone->id,
+                        'user_id' => auth()->id(), 
+                        'old_capstone_name' => $capstone->title,
+                    ]);
+                }
+
+                // Update Capstone
+                $capstone->title = $newTitle;
+                $capstone->title_status = $newTitleStatus;
+
+                $attachmentKey = 'attachment_' . ($index + 1); 
                 if ($request->hasFile($attachmentKey)) {
                     $file = $request->file($attachmentKey);
                     $filename = time() . '_' . $file->getClientOriginalName();
@@ -170,7 +183,7 @@ class CapstoneController extends Controller
                 ->orderBy('created_at', 'asc')
                 ->get();
         }
-        
+
         return view('capstone_history', compact('reservations'));
     }
 }

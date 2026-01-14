@@ -31,8 +31,14 @@ class NotificationController extends Controller
                 ->orderBy('id', 'desc')
                 ->get();
             $customReminders = [];
+        } elseif (auth()->user()->user_type == 'panelist') {
+            $notifications = Notification::where('user_id', auth()->user()->id)
+                ->orderBy('id', 'desc')
+                ->get();
+            $customReminders = [];
         } else {
             $notifications = [];
+            $customReminders = [];
         }
 
         $readNotifications = NotificationUser::where('status', 'read')
@@ -49,25 +55,42 @@ class NotificationController extends Controller
     {
         $today = Carbon::today();
         $reservations = Reservation::with('latestSchedule', 'user')->get();
-    
+
         foreach ($reservations as $reservation) {
             // Check if latestSchedule exists
             if ($reservation->latestSchedule) {
                 $scheduleDate = Carbon::parse($reservation->latestSchedule->schedule_date);
                 $reminderDate = $scheduleDate->copy()->subDay();
-    
+
                 if ($reminderDate->isSameDay($today)) {
                     Notification::create([
                         'user_id' => $reservation->group_id,
                         '_link_id' => $reservation->id,
                         'notification_type' => 'reminder',
                         'notification_title' => 'Upcoming Defense Schedule',
-                        'notification_message' => ucwords($reservation->user->username) 
-                            . '\'s reservation is scheduled on ' 
-                            . $scheduleDate->format('F j, Y \a\t h:i A') 
+                        'notification_message' => ucwords($reservation->user->username)
+                            . '\'s reservation is scheduled on '
+                            . $scheduleDate->format('F j, Y \a\t h:i A')
                             . '. Please be prepared.',
                         'status' => 'unread',
                     ]);
+
+                    $panelistIds = json_decode($reservation->panelist_id, true);
+                    if (is_array($panelistIds)) {
+                        foreach ($panelistIds as $panelistId) {
+                            Notification::create([
+                                'user_id' => $panelistId,
+                                '_link_id' => $reservation->id,
+                                'notification_type' => 'reminder',
+                                'notification_title' => 'Upcoming Defense Schedule',
+                                'notification_message' => ucwords($reservation->user->username)
+                                    . '\'s reservation is scheduled on '
+                                    . $scheduleDate->format('F j, Y \a\t h:i A')
+                                    . '. Please be prepared.',
+                                'status' => 'unread',
+                            ]);
+                        }
+                    }
                 }
             }
         }
@@ -130,6 +153,15 @@ class NotificationController extends Controller
                 ->get();
 
             $notifications = $this->formatNotifications($notif);
+        } elseif ($user->user_type === 'panelist') {
+            $notif = Notification::where('user_id', $user->id)
+                ->select('id', '_link_id', 'notification_message as message', 'created_at')
+                ->latest('created_at')
+                ->get();
+
+            $reminders = [];
+
+            $notifications = $this->formatNotifications($notif, $reminders);
         }
 
         $notifications = collect($notifications)->sortByDesc('created_at')->values();

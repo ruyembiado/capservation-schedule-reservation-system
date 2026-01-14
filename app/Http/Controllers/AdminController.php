@@ -519,15 +519,6 @@ class AdminController extends Controller
 				'status' => 'approved',
 			]);
 
-			Notification::create([
-				'user_id' => $reservation->group_id,
-				'_link_id' => $reservation->id,
-				'notification_type' => 'system_alert',
-				'notification_title' => 'Panelist Assigned',
-				'notification_message' => ucwords($reservation->user->username) .
-					"'s reservation has assigned panelists.",
-			]);
-
 			// --- Step 2: Create defense schedule ---
 			$schedule = Schedule::create([
 				'group_id' => $reservation->group_id,
@@ -550,6 +541,43 @@ class AdminController extends Controller
 					'notification_message' => ucfirst($reservation->user->username) .
 						"'s reservation has been scheduled for defense on {$formattedDateTime}.",
 				]);
+
+				$panelistIds = json_decode($reservation->panelist_id, true);
+				if (is_array($panelistIds)) {
+					foreach ($panelistIds as $panelistId) {
+						Notification::create([
+							'user_id' => $panelistId,
+							'_link_id' => $reservation->id,
+							'notification_type' => 'system_alert',
+							'notification_title' => 'Schedule Created',
+							'notification_message' => ucfirst($reservation->user->username) .
+								"'s reservation has been scheduled for defense on {$formattedDateTime}.",
+						]);
+					}
+				}
+
+				Notification::create([
+					'user_id' => $reservation->group_id,
+					'_link_id' => $reservation->id,
+					'notification_type' => 'system_alert',
+					'notification_title' => 'Panelist Assigned',
+					'notification_message' => ucwords($reservation->user->username) .
+						"'s reservation has assigned panelists.",
+				]);
+
+				$panelistIds = json_decode($reservation->panelist_id, true);
+				if (is_array($panelistIds)) {
+					foreach ($panelistIds as $panelistId) {
+						Notification::create([
+							'user_id' => $panelistId,
+							'_link_id' => $reservation->id,
+							'notification_type' => 'system_alert',
+							'notification_title' => 'Panelist Assigned',
+							'notification_message' => ucwords($reservation->user->username) .
+								"'s reservation has assigned you as a panelist.",
+						]);
+					}
+				}
 
 				// Send emails safely
 				try {

@@ -17,7 +17,8 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-	public function dashboard() {
+	public function dashboard()
+	{
 		$data = [];
 		if (Auth::user()->user_type === 'admin') {
 			$data = [
@@ -43,50 +44,53 @@ class AuthController extends Controller
 		return view('dashboard', compact('data'));
 	}
 
-	public function index() {
+	public function index()
+	{
 		$instructors = User::where('user_type', 'instructor')->get();
 		return view('auth.index', compact('instructors'));
 	}
 
-	public function login(Request $request) {
+	public function login(Request $request)
+	{
 		$validator = Validator::make($request->all(), [
-		'email' => 'required|email',
-		'password' => 'required'
+			'email' => 'required|email',
+			'password' => 'required'
 		]);
 
 		if ($validator->fails()) {
 			return redirect()->back()
-			->withErrors($validator)
-			->with('showLoginModal', true)
-			->withInput($request->only('email'));
+				->withErrors($validator)
+				->with('showLoginModal', true)
+				->withInput($request->only('email'));
 		}
 
 		// Attempt to authenticate user
-	    if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-	        $user = Auth::user();
-	
-	        if ($user->status == 0) {
-	            Auth::logout();
-	
-	            return redirect()->back()
-	                ->withErrors([
-	                    'email' => 'Your account is not yet verified. Please wait for admin approval.'
-	                ])
-	                ->with('showLoginModal', true)
-	                ->withInput($request->only('email'));
-	        }
-	
-	        $request->session()->regenerate();
-	        return $this->check_user_auth($user);
-	    }
+		if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+			$user = Auth::user();
+
+			if ($user->status == 0) {
+				Auth::logout();
+
+				return redirect()->back()
+					->withErrors([
+						'email' => 'Your account is not yet verified. Please wait for admin approval.'
+					])
+					->with('showLoginModal', true)
+					->withInput($request->only('email'));
+			}
+
+			$request->session()->regenerate();
+			return $this->check_user_auth($user);
+		}
 
 		return redirect()->back()
-		->withErrors(['email' => 'Invalid email or password.'])
-		->with('showLoginModal', true)
-		->withInput($request->only('email'));
+			->withErrors(['email' => 'Invalid email or password.'])
+			->with('showLoginModal', true)
+			->withInput($request->only('email'));
 	}
 
-	public function register(Request $request) {
+	public function register(Request $request)
+	{
 
 		// Instructor code validation for students
 		if ($request->code != null) {
@@ -140,9 +144,9 @@ class AuthController extends Controller
 		// If validation fails, return with errors and keep modal open
 		if ($validator->fails()) {
 			return redirect()->back()
-			->withErrors($validator) // Automatically passes validation errors to the form
-			->with('showRegisterModal', $request->user_type) // Keep correct modal open
-			->withInput($request->all()); // Retain input values
+				->withErrors($validator) // Automatically passes validation errors to the form
+				->with('showRegisterModal', $request->user_type) // Keep correct modal open
+				->withInput($request->all()); // Retain input values
 		}
 
 		// Prepare data for saving
@@ -213,40 +217,46 @@ class AuthController extends Controller
 		return redirect()->back()->with('success', 'Registration successful!');
 	}
 
-	public function logout(Request $request) {
+	public function logout(Request $request)
+	{
 		Auth::logout();
 		$request->session()->invalidate();
 		$request->session()->regenerateToken();
 		return redirect('/')->with('success', 'Logged out successfully.');
 	}
 
-	public function check_user_auth($user) {
-		if ($user) {
+	public function check_user_auth($user)
+	{
+		if ($user->user_type === 'panelist') {
+			return redirect('/calendar')->with('success', 'Login successful!');
+		} elseif ($user) {
 			return redirect('/dashboard')->with('success', 'Login successful!');
 		} else {
 			return redirect('/')->withErrors(['error' => 'Unauthorized access. Please login.']);
 		}
 	}
 
-	public function code() {
+	public function code()
+	{
 		$instructor_id = auth()->user()->id;
 
 		$user = User::where('id', $instructor_id)
-		->where('user_type', 'instructor')
-		->first();
+			->where('user_type', 'instructor')
+			->first();
 
 		return view('code', compact('user'));
 	}
 
-	public function addCode(Request $request) {
+	public function addCode(Request $request)
+	{
 		$validator = Validator::make($request->all(), [
-		'code' => 'required|string',
+			'code' => 'required|string',
 		]);
 
 		if ($validator->fails()) {
 			return redirect()->back()
-			->withErrors($validator)
-			->withInput();
+				->withErrors($validator)
+				->withInput();
 		}
 
 		$user = User::findOrFail($request->instructor_id);
@@ -256,14 +266,16 @@ class AuthController extends Controller
 		return redirect('/code')->with('success', 'Code added successfully!');
 	}
 
-	public function profile() {
+	public function profile()
+	{
 		$profile = User::findOrFail(auth()->user()->id);
 		$instructors = User::where('user_type', 'instructor')->get();
 
 		return view('profile', compact('profile', 'instructors'));
 	}
 
-	public function updateProfile(Request $request, $id) {
+	public function updateProfile(Request $request, $id)
+	{
 		$isAdmin = auth()->user()->user_type === 'admin';
 
 		$rules = [
@@ -316,11 +328,12 @@ class AuthController extends Controller
 		return redirect('/profile')->with('success', 'Profile updated successfully!');
 	}
 
-	public function sendTestMail() {
+	public function sendTestMail()
+	{
 		// Get reservation with group_id = 3 and approved status
 		$reservation = Reservation::where('group_id', 3)
-		->where('status', 'approved')
-		->first();
+			->where('status', 'approved')
+			->first();
 
 		if (!$reservation) {
 			return 'No approved reservation found.';
@@ -339,8 +352,8 @@ class AuthController extends Controller
 		// Reservation info for email
 		$groupName = $reservation->user->username ?? 'Unknown Group';
 		$scheduleDate = isset($reservation->latestSchedule)
-		? Carbon::parse($reservation->latestSchedule->schedule_date)->format('F j, Y \a\t h:i A')
-		: 'No schedule date';
+			? Carbon::parse($reservation->latestSchedule->schedule_date)->format('F j, Y \a\t h:i A')
+			: 'No schedule date';
 
 		// Send email to each panelist individually
 		foreach ($panelists as $panelist) {
@@ -350,27 +363,27 @@ class AuthController extends Controller
 
 			// Personalized message
 			$messageBody = "Hi Mr/Mrs. {$lastName},\n\n"
-			. "You are one of the panelists of the group '{$groupName}' and scheduled date on {$scheduleDate}.\n\n"
-			. "Please be prepared.";
+				. "You are one of the panelists of the group '{$groupName}' and scheduled date on {$scheduleDate}.\n\n"
+				. "Please be prepared.";
 
 			$subject = 'Panelist schedule Reminder';
 
 			Mail::raw($messageBody, function ($message) use ($panelist, $subject) {
-			$message->to($panelist->email)
-			->subject($subject)
-			->from('ruyembiadoofficial@gmail.com', 'Capservation');
+				$message->to($panelist->email)
+					->subject($subject)
+					->from('ruyembiadoofficial@gmail.com', 'Capservation');
 			});
 		}
 
 		return 'Test email sent successfully to all panelists!';
 	}
-	
+
 	public function active_deactivate(Request $request)
 	{
-	    $instructor = User::findOrFail($request->id);
-	
-	    $instructor->status = $request->status;
-	    $instructor->save();
+		$instructor = User::findOrFail($request->id);
+
+		$instructor->status = $request->status;
+		$instructor->save();
 
 		if ($instructor->user_type == 'panelist') {
 			$type = 'Panelist';
@@ -378,6 +391,6 @@ class AuthController extends Controller
 			$type = 'Instructor';
 		}
 
-	    return redirect()->back()->with('success', $type . ' status updated successfully.');
+		return redirect()->back()->with('success', $type . ' status updated successfully.');
 	}
 }

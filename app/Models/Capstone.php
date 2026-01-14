@@ -22,5 +22,9 @@ class Capstone extends Model
     {
         return $this->belongsTo(User::class, 'group_id');
     }
-    
+
+    public function histories()
+    {
+        return $this->hasMany(CapstoneHistory::class, 'capstone_id');
+    }
 }

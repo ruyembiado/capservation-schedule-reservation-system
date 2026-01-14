@@ -43,7 +43,7 @@ class PanelistController extends Controller
         //     }
         // })->get();
 
-        $panelists = User::whereNot('id', $group->instructor_id )->where('user_type', 'instructor')->where(function ($query) use ($tags) {
+        $panelists = User::whereNot('id', $group->instructor_id)->where('user_type', 'instructor')->where(function ($query) use ($tags) {
             foreach ($tags as $tag) {
                 $query->orWhereJsonContains('credentials', $tag);
             }
@@ -71,32 +71,37 @@ class PanelistController extends Controller
     {
         $reservation = Reservation::findOrFail($id);
         // $panelists = Panelist::all();
-        $panelists = User::where('user_type', 'instructor')->get();
+        $panelists = User::where('user_type', 'panelist')->get();
 
         $capstoneIds = (array) json_decode($reservation->capstone_title_id, true);
         $capstones = Capstone::whereIn('id', $capstoneIds)->get();
-        
-        $settings = Setting::first();
-	    $dean_name = $settings->dean_name ?? "Dean";
-	    $program_head_name = null;
-	    $program = strtoupper($group->program ?? '');
-	
-	    switch ($program) {
-	        case 'BSIT':
-	            $program_head_name = $settings->it_head_name ?? "IT Head";
-	            break;
-	        case 'BSCS':
-	            $program_head_name = $settings->cs_head_name ?? "CS Head";
-	            break;
-	        case 'BSIS':
-	            $program_head_name = $settings->is_head_name ?? "IS Head";
-	            break;
-	        default:
-	            $program_head_name = "Program Head";
-	    }
 
-        return view('view_panelist', compact('reservation', 'panelists',
-        'capstones', 'dean_name', 'program_head_name'));
+        $settings = Setting::first();
+        $dean_name = $settings->dean_name ?? "Dean";
+        $program_head_name = null;
+        $program = strtoupper($group->program ?? '');
+
+        switch ($program) {
+            case 'BSIT':
+                $program_head_name = $settings->it_head_name ?? "IT Head";
+                break;
+            case 'BSCS':
+                $program_head_name = $settings->cs_head_name ?? "CS Head";
+                break;
+            case 'BSIS':
+                $program_head_name = $settings->is_head_name ?? "IS Head";
+                break;
+            default:
+                $program_head_name = "Program Head";
+        }
+
+        return view('view_panelist', compact(
+            'reservation',
+            'panelists',
+            'capstones',
+            'dean_name',
+            'program_head_name'
+        ));
     }
 
     public function updatePanelist(Request $request, $id)
@@ -269,6 +274,20 @@ class PanelistController extends Controller
                 'notification_message' => ucwords($reservation->user->username) . '\'s reservation has been approved for scheduling and panelists have been assigned.',
             ]);
 
+            $panelistIds = json_decode($reservation->panelist_id, true);
+            if (is_array($panelistIds)) {
+                foreach ($panelistIds as $panelistId) {
+                    Notification::create([
+                        'user_id' => $panelistId,
+                        '_link_id' => $reservation->id,
+                        'notification_type' => 'system_alert',
+                        'notification_title' => 'Panelist Assigned',
+                        'notification_message' => ucwords($reservation->user->username) .
+                            "'s reservation has assigned you as a panelist.",
+                    ]);
+                }
+            }
+
             return redirect('/reservations')->with('success', 'Panelists assigned successfully!');
         } else if ($request->type_of_action == 'update_panelists') {
             Notification::create([
@@ -278,6 +297,20 @@ class PanelistController extends Controller
                 'notification_title' => 'Panelist Updated',
                 'notification_message' => ucwords($reservation->user->username) . '\'s reservation has been updated and panelists have been re-assigned.',
             ]);
+
+            $panelistIds = json_decode($reservation->panelist_id, true);
+            if (is_array($panelistIds)) {
+                foreach ($panelistIds as $panelistId) {
+                    Notification::create([
+                        'user_id' => $panelistId,
+                        '_link_id' => $reservation->id,
+                        'notification_type' => 'system_alert',
+                        'notification_title' => 'Panelist Assigned',
+                        'notification_message' => ucwords($reservation->user->username) .
+                            "'s reservation has assigned you as a panelist.",
+                    ]);
+                }
+            }
 
             return redirect('/reservations')->with('success', 'Panelists updated successfully!');
         }

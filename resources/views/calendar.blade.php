@@ -12,70 +12,72 @@
         <div class="card shadow mb-4">
             <div class="card-body">
                 <div class="d-flex justify-content-between">
-                    <div id="FullCalendar" class="col-9"></div>
-                    <div class="add-events-container col-3 p-3">
-                        <h4 class="add-events-title">Add Schedule</h4>
-                        <form action="{{ route('schedule.store') }}" method="POST">
-                            @csrf
-                            <!-- <div class="mb-3">
-                                <label for="group" class="form-label">Select group</label>
-                                <select name="group" class="form-control select2" id="group_schedule">
-                                    <option value="">-- Select Group --</option>
-                                    @foreach ($reservations as $reservation)
-                                        <option value="{{ $reservation->user->id }}"
-                                            {{ old('group') == $reservation->user->id ? 'selected' : '' }}>
-                                            {{ Str::ucfirst($reservation->user->username) }}</option>
-                                    @endforeach
-                                </select>
-                                @error('group')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
-                            </div> -->
-                            <div class="mb-3">
-                                <label for="schedule_date" class="form-label">Schedule Date</label>
-                                <input type="date" name="schedule_date" class="form-control"
-                                    min="{{ now()->format('Y-m-d') }}" id="schedule_date"
-                                    value="{{ old('schedule_date') }}">
-                                @error('schedule_date')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <!-- <div class="mb-3">
-                                <label for="schedule_time" class="form-label">Schedule Time</label>
-                                <input type="time" class="form-control" id="schedule_time" name="schedule_time"
-                                    value="{{ old('schedule_time') }}">
-                                @error('schedule_time')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
-                            </div> -->
-                            <div class="mb-3">
-                                <label for="schedule_category" class="form-label">Select Category</label>
-                                <select name="schedule_category" class="form-control" id="schedule_category">
-                                    <option value="">-- Select Category --</option>
-                                    {{-- <option value="available"
+                    <div id="FullCalendar" class="col-9 {{ auth()->user()->user_type == 'panelist' ? 'col-12' : '' }}"></div>
+                    @if (auth()->user()->user_type != 'panelist')
+                        <div class="add-events-container col-3 p-3">
+                            <h4 class="add-events-title">Add Schedule</h4>
+                            <form action="{{ route('schedule.store') }}" method="POST">
+                                @csrf
+                                <!-- <div class="mb-3">
+                                    <label for="group" class="form-label">Select group</label>
+                                    <select name="group" class="form-control select2" id="group_schedule">
+                                        <option value="">-- Select Group --</option>
+                                        @foreach ($reservations as $reservation)
+    <option value="{{ $reservation->user->id }}"
+                                                {{ old('group') == $reservation->user->id ? 'selected' : '' }}>
+                                                {{ Str::ucfirst($reservation->user->username) }}</option>
+    @endforeach
+                                    </select>
+                                    @error('group')
+        <div class="invalid-feedback d-block">{{ $message }}</div>
+    @enderror
+                                </div> -->
+                                <div class="mb-3">
+                                    <label for="schedule_date" class="form-label">Schedule Date</label>
+                                    <input type="date" name="schedule_date" class="form-control"
+                                        min="{{ now()->format('Y-m-d') }}" id="schedule_date"
+                                        value="{{ old('schedule_date') }}" required>
+                                    @error('schedule_date')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <!-- <div class="mb-3">
+                                    <label for="schedule_time" class="form-label">Schedule Time</label>
+                                    <input type="time" class="form-control" id="schedule_time" name="schedule_time"
+                                        value="{{ old('schedule_time') }}">
+                                    @error('schedule_time')
+        <div class="invalid-feedback d-block">{{ $message }}</div>
+    @enderror
+                                </div> -->
+                                <div class="mb-3">
+                                    <label for="schedule_category" class="form-label">Select Category</label>
+                                    <select name="schedule_category" class="form-control" id="schedule_category">
+                                        <option value="">-- Select Category --</option>
+                                        {{-- <option value="available"
                                         {{ old('schedule_category') == 'available' ? 'selected' : '' }}>
                                         Available</option>
                                     <option value="occupied"
                                         {{ old('schedule_category') == 'occupied' ? 'selected' : '' }}>
                                         Occupied</option> --}}
-                                    <option value="unavailable"
-                                        {{ old('schedule_category') == 'unavailable' ? 'selected' : '' }}>Unavailable
-                                    </option>
-                                </select>
-                                @error('schedule_category')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="mb-3">
-                                <label for="schedule_remarks" class="form-label">Remarks</label>
-                                <textarea name="schedule_remarks" class="form-control" id="schedule_remarks" cols="10" rows="5"></textarea>
-                                @error('schedule_remarks')
-                                    <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <button type="submit" class="btn btn-primary">Add Event</button>
-                        </form>
-                    </div>
+                                        <option value="unavailable"
+                                            {{ old('schedule_category') == 'unavailable' ? 'selected' : '' }}>Unavailable
+                                        </option>
+                                    </select>
+                                    @error('schedule_category')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="mb-3">
+                                    <label for="schedule_remarks" class="form-label">Remarks</label>
+                                    <textarea name="schedule_remarks" class="form-control" id="schedule_remarks" cols="10" rows="5"></textarea>
+                                    @error('schedule_remarks')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <button type="submit" class="btn btn-primary">Add Event</button>
+                            </form>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
